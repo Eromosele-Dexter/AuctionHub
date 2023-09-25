@@ -1,8 +1,21 @@
 import { NestFactory } from '@nestjs/core';
 import { InventoryModule } from './inventory.module';
+import {
+  inventoryKafkaConfig,
+  inventoryKafkaOptions,
+} from '@app/shared-library/configs/kafkaConfig';
+import { MicroserviceOptions } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const app = await NestFactory.create(InventoryModule);
-  await app.listen(3000);
+  inventoryKafkaOptions.client.brokers = [
+    process.env.KAFKA_BROKER_HOST + ':' + process.env.KAFKA_BROKER_PORT,
+  ];
+  inventoryKafkaConfig.options = inventoryKafkaOptions;
+
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    InventoryModule,
+    inventoryKafkaConfig,
+  );
+  await app.listen();
 }
 bootstrap();
