@@ -5,6 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Session } from './entities/session.entity';
+import { SessionRepository } from './repositories/session-repo/session.repository';
+import { UserRepository } from './repositories/user-repo/user.repository';
 
 @Module({
   imports: [
@@ -25,6 +27,6 @@ import { Session } from './entities/session.entity';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, SessionRepository, UserRepository],
 })
 export class AuthModule {}

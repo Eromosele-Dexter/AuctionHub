@@ -9,7 +9,7 @@ export class Bid {
 
   @Column()
   @ManyToOne(() => User, (user) => user.id, { nullable: false })
-  buyerId: number;
+  bidderId: number;
 
   @Column()
   @ManyToOne(() => Item, (item) => item.id, { nullable: false })

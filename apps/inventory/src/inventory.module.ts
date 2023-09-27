@@ -7,6 +7,10 @@ import { AuctionType } from './entities/auction-type.entity';
 import { ItemKeyword } from './entities/item-keyword.entity';
 import { Item } from './entities/item.entity';
 import { Keyword } from './entities/keyword.entity';
+import { AuctionTypeRepository } from './repositories/auction-type-repo/auction-type.repository';
+import { ItemKeywordRepository } from './repositories/item-keyword-repo/item-keyword.repository';
+import { ItemRepository } from './repositories/item-repo/item.repository';
+import { KeywordRepository } from './repositories/keyword-repo/keyword.repository';
 
 @Module({
   imports: [
@@ -26,6 +30,12 @@ import { Keyword } from './entities/keyword.entity';
     }),
   ],
   controllers: [InventoryController],
-  providers: [InventoryService],
+  providers: [
+    InventoryService,
+    AuctionTypeRepository,
+    ItemKeywordRepository,
+    ItemRepository,
+    KeywordRepository,
+  ],
 })
 export class InventoryModule {}

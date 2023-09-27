@@ -7,6 +7,10 @@ import { AuctionItem } from './entities/auction-item.entity';
 import { Bid } from './entities/bid.entity';
 import { WatchList } from './entities/watch-list.entity';
 import { WatchListItem } from './entities/watch-list-item.entity';
+import { WatchListRepository } from './repositories/watch-list-repo/watch-list.repository';
+import { WatchListItemRepository } from './repositories/watch-list-item-repo/watch-list-item.repository';
+import { BidRepository } from './repositories/bid-repo/bid.repository';
+import { AuctionItemRepository } from './repositories/auction-item-repo/auction-item.repository';
 
 @Module({
   imports: [
@@ -26,6 +30,12 @@ import { WatchListItem } from './entities/watch-list-item.entity';
     }),
   ],
   controllers: [BidController],
-  providers: [BidService],
+  providers: [
+    BidService,
+    AuctionItemRepository,
+    BidRepository,
+    WatchListRepository,
+    WatchListItemRepository,
+  ],
 })
 export class BidModule {}

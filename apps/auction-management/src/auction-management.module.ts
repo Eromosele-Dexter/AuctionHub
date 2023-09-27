@@ -5,6 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuctionListing } from './entities/auction-listing.entity';
 import { AuctionListingItem } from './entities/auction-listing-item.entity';
+import { AuctionListingItemRepository } from './repositories/auction-listing-item-repo/auction-listing-item.repository';
+import { AuctionListingRepository } from './repositories/auction-listing-repo/auction-listing.repository';
 
 @Module({
   imports: [
@@ -24,6 +26,10 @@ import { AuctionListingItem } from './entities/auction-listing-item.entity';
     }),
   ],
   controllers: [AuctionManagementController],
-  providers: [AuctionManagementService],
+  providers: [
+    AuctionManagementService,
+    AuctionListingItemRepository,
+    AuctionListingRepository,
+  ],
 })
 export class AuctionManagementModule {}

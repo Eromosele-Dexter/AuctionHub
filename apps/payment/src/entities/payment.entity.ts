@@ -8,7 +8,7 @@ export class Payment {
 
   @Column()
   @OneToOne(() => User, (user) => user.id, { nullable: false })
-  buyerId: number;
+  bidderId: number;
 
   @Column()
   shipmentCost: number;
