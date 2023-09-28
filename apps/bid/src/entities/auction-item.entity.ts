@@ -23,9 +23,16 @@ export class AuctionItem {
   })
   auctionTypeId: number;
 
+  // this is the time the auction ends
   @Column()
-  duration: number;
+  duration: number; // if it is a dutch auction, this value is not shown to the bidders
 
   @Column()
   startingBidPrice: number;
+
+  @Column()
+  currentBidPrice: number;
+
+  @Column({ nullable: true })
+  decrementAmount: number; // if the auction is a dutch auction, this is the amount to decrement the price by
 }

@@ -28,6 +28,7 @@ import { KeywordRepository } from './repositories/keyword-repo/keyword.repositor
       entities: [AuctionType, ItemKeyword, Item, Keyword],
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([AuctionType, ItemKeyword, Item, Keyword]),
   ],
   controllers: [InventoryController],
   providers: [

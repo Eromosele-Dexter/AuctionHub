@@ -25,6 +25,7 @@ import { UserRepository } from './repositories/user-repo/user.repository';
       entities: [User, Session],
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([User, Session]),
   ],
   controllers: [AuthController],
   providers: [AuthService, SessionRepository, UserRepository],

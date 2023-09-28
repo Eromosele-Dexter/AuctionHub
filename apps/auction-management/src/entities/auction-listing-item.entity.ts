@@ -20,6 +20,6 @@ export class AuctionListingItem {
   auctionListingId: number;
 
   @Column()
-  @OneToOne(() => Item, (item) => item.id, { nullable: false })
+  @OneToOne(() => Item, (item) => item.id, { nullable: false }) // try it out and see results, if it doesnt work, then delete the mapping since it is essentially being mapped to another enttity in another database
   itemId: number;
 }

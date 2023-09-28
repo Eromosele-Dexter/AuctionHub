@@ -4,7 +4,7 @@ import { Session } from '../../entities/session.entity';
 import { ISessionRepository } from './session.repository.interface';
 
 @Injectable()
-export abstract class SessionRepository
+export class SessionRepository
   extends Repository<Session>
   implements ISessionRepository
 {

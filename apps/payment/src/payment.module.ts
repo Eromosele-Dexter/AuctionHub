@@ -4,6 +4,7 @@ import { PaymentService } from './services/payment.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from './entities/payment.entity';
+import { PaymentRepository } from './repositories/payment-repo/payment.repository';
 
 @Module({
   imports: [
@@ -21,8 +22,9 @@ import { Payment } from './entities/payment.entity';
       entities: [Payment],
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([Payment]),
   ],
   controllers: [PaymentController],
-  providers: [PaymentService],
+  providers: [PaymentService, PaymentRepository],
 })
 export class PaymentModule {}

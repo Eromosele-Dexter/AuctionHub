@@ -28,6 +28,7 @@ import { AuctionItemRepository } from './repositories/auction-item-repo/auction-
       entities: [AuctionItem, Bid, WatchList, WatchListItem],
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([AuctionItem, Bid, WatchList, WatchListItem]),
   ],
   controllers: [BidController],
   providers: [

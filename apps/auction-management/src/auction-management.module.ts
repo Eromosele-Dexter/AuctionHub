@@ -24,6 +24,7 @@ import { AuctionListingRepository } from './repositories/auction-listing-repo/au
       entities: [AuctionListing, AuctionListingItem],
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([AuctionListing, AuctionListingItem]),
   ],
   controllers: [AuctionManagementController],
   providers: [
