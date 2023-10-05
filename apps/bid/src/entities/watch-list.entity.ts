@@ -7,7 +7,7 @@ export class WatchList {
   id: number;
 
   @Column()
-  @ManyToOne(() => User, (user) => user.id, { nullable: false })
+  // @ManyToOne(() => User, (user) => user.id, { nullable: false })
   bidderId: number;
 
   @Column()

@@ -11,6 +11,8 @@ import { WatchListRepository } from './repositories/watch-list-repo/watch-list.r
 import { WatchListItemRepository } from './repositories/watch-list-item-repo/watch-list-item.repository';
 import { BidRepository } from './repositories/bid-repo/bid.repository';
 import { AuctionItemRepository } from './repositories/auction-item-repo/auction-item.repository';
+import { BidGateway } from './services/bid-gateway';
+import { jwtModule } from './modules.config';
 
 @Module({
   imports: [
@@ -29,10 +31,12 @@ import { AuctionItemRepository } from './repositories/auction-item-repo/auction-
       synchronize: true,
     }),
     TypeOrmModule.forFeature([AuctionItem, Bid, WatchList, WatchListItem]),
+    jwtModule,
   ],
   controllers: [BidController],
   providers: [
     BidService,
+    BidGateway,
     AuctionItemRepository,
     BidRepository,
     WatchListRepository,

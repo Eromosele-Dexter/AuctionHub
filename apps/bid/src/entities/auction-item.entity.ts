@@ -14,13 +14,13 @@ export class AuctionItem {
   id: number;
 
   @Column()
-  @OneToOne(() => Item, (item) => item.id, { nullable: false })
+  // @OneToOne(() => Item, (item) => item.id, { nullable: false })
   itemId: number;
 
   @Column()
-  @ManyToOne(() => AuctionType, (auctionType) => auctionType.id, {
-    nullable: false,
-  })
+  // @ManyToOne(() => AuctionType, (auctionType) => auctionType.id, {
+  //   nullable: false,
+  // })
   auctionTypeId: number;
 
   // this is the time the auction ends
