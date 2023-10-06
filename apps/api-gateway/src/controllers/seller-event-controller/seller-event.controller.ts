@@ -9,4 +9,10 @@ export class SellerEventController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  // create a listing
+
+  // start an auction
+
+  // view item listing
 }

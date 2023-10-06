@@ -1,0 +1,15 @@
+Register User Request
+
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "username": "Johnd",
+    "password":"Jimpolss",
+    "email": "john@gmail.com",
+    "streetName": "keele street",
+    "streetNumber": "4700",
+    "country": "Canada",
+    "city": "Toronto",
+    "postalCode": "M3J 1p3",
+    "isSeller": true
+}

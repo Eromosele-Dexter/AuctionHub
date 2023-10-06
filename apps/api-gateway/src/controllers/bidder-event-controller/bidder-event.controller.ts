@@ -9,4 +9,12 @@ export class BidderEventController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  // place bid
+
+  // checkout
+
+  // receipt
+
+  // view watchlist
 }

@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { API_GATEWAY_PORT } from '@app/shared-library/configs/serverConfig';
 
@@ -17,6 +17,7 @@ async function bootstrap() {
   };
 
   app.enableCors(corsOptions);
+  app.useGlobalPipes(new ValidationPipe());
 
   const logger = new Logger();
 
@@ -30,6 +31,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('api', app, document);
+
+  await app.startAllMicroservices();
 
   await app.listen(API_GATEWAY_PORT);
 

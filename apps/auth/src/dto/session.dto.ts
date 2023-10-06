@@ -1,17 +1,17 @@
-import { IsInt, IsNotEmpty } from "class-validator";
+// import { IsInt, IsNotEmpty } from "class-validator";
 
-export class SessionDto {
-    // @IsInt()
-    // _id: number;
+// export class SessionDto {
+//     // @IsInt()
+//     // _id: number;
 
-    @IsInt()
-    @IsNotEmpty()
-    bidderId: number;
+//     @IsInt()
+//     @IsNotEmpty()
+//     bidderId: number;
 
-    @IsInt()
-    @IsNotEmpty()
-    itemId: number;
+//     @IsInt()
+//     @IsNotEmpty()
+//     itemId: number;
 
-    @IsNotEmpty()
-    startTime: Date;
-}
+//     @IsNotEmpty()
+//     startTime: Date;
+// }

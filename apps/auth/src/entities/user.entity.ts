@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'bidders' })
+@Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -24,7 +24,7 @@ export class User {
   role: string;
 
   @Column()
-  streetAddress: string;
+  streetName: string;
 
   @Column()
   streetNumber: string;
@@ -41,6 +41,36 @@ export class User {
   @Column()
   createdAt: Date;
 
-  @Column()
+  @Column({ nullable: true })
   updatedAt: Date;
+
+  constructor(
+    firstName: string,
+    lastName: string,
+    username: string,
+    password: string,
+    email: string,
+    role: string,
+    streetName: string,
+    streetNumber: string,
+    postalCode: string,
+    city: string,
+    country: string,
+    createdAt: Date,
+    updatedAt?: Date,
+  ) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.username = username;
+    this.password = password;
+    this.email = email;
+    this.role = role;
+    this.streetName = streetName;
+    this.streetNumber = streetNumber;
+    this.postalCode = postalCode;
+    this.city = city;
+    this.country = country;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
 }

@@ -4,10 +4,7 @@ import { User } from '../../entities/user.entity';
 import { IUserRepository } from './user.repository.interface';
 
 @Injectable()
-export class UserRepository
-  extends Repository<User>
-  implements IUserRepository
-{
+export class UserRepository extends Repository<User> implements IUserRepository {
   private readonly logger = new Logger(UserRepository.name);
 
   constructor(private dataSource: DataSource) {
@@ -15,10 +12,12 @@ export class UserRepository
   }
 
   async createUser(user: User): Promise<User> {
-    throw new Error('Method not implemented.');
+    this.dataSource.manager.create(User, user);
+    return this.save(user);
   }
-  async getUserById(id: number): Promise<User> {
-    throw new Error('Method not implemented.');
+  async getUserById(id: number) {
+    const user = await this.dataSource.manager.query(`SELECT * FROM users WHERE id = ${id}`);
+    return user[0];
   }
   async getUsers(): Promise<User[]> {
     throw new Error('Method not implemented.');

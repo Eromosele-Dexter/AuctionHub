@@ -1,3 +1,3 @@
-export * from './configs/kafkaConfig';
-export * from './events/events.patterns';
-export * from './events/register-user.event';
+export * from './configs/index';
+export * from './events/index';
+export * from './messages/index';

@@ -1,4 +1,4 @@
-class RegisterUserEvent {
+class RegisterUserMessage {
   constructor(
     public readonly firstName: string,
     public readonly lastName: string,
@@ -25,11 +25,10 @@ class RegisterUserEvent {
       streetNumber: this.streetNumber,
       country: this.country,
       city: this.city,
-      postalCode: this.postalCode,
       isSeller: this.isSeller,
       dateRegistered: this.dateRegistered,
     });
   }
 }
 
-export default RegisterUserEvent;
+export default RegisterUserMessage;

@@ -8,11 +8,11 @@ export class Session {
   id: number;
 
   @Column()
-  @ManyToOne(() => User, (user) => user.id, { nullable: false })
+  // @ManyToOne(() => User, (user) => user.id, { nullable: false })
   bidderId: number;
 
   @Column()
-  @ManyToOne(() => Item, (item) => item.id, { nullable: false })
+  // @ManyToOne(() => Item, (item) => item.id, { nullable: false })
   itemId: number;
 
   @Column()

@@ -1,10 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AuthModule } from './auth.module';
 import { MicroserviceOptions } from '@nestjs/microservices';
-import {
-  authKafkaConfig,
-  authKafkaOptions,
-} from '@app/shared-library/configs/kafkaConfig';
+import { authKafkaConfig, authKafkaOptions } from '@app/shared-library/configs/kafkaConfig';
 
 async function bootstrap() {
   authKafkaOptions.client.brokers = [
@@ -16,6 +13,7 @@ async function bootstrap() {
     AuthModule,
     authKafkaConfig,
   );
+
   await app.listen();
 }
 bootstrap();
