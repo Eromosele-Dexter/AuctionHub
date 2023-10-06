@@ -72,6 +72,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/payment/tsconfig.app.json"
       }
+    },
+    "websocket-gateway": {
+      "type": "application",
+      "root": "apps/websocket-gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/websocket-gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/websocket-gateway/tsconfig.app.json"
+      }
     }
   }
 }

@@ -14,12 +14,12 @@ export class WatchListItem {
   id: number;
 
   @Column()
-  @OneToOne(() => WatchList, (watchList) => watchList.id, { nullable: false })
+  // @OneToOne(() => WatchList, (watchList) => watchList.id, { nullable: false })
   watchListId: number;
 
   @Column()
-  @ManyToOne(() => AuctionItem, (auctionItem) => auctionItem.id, {
-    nullable: false,
-  })
+  // @ManyToOne(() => AuctionItem, (auctionItem) => auctionItem.id, {
+  //   nullable: false,
+  // })
   auctionItemId: number;
 }
