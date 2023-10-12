@@ -13,3 +13,10 @@ Register User Request
     "postalCode": "M3J 1p3",
     "isSeller": true
 }
+
+Login User Request
+
+{
+    "username" : "Johnd",
+    "password":"Jimpolss"
+}

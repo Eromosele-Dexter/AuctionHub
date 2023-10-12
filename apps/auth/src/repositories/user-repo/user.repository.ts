@@ -20,15 +20,34 @@ export class UserRepository extends Repository<User> implements IUserRepository 
     return user[0];
   }
   async getUsers(): Promise<User[]> {
-    throw new Error('Method not implemented.');
+    const users = await this.dataSource.manager.query(`SELECT * FROM users`);
+    return users;
   }
   async updateUser(user: User): Promise<User> {
-    throw new Error('Method not implemented.');
+    const updatedUser = await this.dataSource.manager.query(`UPDATE users SET
+    firstName = '${user.firstName}',
+    lastName = '${user.lastName}',
+    username = '${user.username}',
+    password = '${user.password}',
+    email = '${user.email}',
+    role = '${user.role}',
+    streetName = '${user.streetName}',
+    streetNumber = '${user.streetNumber}',
+    postalCode = '${user.postalCode}',
+    city = '${user.city}',
+    country = '${user.country}',
+    createdAt = '${user.createdAt}',
+    updatedAt = '${user.updatedAt}'
+    WHERE id = ${user.id}`);
+
+    this.save(updatedUser[0]);
+    return updatedUser[0];
   }
   async deleteUser(id: number): Promise<void> {
-    throw new Error('Method not implemented.');
+    this.delete(id);
   }
-  async getUserByEmail(email: string): Promise<User> {
-    throw new Error('Method not implemented.');
+  async getUserByUsername(username: string): Promise<User> {
+    const user = await this.dataSource.manager.query(`SELECT * FROM users WHERE username = '${username}'`);
+    return user[0];
   }
 }

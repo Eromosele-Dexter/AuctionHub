@@ -4,11 +4,31 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { API_GATEWAY_PORT } from '@app/shared-library/configs/serverConfig';
+import * as session from 'express-session';
+import * as passport from 'passport';
+import { rateLimiter } from './middleware/rate-limiter.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api-gateway');
+
+  app.use(rateLimiter);
+
+  app.use(
+    session({
+      name: 'bid_session_id',
+      secret: 'secret', // TODO: change this to a more secure secret and put in .env file
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: 300000000, // 3 days
+      },
+    }),
+  );
+
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   const corsOptions: CorsOptions = {
     origin: '*',

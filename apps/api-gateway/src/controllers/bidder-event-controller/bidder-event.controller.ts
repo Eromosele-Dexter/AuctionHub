@@ -1,20 +1,21 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from '../../services/app.service';
+import { BidderEventService } from '../../services/bidder-event.service';
 
 @Controller()
 export class BidderEventController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: BidderEventService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+  // @Get()
+  // getHello(): string {
+  //   return this.appService.getHello();
+  // }
 
-  // place bid
+  // place bid // protected route
 
-  // checkout
+  // checkout // protected route
 
-  // receipt
+  // receipt // protected route
 
-  // view watchlist
+  // view watchlist // protected route
 }

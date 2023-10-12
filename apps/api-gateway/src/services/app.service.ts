@@ -6,11 +6,15 @@ import {
   AUTH_SERVICE,
   BID_SERVICE,
   INVENTORY_SERVICE,
+  LOGIN_USER_MESSAGE_PATTERN,
   PAYMENT_SERVICE,
   REGISTER_USER_MESSAGE_PATTERN,
 } from '@app/shared-library';
 import RegisterUserEvent from '@app/shared-library/events/register-user.event';
 import { RegisterUserResponse } from '../api-contracts/auth/responses/register-user.response';
+import { LoginUserResponse } from '../api-contracts/auth/responses/login-user.response';
+import { LoginUserRequest } from '../api-contracts/auth/requests/login-user.request';
+import LoginUserEvent from '@app/shared-library/events/login-user';
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -24,6 +28,7 @@ export class AppService implements OnModuleInit {
 
   async onModuleInit() {
     this.authClient.subscribeToResponseOf(REGISTER_USER_MESSAGE_PATTERN);
+    this.authClient.subscribeToResponseOf(LOGIN_USER_MESSAGE_PATTERN);
     await this.authClient.connect();
   }
 
@@ -56,5 +61,54 @@ export class AppService implements OnModuleInit {
           },
         });
     });
+  }
+
+  async validateUser(loginUserRequest: LoginUserRequest): Promise<any> {
+    const user = new Promise<LoginUserResponse>((resolve, reject) => {
+      this.authClient
+        .send(LOGIN_USER_MESSAGE_PATTERN, new LoginUserEvent(loginUserRequest.username, loginUserRequest.password))
+        .subscribe({
+          next: (response) => {
+            resolve(response);
+          },
+          error: (error) => {
+            reject(error);
+          },
+        });
+    });
+
+    return user;
+  }
+
+  async logoutUser() {
+    throw new Error('Method not implemented.');
+  }
+
+  async resetPassword() {
+    throw new Error('Method not implemented.');
+  }
+
+  async viewCatalog() {
+    throw new Error('Method not implemented.');
+  }
+
+  async searchCatalog() {
+    throw new Error('Method not implemented.');
+  }
+
+  async viewBiddingHistory() {
+    throw new Error('Method not implemented.');
+  }
+
+  async editProfile() {
+    throw new Error('Method not implemented.');
+  }
+
+  async viewItem() {
+    throw new Error('Method not implemented.');
+  }
+
+  async auctionEnded() {
+    throw new Error('Method not implemented.');
   }
 }
