@@ -12,6 +12,9 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './middleware/local.strategy';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { SessionSerializer } from './utils/session.serializer';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Session } from '../src/sessions/session.entity';
+import { SessionRepository } from './sessions/session-repo/session.repository';
 
 @Module({
   imports: [
@@ -23,6 +26,17 @@ import { SessionSerializer } from './utils/session.serializer';
     PassportModule.register({
       session: true,
     }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.POSTGRES_HOST,
+      port: Number(process.env.POSTGRES_PORT),
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_AUTH_DATABASE,
+      entities: [Session],
+      synchronize: true,
+    }),
+    TypeOrmModule.forFeature([Session]),
   ],
   controllers: [AppController, BidderEventController, SellerEventController],
   providers: [
@@ -32,6 +46,7 @@ import { SessionSerializer } from './utils/session.serializer';
     LocalStrategy,
     LocalAuthGuard,
     SessionSerializer,
+    SessionRepository,
   ],
 })
 export class AppModule {}

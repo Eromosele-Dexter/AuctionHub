@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../repositories/user-repo/user.repository';
-import { SessionRepository } from '../repositories/session-repo/session.repository';
 import { User } from '../entities/user.entity';
 import { ROLES, STATUS } from '@app/shared-library/types';
 import { LoginUserResponse, RegisterUserResponse } from '@app/shared-library';
@@ -9,10 +8,7 @@ import RegisterUserMessage from '@app/shared-library/messages/register-user.mess
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private userRepository: UserRepository,
-    private sessionRepository: SessionRepository,
-  ) {}
+  constructor(private userRepository: UserRepository) {}
   getHello(): string {
     return 'Hello World!';
   }

@@ -1,13 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { Session } from '../../entities/session.entity';
+import { Session } from '../session.entity';
 import { ISessionRepository } from './session.repository.interface';
+import { ISession } from 'connect-typeorm';
 
 @Injectable()
-export class SessionRepository
-  extends Repository<Session>
-  implements ISessionRepository
-{
+export class SessionRepository extends Repository<Session> {
+  // export class SessionRepository extends Repository<ISession> implements ISessionRepository {
   private readonly logger = new Logger(SessionRepository.name);
 
   constructor(private dataSource: DataSource) {

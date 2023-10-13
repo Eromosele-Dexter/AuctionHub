@@ -4,8 +4,6 @@ import { AuthService } from './services/auth.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Session } from './entities/session.entity';
-import { SessionRepository } from './repositories/session-repo/session.repository';
 import { UserRepository } from './repositories/user-repo/user.repository';
 
 @Module({
@@ -22,12 +20,12 @@ import { UserRepository } from './repositories/user-repo/user.repository';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_AUTH_DATABASE,
-      entities: [User, Session],
+      entities: [User],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([User, Session]),
+    TypeOrmModule.forFeature([User]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, SessionRepository, UserRepository],
+  providers: [AuthService, UserRepository],
 })
 export class AuthModule {}

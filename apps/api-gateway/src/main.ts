@@ -7,11 +7,12 @@ import { API_GATEWAY_PORT } from '@app/shared-library/configs/serverConfig';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import { rateLimiter } from './middleware/rate-limiter.middleware';
-
 import { TypeormStore } from 'connect-typeorm';
+import { SessionRepository } from './sessions/session-repo/session.repository';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const SessionRepo = app.get(SessionRepository);
 
   app.setGlobalPrefix('api-gateway');
 
@@ -24,9 +25,9 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 300000000, // 3 days
+        maxAge: 3_600_000, // 1 hour
       },
-      // store: new TypeormStore({}),
+      store: new TypeormStore({}).connect(SessionRepo),
     }),
   );
 
