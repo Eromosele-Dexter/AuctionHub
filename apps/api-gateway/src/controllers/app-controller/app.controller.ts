@@ -1,12 +1,11 @@
 import { Controller, Get, Post, HttpStatus, Res, Body, UseGuards, Request } from '@nestjs/common';
 import { Response } from 'express';
 import { AppService } from '../../services/app.service';
-import { RegisterUserRequest } from '../../api-contracts/auth/requests/register-user.request';
+import { RegisterUserRequest } from '../../../../../libs/shared-library/src/api-contracts/auth/requests/register-user.request';
 import { formatResponse } from '../../utils/formatResponse';
-import { LoginUserRequest } from '../../api-contracts/auth/requests/login-user.request';
 import { LocalAuthGuard } from '../../guards/local-auth.guard';
-import { AuthGuard } from '@nestjs/passport';
 import { AuthenticatedGuard } from '../../guards/authenticated.guard';
+import { SendValidationCodeRequest } from '@app/shared-library';
 
 @Controller()
 export class AppController {
@@ -16,26 +15,27 @@ export class AppController {
 
   @Post('/register')
   async registerUser(@Body() registerUserRequest: RegisterUserRequest, @Res() response: Response) {
-    try {
-      const data = await this.appService.registerUser(registerUserRequest);
+    const data = await this.appService.registerUser(registerUserRequest);
 
-      return formatResponse(response, 'Registration', data);
-    } catch (error) {
-      return formatResponse(response, 'Registration', error.message);
+    if (data?.error || !data) {
+      return response.status(HttpStatus.BAD_REQUEST).json(data);
     }
+
+    return response.status(HttpStatus.OK).json(data);
   }
 
-  // user login
+  // user login - auth service
+
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   async loginUser(@Request() loginUserRequest, @Res() response: Response): Promise<any> {
-    try {
-      const data = loginUserRequest.user;
+    const data = loginUserRequest.user;
 
-      return formatResponse(response, 'Login', data);
-    } catch (error) {
-      return formatResponse(response, 'Login', error.message);
+    if (data?.error || !data) {
+      return response.status(HttpStatus.BAD_REQUEST).json(data);
     }
+
+    return response.status(HttpStatus.OK).json(data);
   }
 
   @UseGuards(AuthenticatedGuard)
@@ -53,17 +53,25 @@ export class AppController {
   // user logout
   @UseGuards(AuthenticatedGuard)
   @Post('/logout')
-  async logoutUser(@Res() response: Response) {
-    try {
-      const data = await this.appService.logoutUser();
-
-      return formatResponse(response, 'Logout', data);
-    } catch (error) {
-      return formatResponse(response, 'Logout', error.message);
-    }
+  async logoutUser(@Request() logoutUserRequest, @Res() response: Response) {
+    // Destroy the session to log the user out
+    logoutUserRequest.session.destroy((err) => {
+      if (err) {
+        console.error(err);
+        return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Logout failed' });
+      }
+      return response.status(HttpStatus.OK).json({ message: 'Logout successful' });
+    });
   }
 
-  // reset password // protected route
+  @Post('/send-validation-code')
+  sendValidationCode(@Body() sendValidationCodeRequest: SendValidationCodeRequest, @Res() response: Response) {
+    this.appService.sendValidationCode(sendValidationCodeRequest);
+
+    return response.status(HttpStatus.OK).json({ message: 'Sending validation code successful' });
+  }
+
+  // reset password - auth service
   @Post('/reset-password')
   async resetPassword(@Res() response: Response) {
     try {

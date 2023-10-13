@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../repositories/user-repo/user.repository';
 import { SessionRepository } from '../repositories/session-repo/session.repository';
-import RegisterUserEvent from '@app/shared-library/events/register-user.event';
 import { User } from '../entities/user.entity';
-import LoginUserEvent from '@app/shared-library/events/login-user';
+import { ROLES, STATUS } from '@app/shared-library/types';
+import { LoginUserResponse, RegisterUserResponse } from '@app/shared-library';
+import * as bcrypt from 'bcrypt';
+import RegisterUserMessage from '@app/shared-library/messages/register-user.message';
 
 @Injectable()
 export class AuthService {
@@ -15,46 +17,46 @@ export class AuthService {
     return 'Hello World!';
   }
 
-  public handleRegisterUser(registerUserEvent: RegisterUserEvent) {
-    console.log('Auth Service Registering: ', JSON.stringify(registerUserEvent, null, 2));
-
+  async handleRegisterUser(registerUserMessage: RegisterUserMessage): Promise<RegisterUserResponse> {
     const user = new User(
-      registerUserEvent.firstName,
-      registerUserEvent.lastName,
-      registerUserEvent.username,
-      registerUserEvent.password,
-      registerUserEvent.email,
-      registerUserEvent.isSeller ? 'seller' : 'buyer',
-      registerUserEvent.streetName,
-      registerUserEvent.streetNumber,
-      registerUserEvent.postalCode,
-      registerUserEvent.city,
-      registerUserEvent.country,
-      registerUserEvent.dateRegistered,
+      registerUserMessage.firstName,
+      registerUserMessage.lastName,
+      registerUserMessage.username,
+      registerUserMessage.password,
+      registerUserMessage.email,
+      registerUserMessage.isSeller ? ROLES.SELLER : ROLES.BUYER,
+      registerUserMessage.streetName,
+      registerUserMessage.streetNumber,
+      registerUserMessage.postalCode,
+      registerUserMessage.city,
+      registerUserMessage.country,
+      registerUserMessage.dateRegistered,
     );
 
-    this.userRepository.createUser(user);
-    this.userRepository.getUserById(4).then((user) => {
-      console.log('User: ', JSON.stringify(user, null, 2));
-    });
+    const userExists = await this.userRepository.getUserByUsername(user.username);
 
-    return {
-      token: 'Dexter123345',
-    };
+    if (userExists) {
+      return new RegisterUserResponse(
+        null,
+        `User with username '${user.username}' already exists`,
+        STATUS.FAILED,
+        'Error registering user',
+      );
+    }
+
+    this.userRepository.createUser(user);
+
+    return new RegisterUserResponse(user, 'User created', STATUS.SUCCESS);
   }
 
-  async validateUser(username: string, password: string): Promise<any> {
+  async validateUser(username: string, password: string): Promise<LoginUserResponse> {
     const user: User = await this.userRepository.getUserByUsername(username);
+    // const isMatch = await bcrypt.compare(password, user.password);
     if (user && user.password === password) {
       // TODO: use bcrypt to compare passwords instead
-      const { password, ...result } = user;
-      return result;
+      return new LoginUserResponse(user, 'User validated', STATUS.SUCCESS);
     }
-    console.log("User doesn't exist from auth service");
-    return null;
-  }
 
-  handleLoginUser(data: LoginUserEvent) {
-    return this.validateUser(data.username, data.password);
+    return new LoginUserResponse(null, "User doesn't exist", STATUS.FAILED, 'Error validating user');
   }
 }

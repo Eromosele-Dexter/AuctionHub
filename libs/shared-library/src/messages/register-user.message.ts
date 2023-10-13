@@ -25,6 +25,7 @@ class RegisterUserMessage {
       streetNumber: this.streetNumber,
       country: this.country,
       city: this.city,
+      postalCode: this.postalCode,
       isSeller: this.isSeller,
       dateRegistered: this.dateRegistered,
     });

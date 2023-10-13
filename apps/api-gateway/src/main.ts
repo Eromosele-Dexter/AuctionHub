@@ -8,6 +8,8 @@ import * as session from 'express-session';
 import * as passport from 'passport';
 import { rateLimiter } from './middleware/rate-limiter.middleware';
 
+import { TypeormStore } from 'connect-typeorm';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -24,6 +26,7 @@ async function bootstrap() {
       cookie: {
         maxAge: 300000000, // 3 days
       },
+      // store: new TypeormStore({}),
     }),
   );
 

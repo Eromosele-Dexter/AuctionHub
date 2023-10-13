@@ -1,2 +1,2 @@
 export * from './events.patterns';
-export * from './register-user.event';
+export * from './send-validation-code.event';

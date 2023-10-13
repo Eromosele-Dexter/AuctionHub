@@ -1,1 +1,1 @@
-export const REGISTER_USER_EVENT_PATTERN = 'register_user';
+export const SEND_VALIDATION_CODE_EVENT_PATTERN = 'send_validation_code';

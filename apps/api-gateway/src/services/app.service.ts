@@ -1,5 +1,5 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { RegisterUserRequest } from '../api-contracts/auth/requests/register-user.request';
+import { RegisterUserRequest } from '../../../../libs/shared-library/src/api-contracts/auth/requests/register-user.request';
 import { ClientKafka } from '@nestjs/microservices';
 import {
   AUCTION_MANAGEMENT_SERVICE,
@@ -9,12 +9,13 @@ import {
   LOGIN_USER_MESSAGE_PATTERN,
   PAYMENT_SERVICE,
   REGISTER_USER_MESSAGE_PATTERN,
+  SEND_VALIDATION_CODE_EVENT_PATTERN,
 } from '@app/shared-library';
-import RegisterUserEvent from '@app/shared-library/events/register-user.event';
-import { RegisterUserResponse } from '../api-contracts/auth/responses/register-user.response';
-import { LoginUserResponse } from '../api-contracts/auth/responses/login-user.response';
-import { LoginUserRequest } from '../api-contracts/auth/requests/login-user.request';
-import LoginUserEvent from '@app/shared-library/events/login-user';
+import { RegisterUserResponse, LoginUserResponse } from '@app/shared-library';
+import { LoginUserRequest, SendValidationCodeRequest } from '@app/shared-library';
+import RegisterUserMessage from '@app/shared-library/messages/register-user.message';
+import LoginUserMessage from '@app/shared-library/messages/login-user.message';
+import SendValidationCodeEvent from '@app/shared-library/events/send-validation-code.event';
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -33,11 +34,11 @@ export class AppService implements OnModuleInit {
   }
 
   async registerUser(registerUserRequest: RegisterUserRequest): Promise<RegisterUserResponse> {
-    return new Promise<RegisterUserResponse>((resolve, reject) => {
+    const response = new Promise<RegisterUserResponse>((resolve, reject) => {
       this.authClient
         .send(
           REGISTER_USER_MESSAGE_PATTERN,
-          new RegisterUserEvent(
+          new RegisterUserMessage(
             registerUserRequest.firstName,
             registerUserRequest.lastName,
             registerUserRequest.username,
@@ -54,19 +55,24 @@ export class AppService implements OnModuleInit {
         )
         .subscribe({
           next: (response) => {
-            resolve(response.token);
+            resolve(response);
           },
           error: (error) => {
             reject(error);
           },
         });
     });
+
+    return response;
   }
 
-  async validateUser(loginUserRequest: LoginUserRequest): Promise<any> {
-    const user = new Promise<LoginUserResponse>((resolve, reject) => {
+  async validateUser(loginUserRequest: LoginUserRequest): Promise<LoginUserResponse> {
+    const validatedUserResponse = new Promise<LoginUserResponse>((resolve, reject) => {
       this.authClient
-        .send(LOGIN_USER_MESSAGE_PATTERN, new LoginUserEvent(loginUserRequest.username, loginUserRequest.password))
+        .send(
+          LOGIN_USER_MESSAGE_PATTERN,
+          new LoginUserMessage(loginUserRequest.username, loginUserRequest.password),
+        )
         .subscribe({
           next: (response) => {
             resolve(response);
@@ -77,11 +83,14 @@ export class AppService implements OnModuleInit {
         });
     });
 
-    return user;
+    return validatedUserResponse;
   }
 
-  async logoutUser() {
-    throw new Error('Method not implemented.');
+  sendValidationCode(sendValidationCodeRequest: SendValidationCodeRequest) {
+    this.authClient.emit(
+      SEND_VALIDATION_CODE_EVENT_PATTERN,
+      new SendValidationCodeEvent(sendValidationCodeRequest.email),
+    );
   }
 
   async resetPassword() {

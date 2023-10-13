@@ -1,4 +1,4 @@
-class LoginUserEvent {
+class LoginUserMessage {
   constructor(
     public readonly username: string,
     public readonly password: string,
@@ -12,4 +12,4 @@ class LoginUserEvent {
   }
 }
 
-export default LoginUserEvent;
+export default LoginUserMessage;
