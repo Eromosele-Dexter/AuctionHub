@@ -7,4 +7,8 @@ export class Keyword {
 
   @Column()
   name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
 }

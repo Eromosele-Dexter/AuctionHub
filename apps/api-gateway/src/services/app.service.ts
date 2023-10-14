@@ -1,5 +1,4 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { RegisterUserRequest } from '../../../../libs/shared-library/src/api-contracts/auth/requests/register-user.request';
 import { ClientKafka } from '@nestjs/microservices';
 import {
   AUCTION_MANAGEMENT_SERVICE,
@@ -9,13 +8,23 @@ import {
   LOGIN_USER_MESSAGE_PATTERN,
   PAYMENT_SERVICE,
   REGISTER_USER_MESSAGE_PATTERN,
+  RESET_PASSWORD_MESSAGE_PATTERN,
+  ResetPasswordResponse,
   SEND_VALIDATION_CODE_EVENT_PATTERN,
 } from '@app/shared-library';
+
+import {
+  RegisterUserRequest,
+  LoginUserRequest,
+  SendValidationCodeRequest,
+  ResetPasswordRequest,
+} from '@app/shared-library';
+
 import { RegisterUserResponse, LoginUserResponse } from '@app/shared-library';
-import { LoginUserRequest, SendValidationCodeRequest } from '@app/shared-library';
 import RegisterUserMessage from '@app/shared-library/messages/register-user.message';
 import LoginUserMessage from '@app/shared-library/messages/login-user.message';
 import SendValidationCodeEvent from '@app/shared-library/events/send-validation-code.event';
+import ResetPasswordMessage from '@app/shared-library/messages/reset-password.message';
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -30,6 +39,7 @@ export class AppService implements OnModuleInit {
   async onModuleInit() {
     this.authClient.subscribeToResponseOf(REGISTER_USER_MESSAGE_PATTERN);
     this.authClient.subscribeToResponseOf(LOGIN_USER_MESSAGE_PATTERN);
+    this.authClient.subscribeToResponseOf(RESET_PASSWORD_MESSAGE_PATTERN);
     await this.authClient.connect();
   }
 
@@ -93,8 +103,28 @@ export class AppService implements OnModuleInit {
     );
   }
 
-  async resetPassword() {
-    throw new Error('Method not implemented.');
+  async resetPassword(resetPasswordRequest: ResetPasswordRequest): Promise<ResetPasswordResponse> {
+    const response = new Promise<ResetPasswordResponse>((resolve, reject) => {
+      this.authClient
+        .send(
+          RESET_PASSWORD_MESSAGE_PATTERN,
+          new ResetPasswordMessage(
+            resetPasswordRequest.email,
+            resetPasswordRequest.code,
+            resetPasswordRequest.newPassword,
+          ),
+        )
+        .subscribe({
+          next: (response) => {
+            resolve(response);
+          },
+          error: (error) => {
+            reject(error);
+          },
+        });
+    });
+
+    return response;
   }
 
   async viewCatalog() {

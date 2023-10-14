@@ -1,11 +1,11 @@
-import { Controller, Get, Post, HttpStatus, Res, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, HttpStatus, Res, Body, UseGuards, Request, Req, Param } from '@nestjs/common';
 import { Response } from 'express';
 import { AppService } from '../../services/app.service';
 import { RegisterUserRequest } from '../../../../../libs/shared-library/src/api-contracts/auth/requests/register-user.request';
 import { formatResponse } from '../../utils/formatResponse';
 import { LocalAuthGuard } from '../../guards/local-auth.guard';
 import { AuthenticatedGuard } from '../../guards/authenticated.guard';
-import { SendValidationCodeRequest } from '@app/shared-library';
+import { LoginUserRequest, ResetPasswordRequest, SendValidationCodeRequest } from '@app/shared-library';
 
 @Controller()
 export class AppController {
@@ -21,7 +21,7 @@ export class AppController {
       return response.status(HttpStatus.BAD_REQUEST).json(data);
     }
 
-    return response.status(HttpStatus.OK).json(data);
+    return response.status(HttpStatus.CREATED).json(data);
   }
 
   // user login - auth service
@@ -42,7 +42,6 @@ export class AppController {
   @Get('/hello')
   async hello(@Request() req): Promise<any> {
     try {
-      console.log('req: ', req.user);
       return 'hello';
       // return formatResponse(response, 'Hello', 'Hello');
     } catch (error) {
@@ -51,6 +50,7 @@ export class AppController {
   }
 
   // user logout
+
   @UseGuards(AuthenticatedGuard)
   @Post('/logout')
   async logoutUser(@Request() logoutUserRequest, @Res() response: Response) {
@@ -64,26 +64,36 @@ export class AppController {
     });
   }
 
+  // send validation code - auth service
+
   @Post('/send-validation-code')
   sendValidationCode(@Body() sendValidationCodeRequest: SendValidationCodeRequest, @Res() response: Response) {
-    this.appService.sendValidationCode(sendValidationCodeRequest);
+    try {
+      this.appService.sendValidationCode(sendValidationCodeRequest);
+    } catch (error) {
+      return response
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Sending validation code failed', error });
+    }
 
     return response.status(HttpStatus.OK).json({ message: 'Sending validation code successful' });
   }
 
   // reset password - auth service
-  @Post('/reset-password')
-  async resetPassword(@Res() response: Response) {
-    try {
-      const data = await this.appService.resetPassword();
 
-      return formatResponse(response, 'Password reset', data);
-    } catch (error) {
-      return formatResponse(response, 'Password reset', error.message);
+  @Post('/reset-password')
+  async resetPassword(@Body() resetPasswordRequest: ResetPasswordRequest, @Res() response: Response) {
+    const data = await this.appService.resetPassword(resetPasswordRequest);
+
+    if (data?.error || !data) {
+      return response.status(HttpStatus.BAD_REQUEST).json(data);
     }
+
+    return response.status(HttpStatus.OK).json(data);
   }
 
-  // view catalog and search
+  // view catalog - item service
+
   @UseGuards(AuthenticatedGuard)
   @Get('/catalog')
   async viewCatalog(@Res() response: Response) {
@@ -98,7 +108,7 @@ export class AppController {
 
   @UseGuards(AuthenticatedGuard)
   @Get('/catalog/:search')
-  async searchCatalog(@Res() response: Response) {
+  async searchCatalog(@Param('search') search: string, @Res() response: Response) {
     try {
       const data = await this.appService.searchCatalog();
 
@@ -111,7 +121,7 @@ export class AppController {
   // view item
   @UseGuards(AuthenticatedGuard)
   @Get('/item/:id')
-  async viewItem(@Res() response: Response) {
+  async viewItem(@Param('id') id: number, @Res() response: Response) {
     try {
       const data = await this.appService.viewItem();
 

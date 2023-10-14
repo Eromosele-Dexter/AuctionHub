@@ -7,6 +7,8 @@ import { AuctionListing } from './entities/auction-listing.entity';
 import { AuctionListingItem } from './entities/auction-listing-item.entity';
 import { AuctionListingItemRepository } from './repositories/auction-listing-item-repo/auction-listing-item.repository';
 import { AuctionListingRepository } from './repositories/auction-listing-repo/auction-listing.repository';
+import { AuctionItemRepository } from './repositories/auction-item-repo/auction-item.repository';
+import { AuctionItem } from './entities/auction-item.entity';
 
 @Module({
   imports: [
@@ -21,16 +23,17 @@ import { AuctionListingRepository } from './repositories/auction-listing-repo/au
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_AUCTION_MANAGEMENT_DATABASE,
-      entities: [AuctionListing, AuctionListingItem],
+      entities: [AuctionListing, AuctionListingItem, AuctionItem],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([AuctionListing, AuctionListingItem]),
+    TypeOrmModule.forFeature([AuctionListing, AuctionListingItem, AuctionItem]),
   ],
   controllers: [AuctionManagementController],
   providers: [
     AuctionManagementService,
     AuctionListingItemRepository,
     AuctionListingRepository,
+    AuctionItemRepository,
   ],
 })
 export class AuctionManagementModule {}

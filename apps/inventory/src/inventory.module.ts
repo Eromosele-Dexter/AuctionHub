@@ -31,12 +31,6 @@ import { KeywordRepository } from './repositories/keyword-repo/keyword.repositor
     TypeOrmModule.forFeature([AuctionType, ItemKeyword, Item, Keyword]),
   ],
   controllers: [InventoryController],
-  providers: [
-    InventoryService,
-    AuctionTypeRepository,
-    ItemKeywordRepository,
-    ItemRepository,
-    KeywordRepository,
-  ],
+  providers: [InventoryService, AuctionTypeRepository, ItemKeywordRepository, ItemRepository, KeywordRepository],
 })
 export class InventoryModule {}

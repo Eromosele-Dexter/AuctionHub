@@ -1,5 +1,5 @@
 import { User } from 'apps/auth/src/entities/user.entity';
-import { CustomResponse } from './response.response';
+import { CustomResponse } from '../../response.response';
 
 export class RegisterUserResponse extends CustomResponse {
   constructor(

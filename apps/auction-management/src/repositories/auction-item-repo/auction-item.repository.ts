@@ -1,13 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { AuctionItem } from '../../entities/auction-item.entity';
+import { AuctionItem } from '../../../../inventory/src/entities/auction-item.entity';
 import { IAuctionItemRepository } from './auction-item.repository.interface';
 
 @Injectable()
-export class AuctionItemRepository
-  extends Repository<AuctionItem>
-  implements IAuctionItemRepository
-{
+export class AuctionItemRepository extends Repository<AuctionItem> implements IAuctionItemRepository {
   private readonly logger = new Logger(AuctionItemRepository.name);
 
   constructor(private dataSource: DataSource) {

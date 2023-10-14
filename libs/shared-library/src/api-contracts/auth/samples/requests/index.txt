@@ -14,9 +14,31 @@ Register User Request
     "isSeller": true
 }
 
+
 Login User Request
 
 {
     "username" : "Johnd",
     "password":"Jimpolss"
+}
+
+Logout User Request
+
+{
+
+}
+
+Send Validation Code Request
+
+{
+    "email": "dextere2512@gmail.com"
+}
+
+
+Reset Password Request
+
+{
+    "email": "dextere2512@gmail.com",
+    "newPassword": "Password123"
+    "code": 9092
 }

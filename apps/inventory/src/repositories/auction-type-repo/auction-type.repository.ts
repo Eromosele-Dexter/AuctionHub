@@ -4,10 +4,7 @@ import { IAuctionTypeRepository } from './auction-type.repository.interface';
 import { AuctionType } from '../../entities/auction-type.entity';
 
 @Injectable()
-export class AuctionTypeRepository
-  extends Repository<AuctionType>
-  implements IAuctionTypeRepository
-{
+export class AuctionTypeRepository extends Repository<AuctionType> implements IAuctionTypeRepository {
   private readonly logger = new Logger(AuctionTypeRepository.name);
 
   constructor(private dataSource: DataSource) {
@@ -15,18 +12,24 @@ export class AuctionTypeRepository
   }
 
   async createAuctionType(auctionType: AuctionType): Promise<AuctionType> {
-    throw new Error('Method not implemented.');
+    this.dataSource.manager.create(AuctionType, auctionType);
+    return this.save(auctionType);
+  }
+  async getAuctionTypeByName(auctionTypeName: string): Promise<AuctionType> {
+    const auctionType = await this.dataSource.manager.query(
+      `SELECT * FROM auction_types WHERE name = '${auctionTypeName}'`,
+    );
+    return auctionType[0];
   }
   async getAuctionTypeById(id: number): Promise<AuctionType> {
-    throw new Error('Method not implemented.');
+    const auctionType = this.dataSource.manager.query('SELECT * FROM auction_types WHERE id = $1', [id]);
+    return auctionType[0];
   }
   async getAuctionTypes(): Promise<AuctionType[]> {
-    throw new Error('Method not implemented.');
+    return this.find();
   }
-  async updateAuctionType(auctionType: AuctionType): Promise<AuctionType> {
-    throw new Error('Method not implemented.');
-  }
+
   async deleteAuctionType(id: number): Promise<void> {
-    throw new Error('Method not implemented.');
+    this.delete(id);
   }
 }

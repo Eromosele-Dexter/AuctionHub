@@ -4,10 +4,7 @@ import { IItemKeywordRepository } from './item-keyword.repository.interface';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
-export class ItemKeywordRepository
-  extends Repository<ItemKeyword>
-  implements IItemKeywordRepository
-{
+export class ItemKeywordRepository extends Repository<ItemKeyword> implements IItemKeywordRepository {
   private readonly logger = new Logger(ItemKeywordRepository.name);
 
   constructor(private dataSource: DataSource) {
@@ -15,11 +12,17 @@ export class ItemKeywordRepository
   }
 
   async createItemKeyword(itemKeyword: ItemKeyword): Promise<ItemKeyword> {
-    throw new Error('Method not implemented.');
+    this.dataSource.manager.create(ItemKeyword, itemKeyword);
+    return this.save(itemKeyword);
   }
-  async getItemKeywordById(id: number): Promise<ItemKeyword> {
-    throw new Error('Method not implemented.');
+
+  getItemKeywordByItemIdAndKeywordId(itemId: number, keywordId: number): Promise<ItemKeyword> {
+    const itemKeyword = this.dataSource.manager.query(
+      `SELECT * FROM item_keywords WHERE item_id = ${itemId} AND keyword_id = ${keywordId}`,
+    );
+    return itemKeyword[0];
   }
+
   async getItemKeywords(): Promise<ItemKeyword[]> {
     throw new Error('Method not implemented.');
   }

@@ -1,12 +1,6 @@
 import { AuctionType } from 'apps/inventory/src/entities/auction-type.entity';
 import { Item } from 'apps/inventory/src/entities/item.entity';
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'auction_items' })
 export class AuctionItem {
@@ -25,7 +19,7 @@ export class AuctionItem {
 
   // this is the time the auction ends
   @Column()
-  duration: number; // if it is a dutch auction, this value is not shown to the bidders
+  endTime: Date; // if it is a dutch auction, this value is not shown to the bidders
 
   @Column()
   startingBidPrice: number;

@@ -1,4 +1,4 @@
-import { AuctionItem } from '../../entities/auction-item.entity';
+import { AuctionItem } from '../../../../inventory/src/entities/auction-item.entity';
 
 export interface IAuctionItemRepository {
   createAuctionItem(auctionItem: AuctionItem): Promise<AuctionItem>;

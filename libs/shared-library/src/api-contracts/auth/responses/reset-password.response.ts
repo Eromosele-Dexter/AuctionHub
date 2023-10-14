@@ -1,7 +1,7 @@
 import { User } from 'apps/auth/src/entities/user.entity';
 import { CustomResponse } from '../../response.response';
 
-export class LoginUserResponse extends CustomResponse {
+export class ResetPasswordResponse extends CustomResponse {
   constructor(
     public readonly user: User,
     public readonly message: string,

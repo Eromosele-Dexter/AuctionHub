@@ -1,12 +1,15 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { InventoryService } from '../services/inventory.service';
+import { EventPattern } from '@nestjs/microservices';
+import CreateListingEvent from '@app/shared-library/events/create-listing.event';
+import { CREATE_LISTING_EVENT_PATTERN } from '@app/shared-library/events';
 
 @Controller()
 export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
 
-  @Get()
-  getHello(): string {
-    return this.inventoryService.getHello();
+  @EventPattern(CREATE_LISTING_EVENT_PATTERN)
+  handleSendValidationCode(data: CreateListingEvent) {
+    return this.inventoryService.handleCreateListing(data);
   }
 }

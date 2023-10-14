@@ -1,12 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Session } from '../session.entity';
-import { ISessionRepository } from './session.repository.interface';
-import { ISession } from 'connect-typeorm';
 
 @Injectable()
 export class SessionRepository extends Repository<Session> {
-  // export class SessionRepository extends Repository<ISession> implements ISessionRepository {
   private readonly logger = new Logger(SessionRepository.name);
 
   constructor(private dataSource: DataSource) {
@@ -16,14 +13,21 @@ export class SessionRepository extends Repository<Session> {
   async createSession(session: Session): Promise<Session> {
     throw new Error('Method not implemented.');
   }
-  async getSessionById(id: number): Promise<Session> {
-    throw new Error('Method not implemented.');
+  async getSessionById(id: string): Promise<Session> {
+    const session = await this.dataSource.manager.query(`SELECT * FROM sessions WHERE id = '${id}'`);
+    return session[0];
   }
   async getSessions(): Promise<Session[]> {
     throw new Error('Method not implemented.');
   }
-  async updateSession(session: Session): Promise<Session> {
-    throw new Error('Method not implemented.');
+  async updateSession(session: Session) {
+    // const updatedSession = await this.dataSource.manager.query(`UPDATE sessions SET
+    // userId = '${session.json.passport.user.id}',
+    // token = '${session.token}',
+    // expiresAt = '${session.expiresAt}',
+    // createdAt = '${session.createdAt}',
+    // updatedAt = '${session.updatedAt}'
+    // WHERE id = ${session.id}`);
   }
   async deleteSession(id: number): Promise<void> {
     throw new Error('Method not implemented.');
