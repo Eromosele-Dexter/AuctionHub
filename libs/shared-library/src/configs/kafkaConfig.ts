@@ -1,8 +1,4 @@
-import {
-  ClientProviderOptions,
-  ClientsModuleOptions,
-  Transport,
-} from '@nestjs/microservices';
+import { ClientProviderOptions, ClientsModuleOptions, Transport } from '@nestjs/microservices';
 
 export const AUTH_SERVICE = 'AUTH_SERVICE';
 export const AUCTION_MANAGEMENT_SERVICE = 'AUCTION_MANAGEMENT_SERVICE';
@@ -10,19 +6,19 @@ export const BID_SERVICE = 'BID_SERVICE';
 export const PAYMENT_SERVICE = 'PAYMENT_SERVICE';
 export const INVENTORY_SERVICE = 'INVENTORY_SERVICE';
 
-const AUTH_CLIENT_ID = 'auth';
-const AUCTION_MANAGEMENT_CLIENT_ID = 'auction-management';
-const BID_CLIENT_ID = 'bid';
-const PAYMENT_CLIENT_ID = 'payment';
-const INVENTORY_CLIENT_ID = 'inventory';
+export const AUTH_CLIENT_ID = 'auth';
+export const AUCTION_MANAGEMENT_CLIENT_ID = 'auction-management';
+export const BID_CLIENT_ID = 'bid';
+export const PAYMENT_CLIENT_ID = 'payment';
+export const INVENTORY_CLIENT_ID = 'inventory';
 
 const KAFKA_BROKER = 'localhost:9092';
 
-const AUTH_GROUP_ID = 'auth-consumer';
-const AUCTION_MANAGEMENT_GROUP_ID = 'auction-management-consumer';
-const BID_GROUP_ID = 'bid-consumer';
-const PAYMENT_GROUP_ID = 'payment-consumer';
-const INVENTORY_GROUP_ID = 'inventory-consumer';
+export const AUTH_GROUP_ID = 'auth-consumer';
+export const AUCTION_MANAGEMENT_GROUP_ID = 'auction-management-consumer';
+export const BID_GROUP_ID = 'bid-consumer';
+export const PAYMENT_GROUP_ID = 'payment-consumer';
+export const INVENTORY_GROUP_ID = 'inventory-consumer';
 
 export const authKafkaConfig: ClientProviderOptions = {
   name: AUTH_SERVICE,
@@ -103,11 +99,3 @@ export const inventoryKafkaOptions = {
     groupId: INVENTORY_GROUP_ID,
   },
 };
-
-export const microservices: ClientsModuleOptions = [
-  authKafkaConfig,
-  auctionManagementKafkaConfig,
-  bidKafkaConfig,
-  paymentKafkaConfig,
-  inventoryKafkaConfig,
-];

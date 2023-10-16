@@ -6,7 +6,9 @@ class CreateListingEvent {
 
     public readonly description: string,
 
-    public readonly image: any,
+    public readonly imageName: string,
+
+    public readonly imageUrl: string,
 
     public readonly createdAt: Date,
 
@@ -24,7 +26,8 @@ class CreateListingEvent {
       sellerId: this.sellerId,
       name: this.name,
       description: this.description,
-      image: this.image,
+      imageName: this.imageName,
+      imageUrl: this.imageUrl,
       createdAt: this.createdAt,
       auctionType: this.auctionType,
       keyword1: this.keyword1,

@@ -24,24 +24,31 @@ export class ItemRepository extends Repository<Item> implements IItemRepository 
     return item[0];
   }
 
-  getItemsByUserId(userId: number): Promise<Item[]> {
-    throw new Error('Method not implemented.');
+  async getItemsBySellerId(userId: number): Promise<Item[]> {
+    const items = await this.dataSource.manager.query(`SELECT * FROM items WHERE seller_id = $1`, [userId]);
+    return items;
   }
 
   async getItemById(id: number): Promise<Item> {
-    throw new Error('Method not implemented.');
+    const item = await this.dataSource.manager.query(`SELECT * FROM items WHERE id = ${id}`);
+    return item[0];
   }
   async getItems(): Promise<Item[]> {
-    throw new Error('Method not implemented.');
+    return this.find();
   }
   async updateItem(item: Item) {
     this.dataSource.manager.query(
-      `UPDATE items SET name = '${item.name}', description = '${item.description}', image = '${item.image}', auction_type_id = ${item.auctionTypeId} WHERE id = ${item.id}`,
+      `UPDATE items SET name = '${item.name}', description = '${item.description}', image_name = '${item.imageName}', auction_type_id = ${item.auctionTypeId}, image_url = '${item.imageUrl}' WHERE id = ${item.id}`,
     );
     this.save(item);
   }
 
   async deleteItem(id: number): Promise<void> {
-    throw new Error('Method not implemented.');
+    this.delete(id);
+  }
+
+  async getAllActiveItems(): Promise<Item[]> {
+    const items = await this.dataSource.manager.query(`SELECT * FROM items WHERE has_been_sold = false`);
+    return items;
   }
 }

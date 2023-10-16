@@ -8,13 +8,14 @@ import RegisterUserMessage from '@app/shared-library/messages/register-user.mess
 import SendValidationCodeEvent from '@app/shared-library/events/send-validation-code.event';
 import * as sgMail from '@sendgrid/mail';
 import { SendGridService } from './sendgrid.service';
-
 import { ValidationCodeRepository } from '../repositories/validation-codes-repo/code.repository';
 import { ValidationCode } from '../entities/validation-code.entity';
 import { ResetPasswordResponse } from '@app/shared-library/api-contracts/auth/responses/reset-password.response';
 import ResetPasswordMessage from '@app/shared-library/messages/reset-password.message';
 import { generateValidationCode } from '../utils/generateCode';
 import { VALIDATION_CODE_EMAIL_SUBJECT, validationCodeEmailFormat } from '../utils/emailformats';
+import EditProfileMessage from '@app/shared-library/messages/edit-profile.message';
+import { EditProfileResponse } from '@app/shared-library/api-contracts/auth/responses/edit-profile.response';
 
 @Injectable()
 export class AuthService {
@@ -65,7 +66,7 @@ export class AuthService {
     }
 
     this.userRepository.createUser(user);
-
+    //TODO: send welcome email
     return new RegisterUserResponse(user, 'User created', STATUS.SUCCESS);
   }
 
@@ -118,6 +119,46 @@ export class AuthService {
 
     await this.userRepository.updateUser(user);
 
+    // TODO: delete validation code associated with email from db
+
     return new ResetPasswordResponse(user, 'Password successfully reset', STATUS.SUCCESS);
+  }
+
+  async handleEditProfile(data: EditProfileMessage): Promise<EditProfileResponse> {
+    const {
+      userId,
+      firstName,
+      lastName,
+      username,
+      email,
+      streetName,
+      streetNumber,
+      postalCode,
+      city,
+      country,
+      updatedAt,
+    } = data;
+
+    const user = await this.userRepository.getUserById(userId);
+
+    // not possible for user not to be found, but just in case
+    if (!user) {
+      return new EditProfileResponse(null, 'User not found', STATUS.FAILED, 'Error editing profile');
+    }
+
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.username = username;
+    user.email = email;
+    user.streetName = streetName;
+    user.streetNumber = streetNumber;
+    user.postalCode = postalCode;
+    user.city = city;
+    user.country = country;
+    user.updatedAt = updatedAt;
+
+    await this.userRepository.updateUser(user);
+
+    return new EditProfileResponse(user, 'Profile successfully edited', STATUS.SUCCESS);
   }
 }

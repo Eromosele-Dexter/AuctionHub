@@ -6,6 +6,9 @@ import { SessionRepository } from '../sessions/session-repo/session.repository';
 
 @Injectable()
 export class BidderEventService implements OnModuleInit {
+  checkout(id: any): Promise<any> {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     @Inject(BID_SERVICE) private readonly bidClient: ClientKafka,
     private sessionRepository: SessionRepository,
@@ -19,5 +22,9 @@ export class BidderEventService implements OnModuleInit {
   async onModuleInit() {
     // this.bidClient.subscribeToResponseOf();
     // await this.bidClient.connect();
+  }
+
+  async viewWatchList(id: any): Promise<any> {
+    throw new Error('Method not implemented.');
   }
 }

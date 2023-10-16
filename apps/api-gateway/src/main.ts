@@ -18,14 +18,15 @@ async function bootstrap() {
 
   app.use(rateLimiter);
 
+  const COOKIE_EXPIRY = 3_600_000; // 1 hour
   app.use(
     session({
       name: 'bid_session_id',
-      secret: 'secret', // TODO: change this to a more secure secret and put in .env file
+      secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 3_600_000, // 1 hour
+        maxAge: COOKIE_EXPIRY,
       },
       store: new TypeormStore({}).connect(SessionRepo),
     }),

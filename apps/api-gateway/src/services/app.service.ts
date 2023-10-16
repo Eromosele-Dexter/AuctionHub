@@ -4,13 +4,17 @@ import {
   AUCTION_MANAGEMENT_SERVICE,
   AUTH_SERVICE,
   BID_SERVICE,
+  EDIT_PROFILE_MESSAGE_PATTERN,
   INVENTORY_SERVICE,
   LOGIN_USER_MESSAGE_PATTERN,
   PAYMENT_SERVICE,
   REGISTER_USER_MESSAGE_PATTERN,
   RESET_PASSWORD_MESSAGE_PATTERN,
   ResetPasswordResponse,
+  SEARCH_CATALOG_MESSAGE_PATTERN,
   SEND_VALIDATION_CODE_EVENT_PATTERN,
+  VIEW_CATALOG_MESSAGE_PATTERN,
+  VIEW_LISTING_MESSAGE_PATTERN,
 } from '@app/shared-library';
 
 import {
@@ -25,6 +29,13 @@ import RegisterUserMessage from '@app/shared-library/messages/register-user.mess
 import LoginUserMessage from '@app/shared-library/messages/login-user.message';
 import SendValidationCodeEvent from '@app/shared-library/events/send-validation-code.event';
 import ResetPasswordMessage from '@app/shared-library/messages/reset-password.message';
+import { ViewCatalogResponse } from '@app/shared-library/api-contracts/auction-management/responses/view-catalog.response';
+import ViewCatalogMessage from '@app/shared-library/messages/view-catalog.message';
+import { SearchCatalogResponse } from '@app/shared-library/api-contracts/auction-management/responses/search-catalog.response';
+import SearchCatalogMessage from '@app/shared-library/messages/search-catalog.message';
+import { EditProfileRequest } from '@app/shared-library/api-contracts/auth/requests/edit-profile.request';
+import { EditProfileResponse } from '@app/shared-library/api-contracts/auth/responses/edit-profile.response';
+import EditProfileMessage from '@app/shared-library/messages/edit-profile.message';
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -40,7 +51,13 @@ export class AppService implements OnModuleInit {
     this.authClient.subscribeToResponseOf(REGISTER_USER_MESSAGE_PATTERN);
     this.authClient.subscribeToResponseOf(LOGIN_USER_MESSAGE_PATTERN);
     this.authClient.subscribeToResponseOf(RESET_PASSWORD_MESSAGE_PATTERN);
+    // this.auctionManagementClient.subscribeToResponseOf(VIEW_CATALOG_MESSAGE_PATTERN);
+    // this.auctionManagementClient.subscribeToResponseOf(SEARCH_CATALOG_MESSAGE_PATTERN);
+    this.authClient.subscribeToResponseOf(EDIT_PROFILE_MESSAGE_PATTERN);
+    // this.inventoryClient.subscribeToResponseOf(VIEW_LISTING_MESSAGE_PATTERN);
     await this.authClient.connect();
+    // await this.auctionManagementClient.connect();
+    // await this.inventoryClient.connect();
   }
 
   async registerUser(registerUserRequest: RegisterUserRequest): Promise<RegisterUserResponse> {
@@ -127,27 +144,76 @@ export class AppService implements OnModuleInit {
     return response;
   }
 
-  async viewCatalog() {
-    throw new Error('Method not implemented.');
+  async viewCatalog(userId: number): Promise<ViewCatalogResponse> {
+    const response = new Promise<ViewCatalogResponse>((resolve, reject) => {
+      this.auctionManagementClient.send(VIEW_CATALOG_MESSAGE_PATTERN, new ViewCatalogMessage(userId)).subscribe({
+        next: (response) => {
+          resolve(response);
+        },
+        error: (error) => {
+          reject(error);
+        },
+      });
+    });
+    return response;
   }
 
-  async searchCatalog() {
-    throw new Error('Method not implemented.');
+  async searchCatalog(searchkeyword: string): Promise<SearchCatalogResponse> {
+    const response = new Promise<SearchCatalogResponse>((resolve, reject) => {
+      this.auctionManagementClient
+        .send(SEARCH_CATALOG_MESSAGE_PATTERN, new SearchCatalogMessage(searchkeyword))
+        .subscribe({
+          next: (response) => {
+            resolve(response);
+          },
+          error: (error) => {
+            reject(error);
+          },
+        });
+    });
+    return response;
   }
 
   async viewBiddingHistory() {
     throw new Error('Method not implemented.');
   }
 
-  async editProfile() {
-    throw new Error('Method not implemented.');
+  async editProfile(userId: number, editProfileRequest: EditProfileRequest): Promise<EditProfileResponse> {
+    const response = new Promise<EditProfileResponse>((resolve, reject) => {
+      this.authClient
+        .send(
+          EDIT_PROFILE_MESSAGE_PATTERN,
+          new EditProfileMessage(
+            userId,
+            editProfileRequest.firstName,
+            editProfileRequest.lastName,
+            editProfileRequest.username,
+            editProfileRequest.email,
+            editProfileRequest.streetName,
+            editProfileRequest.streetNumber,
+            editProfileRequest.postalCode,
+            editProfileRequest.city,
+            editProfileRequest.country,
+            new Date(),
+          ),
+        )
+        .subscribe({
+          next: (response) => {
+            resolve(response);
+          },
+          error: (error) => {
+            reject(error);
+          },
+        });
+    });
+    return response;
   }
 
-  async viewItem() {
-    throw new Error('Method not implemented.');
-  }
+  // async viewItem() {
+  //   throw new Error('Method not implemented.');
+  // }
 
-  async auctionEnded() {
-    throw new Error('Method not implemented.');
-  }
+  // async auctionEnded() {
+  //   throw new Error('Method not implemented.');
+  // }
 }

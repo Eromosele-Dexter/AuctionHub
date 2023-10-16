@@ -12,6 +12,9 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  Param,
+  StreamableFile,
+  NotFoundException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { SellerEventService } from '../../services/seller-event.service';
@@ -19,6 +22,8 @@ import { AuthenticatedGuard } from '../../guards/authenticated.guard';
 import { CreateListingRequest } from '@app/shared-library/api-contracts/inventory/requests';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { fileTypesPattern } from '../../utils/fileUtils';
+import { StartAuctionRequest } from '@app/shared-library/api-contracts/auction-management/requests/start-auction.request';
+import * as fs from 'fs';
 
 @Controller()
 export class SellerEventController {
@@ -44,7 +49,7 @@ export class SellerEventController {
     @Res() response: Response,
   ) {
     try {
-      createListingRequest.image = image.buffer; // TODO: need to invoke aws s3 and just store image id or unique image name in postgres db
+      createListingRequest.image = image;
       createListingRequest.sellerId = req.user.id;
 
       this.sellerService.createListing(createListingRequest);
@@ -54,18 +59,95 @@ export class SellerEventController {
     return response.status(HttpStatus.OK).json({ message: 'Listing created successfully' });
   }
 
-  // start an auction  // protected route
-  // @UseGuards(AuthenticatedGuard)
-  // @Post('/start-auction/:listingId')
-  // async startAuction(@Body() startAuctionRequest: StartAuctionRequest, @Res() response: Response) {
-  //   const data = await this.sellerService.createListing(startAuctionRequest);
+  // start an auction - auction management service
 
-  //   if (data?.error || !data) {
-  //     return response.status(HttpStatus.BAD_REQUEST).json(data);
-  //   }
+  @UseGuards(AuthenticatedGuard)
+  @Post('/start-auction/:itemId')
+  async startAuction(
+    @Body() startAuctionRequest: StartAuctionRequest,
+    @Param('itemId') itemId,
+    @Request() req,
+    @Res() response: Response,
+  ) {
+    try {
+      const sellerId = req.user.id;
+      this.sellerService.startAuction(itemId, sellerId, startAuctionRequest);
+    } catch (error) {
+      return response
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: `Error starting auction for item with id: ${itemId}`, error });
+    }
+    return response
+      .status(HttpStatus.OK)
+      .json({ message: `Auction started for item with id: ${itemId} successfully` });
+  }
 
-  //   return response.status(HttpStatus.OK).json(data);
-  // }
+  // view item listing - inventory service
 
-  // view item listing // protected route
+  @UseGuards(AuthenticatedGuard)
+  @Get('/view-listing')
+  async viewListing(@Request() req, @Res() response: Response) {
+    const data = await this.sellerService.viewListing(req.user.id);
+
+    if (data?.error || !data) {
+      return response.status(HttpStatus.BAD_REQUEST).json(data);
+    }
+
+    return response.status(HttpStatus.CREATED).json(data);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @UseInterceptors(FileInterceptor('image'))
+  @Post('/upload-image')
+  async uploadImage(
+    @Request() req,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }), // 5MB
+          new FileTypeValidator({ fileType: fileTypesPattern }),
+        ],
+      }),
+    )
+    image: Express.Multer.File,
+    @Res() response: Response,
+  ) {
+    try {
+      const imageUrl = await this.sellerService.uploadImage(image.originalname, image.buffer);
+
+      response
+        .status(HttpStatus.CREATED)
+        .json({ message: 'Uploaded image successfully', imageUploadUrl: imageUrl, errror: null });
+    } catch (error) {
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error uploading image', error });
+    }
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('/download-image/:image')
+  async downloadImage(@Param('image') imageKey, @Request() req, @Res() response: Response) {
+    try {
+      if (!imageKey) {
+        throw new NotFoundException('Image not found');
+      }
+
+      const imageUrl = await this.sellerService.getImageUrl(imageKey);
+
+      return response.status(HttpStatus.OK).json({ message: 'Retrieved image url successfully', url: imageUrl });
+    } catch (error) {
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error retrieving image', error });
+    }
+  }
+  // TODO: when getting the image url in the for loop, check if the url is expiring in less than 1 day, if so, get a new url and also store it the db
+  @UseGuards(AuthenticatedGuard)
+  @Post('/delete-image/:image')
+  async deleteImage(@Param('image') imageKey, @Request() req, @Res() response: Response) {
+    try {
+      await this.sellerService.deleteImage(imageKey);
+
+      return response.status(HttpStatus.OK).json({ message: 'Deleted image successfully' });
+    } catch (error) {
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error deleting image', error });
+    }
+  }
 }

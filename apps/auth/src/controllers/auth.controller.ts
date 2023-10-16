@@ -6,11 +6,13 @@ import {
   LOGIN_USER_MESSAGE_PATTERN,
   SEND_VALIDATION_CODE_EVENT_PATTERN,
   RESET_PASSWORD_MESSAGE_PATTERN,
+  EDIT_PROFILE_MESSAGE_PATTERN,
 } from '@app/shared-library';
 import SendValidationCodeEvent from '@app/shared-library/events/send-validation-code.event';
 import LoginUserMessage from '@app/shared-library/messages/login-user.message';
 import RegisterUserMessage from '@app/shared-library/messages/register-user.message';
 import ResetPasswordMessage from '@app/shared-library/messages/reset-password.message';
+import EditProfileMessage from '@app/shared-library/messages/edit-profile.message';
 
 @Controller()
 export class AuthController {
@@ -34,5 +36,10 @@ export class AuthController {
   @MessagePattern(RESET_PASSWORD_MESSAGE_PATTERN)
   handleResetPassword(data: ResetPasswordMessage) {
     return this.authService.handleResetPassword(data);
+  }
+
+  @MessagePattern(EDIT_PROFILE_MESSAGE_PATTERN)
+  handleEditProfile(data: EditProfileMessage) {
+    return this.authService.handleEditProfile(data);
   }
 }

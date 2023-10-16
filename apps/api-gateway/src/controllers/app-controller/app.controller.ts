@@ -1,4 +1,16 @@
-import { Controller, Get, Post, HttpStatus, Res, Body, UseGuards, Request, Req, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  HttpStatus,
+  Res,
+  Body,
+  UseGuards,
+  Request,
+  Req,
+  Param,
+  Patch,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { AppService } from '../../services/app.service';
 import { RegisterUserRequest } from '../../../../../libs/shared-library/src/api-contracts/auth/requests/register-user.request';
@@ -6,6 +18,7 @@ import { formatResponse } from '../../utils/formatResponse';
 import { LocalAuthGuard } from '../../guards/local-auth.guard';
 import { AuthenticatedGuard } from '../../guards/authenticated.guard';
 import { LoginUserRequest, ResetPasswordRequest, SendValidationCodeRequest } from '@app/shared-library';
+import { EditProfileRequest } from '@app/shared-library/api-contracts/auth/requests/edit-profile.request';
 
 @Controller()
 export class AppController {
@@ -92,81 +105,84 @@ export class AppController {
     return response.status(HttpStatus.OK).json(data);
   }
 
-  // view catalog - item service
+  // view catalog -  auction management service
 
   @UseGuards(AuthenticatedGuard)
   @Get('/catalog')
-  async viewCatalog(@Res() response: Response) {
-    try {
-      const data = await this.appService.viewCatalog();
+  async viewCatalog(@Request() req, @Res() response: Response) {
+    const data = await this.appService.viewCatalog(req.user.id);
 
-      return formatResponse(response, 'Catalog', data);
-    } catch (error) {
-      return formatResponse(response, 'Catalog', error.message);
+    if (data?.error || !data) {
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(data);
     }
+
+    return response.status(HttpStatus.OK).json(data);
   }
 
-  @UseGuards(AuthenticatedGuard)
-  @Get('/catalog/:search')
-  async searchCatalog(@Param('search') search: string, @Res() response: Response) {
-    try {
-      const data = await this.appService.searchCatalog();
+  // search catalog - auction management service
 
-      return formatResponse(response, 'Catalog', data);
-    } catch (error) {
-      return formatResponse(response, 'Catalog', error.message);
+  @UseGuards(AuthenticatedGuard)
+  @Get('/catalog/:searchkeyword')
+  async searchCatalog(@Param('searchkeyword') searchkeyword: string, @Res() response: Response) {
+    const data = await this.appService.searchCatalog(searchkeyword);
+
+    if (data?.error || !data) {
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(data);
     }
+
+    return response.status(HttpStatus.OK).json(data);
   }
 
-  // view item
-  @UseGuards(AuthenticatedGuard)
-  @Get('/item/:id')
-  async viewItem(@Param('id') id: number, @Res() response: Response) {
-    try {
-      const data = await this.appService.viewItem();
+  // // view item
+  // @UseGuards(AuthenticatedGuard)
+  // @Get('/item/:id')
+  // async viewItem(@Param('id') id: number, @Res() response: Response) {
+  //   try {
+  //     const data = await this.appService.viewItem();
 
-      return formatResponse(response, 'Item', data);
-    } catch (error) {
-      return formatResponse(response, 'Item', error.message);
-    }
-  }
+  //     return formatResponse(response, 'Item', data);
+  //   } catch (error) {
+  //     return formatResponse(response, 'Item', error.message);
+  //   }
+  // }
 
-  // view bidding history
+  // view bidding history - bid service
   @UseGuards(AuthenticatedGuard)
-  @Get('/bidding-history')
+  @Get('/view-bidding-history')
   async viewBiddingHistory(@Res() response: Response) {
-    try {
-      const data = await this.appService.viewBiddingHistory();
-
-      return formatResponse(response, 'Bidding history', data);
-    } catch (error) {
-      return formatResponse(response, 'Bidding history', error.message);
-    }
+    // try {
+    //   const data = await this.appService.viewBiddingHistory();
+    //   return formatResponse(response, 'Bidding history', data);
+    // } catch (error) {
+    //   return formatResponse(response, 'Bidding history', error.message);
+    // }
   }
 
-  // edit profile
+  // edit profile - auth service
   @UseGuards(AuthenticatedGuard)
-  @Post('/edit-profile')
-  async editProfile(@Res() response: Response) {
-    try {
-      const data = await this.appService.editProfile();
+  @Patch('/edit-profile')
+  async editProfile(@Body() editProfileRequest: EditProfileRequest, @Request() req, @Res() response: Response) {
+    const userId = req.user.id;
 
-      return formatResponse(response, 'Profile edited', data);
-    } catch (error) {
-      return formatResponse(response, 'Profile edit', error.message);
+    const data = await this.appService.editProfile(userId, editProfileRequest);
+
+    if (data?.error || !data) {
+      return response.status(HttpStatus.BAD_REQUEST).json(data);
     }
+
+    return response.status(HttpStatus.CREATED).json(data);
   }
 
-  @UseGuards(AuthenticatedGuard)
-  // auction for item ended
-  @Post('/auction-ended')
-  async auctionEnded(@Res() response: Response) {
-    try {
-      const data = await this.appService.auctionEnded();
+  // @UseGuards(AuthenticatedGuard) // convert to service worker or websockets
+  // // auction for item ended
+  // @Post('/auction-ended')
+  // async auctionEnded(@Res() response: Response) {
+  //   try {
+  //     const data = await this.appService.auctionEnded();
 
-      return formatResponse(response, 'Auction ended', data);
-    } catch (error) {
-      return formatResponse(response, 'Auction end', error.message);
-    }
-  }
+  //     return formatResponse(response, 'Auction ended', data);
+  //   } catch (error) {
+  //     return formatResponse(response, 'Auction end', error.message);
+  //   }
+  // }
 }

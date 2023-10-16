@@ -3,7 +3,7 @@ import { AppController } from './controllers/app-controller/app.controller';
 import { AppService } from './services/app.service';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule } from '@nestjs/microservices';
-import { microservices } from '@app/shared-library/configs/kafkaConfig';
+import { microservices } from './config/kafka-microservices.config';
 import { BidderEventController } from './controllers/bidder-event-controller/bidder-event.controller';
 import { SellerEventController } from './controllers/seller-event-controller/seller-event.controller';
 import { BidderEventService } from './services/bidder-event.service';

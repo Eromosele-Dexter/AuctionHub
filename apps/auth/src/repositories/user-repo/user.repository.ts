@@ -25,19 +25,19 @@ export class UserRepository extends Repository<User> implements IUserRepository 
   }
   async updateUser(user: User): Promise<User> {
     const updatedUser = await this.dataSource.manager.query(`UPDATE users SET
-    firstName = '${user.firstName}',
-    lastName = '${user.lastName}',
+    first_name = '${user.firstName}',
+    last_name = '${user.lastName}',
     username = '${user.username}',
     password = '${user.password}',
     email = '${user.email}',
     role = '${user.role}',
-    streetName = '${user.streetName}',
-    streetNumber = '${user.streetNumber}',
-    postalCode = '${user.postalCode}',
+    street_name = '${user.streetName}',
+    street_number = '${user.streetNumber}',
+    postal_code = '${user.postalCode}',
     city = '${user.city}',
     country = '${user.country}',
-    createdAt = '${user.createdAt}',
-    updatedAt = '${user.updatedAt}'
+    created_at = '${user.createdAt}',
+    updated_at = '${user.updatedAt}'
     WHERE id = ${user.id}`);
 
     this.save(updatedUser[0]);

@@ -1,24 +1,17 @@
-import { Body, Controller, Get, HttpStatus, Post, Res, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Post, Res, Request, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { AppService } from '../../services/app.service';
 import { BidderEventService } from '../../services/bidder-event.service';
 import { AuthenticatedGuard } from '../../guards/authenticated.guard';
-import { formatResponse } from '../../utils/formatResponse';
 
 @Controller()
 export class BidderEventController {
   constructor(private readonly bidderService: BidderEventService) {}
 
-  // @Get()
-  // getHello(): string {
-  //   return this.appService.getHello();
-  // }
-
-  // place bid // protected route
+  // place bid - bid service this a fallback method for websocket
 
   @UseGuards(AuthenticatedGuard)
-  @Get('/bid')
-  async bid(@Request() req): Promise<any> {
+  @Post('/bid')
+  async placeBid(@Request() req) {
     // try {
     //   const sessionData = req.session;
     //   sessionData.hasActiveBid = true;
@@ -30,9 +23,29 @@ export class BidderEventController {
     // }
   }
 
-  // checkout // protected route
+  // view watchlist - bid service
+  @UseGuards(AuthenticatedGuard)
+  @Get('/view-watchlist')
+  async viewWatchList(@Request() req, @Res() response: Response) {
+    const data = await this.bidderService.viewWatchList(req.user.id);
 
-  // receipt // protected route
+    if (data?.error || !data) {
+      return response.status(HttpStatus.BAD_REQUEST).json(data);
+    }
 
-  // view watchlist // protected route
+    return response.status(HttpStatus.CREATED).json(data);
+  }
+
+  // checkout  - payment service
+  @UseGuards(AuthenticatedGuard)
+  @Post('/checkout')
+  async checkout(@Request() req, @Res() response: Response) {
+    const data = await this.bidderService.checkout(req.user.id);
+
+    if (data?.error || !data) {
+      return response.status(HttpStatus.BAD_REQUEST).json(data);
+    }
+
+    return response.status(HttpStatus.CREATED).json(data);
+  }
 }
