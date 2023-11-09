@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import {
   CREATE_LISTING_EVENT_PATTERN,
   INVENTORY_SERVICE,
@@ -15,11 +15,11 @@ import { StartAuctionRequest } from '@app/shared-library/api-contracts/auction-m
 import * as AWS from 'aws-sdk';
 
 @Injectable()
-export class SellerEventService implements OnModuleInit {
+export class SellerEventService {
   private readonly s3: AWS.S3;
   private readonly EXPIRATION_TIME = 604_800; // 7 days
 
-  constructor(@Inject(INVENTORY_SERVICE) private readonly inventoryClient: ClientKafka) {
+  constructor(@Inject(INVENTORY_SERVICE) private readonly inventoryClient: ClientProxy) {
     this.s3 = new AWS.S3({
       region: process.env.AWS_S3_REGION,
       credentials: {
@@ -27,11 +27,6 @@ export class SellerEventService implements OnModuleInit {
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
       },
     });
-  }
-
-  async onModuleInit() {
-    this.inventoryClient.subscribeToResponseOf(VIEW_LISTING_MESSAGE_PATTERN);
-    await this.inventoryClient.connect();
   }
 
   async uploadImage(fileName: string, image: Buffer): Promise<string> {

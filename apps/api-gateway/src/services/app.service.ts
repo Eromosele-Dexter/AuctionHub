@@ -1,5 +1,5 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import {
   AUCTION_MANAGEMENT_SERVICE,
   AUTH_SERVICE,
@@ -38,27 +38,14 @@ import { EditProfileResponse } from '@app/shared-library/api-contracts/auth/resp
 import EditProfileMessage from '@app/shared-library/messages/edit-profile.message';
 
 @Injectable()
-export class AppService implements OnModuleInit {
+export class AppService {
   constructor(
-    @Inject(AUCTION_MANAGEMENT_SERVICE) private readonly auctionManagementClient: ClientKafka,
-    @Inject(AUTH_SERVICE) private readonly authClient: ClientKafka,
-    @Inject(BID_SERVICE) private readonly bidClient: ClientKafka,
-    @Inject(INVENTORY_SERVICE) private readonly inventoryClient: ClientKafka,
-    @Inject(PAYMENT_SERVICE) private readonly paymentClient: ClientKafka,
+    @Inject(AUCTION_MANAGEMENT_SERVICE) private readonly auctionManagementClient: ClientProxy,
+    @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
+    @Inject(BID_SERVICE) private readonly bidClient: ClientProxy,
+    @Inject(INVENTORY_SERVICE) private readonly inventoryClient: ClientProxy,
+    @Inject(PAYMENT_SERVICE) private readonly paymentClient: ClientProxy,
   ) {}
-
-  async onModuleInit() {
-    this.authClient.subscribeToResponseOf(REGISTER_USER_MESSAGE_PATTERN);
-    this.authClient.subscribeToResponseOf(LOGIN_USER_MESSAGE_PATTERN);
-    this.authClient.subscribeToResponseOf(RESET_PASSWORD_MESSAGE_PATTERN);
-    // this.auctionManagementClient.subscribeToResponseOf(VIEW_CATALOG_MESSAGE_PATTERN);
-    // this.auctionManagementClient.subscribeToResponseOf(SEARCH_CATALOG_MESSAGE_PATTERN);
-    this.authClient.subscribeToResponseOf(EDIT_PROFILE_MESSAGE_PATTERN);
-    // this.inventoryClient.subscribeToResponseOf(VIEW_LISTING_MESSAGE_PATTERN);
-    await this.authClient.connect();
-    // await this.auctionManagementClient.connect();
-    // await this.inventoryClient.connect();
-  }
 
   async registerUser(registerUserRequest: RegisterUserRequest): Promise<RegisterUserResponse> {
     const response = new Promise<RegisterUserResponse>((resolve, reject) => {

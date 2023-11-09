@@ -11,7 +11,7 @@ import ViewListingMessage from '@app/shared-library/messages/view-listing.messag
 import { ViewListingResponse } from '@app/shared-library/api-contracts/inventory/responses/view-listing.response';
 import { STATUS, VIEW_LISTING_ITEM_STATUS } from '@app/shared-library/types/status';
 import { AUCTION_MANAGEMENT_SERVICE, GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN } from '@app/shared-library';
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { GetAuctionItemsForSellerResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-auction-items-for-seller.response';
 import GetAuctionItemsForSellerMessage from '@app/shared-library/messages/get-auction-items-for-seller.message';
 import { ViewListingItem } from '@app/shared-library/types/view-listing-item';
@@ -19,19 +19,14 @@ import { GetAllActiveItemsResponse } from '@app/shared-library/api-contracts/auc
 import { ActiveItem } from '@app/shared-library/types/active-item';
 
 @Injectable()
-export class InventoryService implements OnModuleInit {
+export class InventoryService {
   constructor(
     private auctionTypeRepository: AuctionTypeRepository,
     private itemKeywordRepository: ItemKeywordRepository,
     private itemRepository: ItemRepository,
     private keywordRepository: KeywordRepository,
-    @Inject(AUCTION_MANAGEMENT_SERVICE) private readonly auctionManagementClient: ClientKafka,
+    @Inject(AUCTION_MANAGEMENT_SERVICE) private readonly auctionManagementClient: ClientProxy,
   ) {}
-
-  async onModuleInit() {
-    this.auctionManagementClient.subscribeToResponseOf(GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN);
-    await this.auctionManagementClient.connect();
-  }
 
   async handleCreateListing(data: CreateListingEvent) {
     const auctionTypeByName = data.auctionType.toUpperCase();
@@ -148,20 +143,22 @@ export class InventoryService implements OnModuleInit {
   // TODO: Need to include pagination in view catalog endpoint
 
   async handleViewListing(data: ViewListingMessage): Promise<ViewListingResponse> {
-    // const items = await this.itemRepository.getItemsBySellerId(data.sellerId);
+    const items = await this.itemRepository.getItemsBySellerId(data.sellerId);
 
-    // const auctionItems = await new Promise<GetAuctionItemsForSellerResponse>((resolve, reject) => {
-    //   this.auctionManagementClient
-    //     .send(GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN, new GetAuctionItemsForSellerMessage(data.sellerId))
-    //     .subscribe({
-    //       next: (response) => {
-    //         resolve(response);
-    //       },
-    //       error: (error) => {
-    //         reject(error);
-    //       },
-    //     });
-    // });
+    const auctionItems = await new Promise<GetAuctionItemsForSellerResponse>((resolve, reject) => {
+      this.auctionManagementClient
+        .send(GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN, new GetAuctionItemsForSellerMessage(data.sellerId))
+        .subscribe({
+          next: (response) => {
+            resolve(response);
+          },
+          error: (error) => {
+            reject(error);
+          },
+        });
+    });
+
+    console.log('auctionItems: ', auctionItems);
 
     const viewListingItems: ViewListingItem[] = [];
 

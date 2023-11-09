@@ -1,2 +1,2 @@
-export * from './kafkaConfig';
+export * from './rmqConfig';
 export * from './serverConfig';

@@ -7,7 +7,7 @@ import {
   INVENTORY_SERVICE,
   START_AUCTION_MESSAGE_PATTERN,
 } from '@app/shared-library';
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { StartAuctionResponse } from '@app/shared-library/api-contracts/auction-management/responses/start-auction.response';
 import { AuctionItem } from '../entities/auction-item.entity';
 import StartAuctionMessage from '@app/shared-library/messages/start-auction.message';
@@ -21,17 +21,11 @@ import SearchCatalogMessage from '@app/shared-library/messages/search-catalog.me
 import { SearchCatalogResponse } from '@app/shared-library/api-contracts/auction-management/responses/search-catalog.response';
 
 @Injectable()
-export class AuctionManagementService implements OnModuleInit {
+export class AuctionManagementService {
   constructor(
     private auctionItemRepository: AuctionItemRepository,
-    @Inject(INVENTORY_SERVICE) private readonly inventoryClient: ClientKafka,
+    @Inject(INVENTORY_SERVICE) private readonly inventoryClient: ClientProxy,
   ) {}
-
-  async onModuleInit() {
-    this.inventoryClient.subscribeToResponseOf(START_AUCTION_MESSAGE_PATTERN);
-    this.inventoryClient.subscribeToResponseOf(GET_ALL_ACTIVE_ITEMS_MESSAGE_PATTERN);
-    await this.inventoryClient.connect();
-  }
 
   async handleStartAuction(data: StartAuctionEvent) {
     const { itemId, sellerId, endTime, startingBidPrice, decrementAmount } = data;

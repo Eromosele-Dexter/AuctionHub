@@ -1,16 +1,16 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { BID_SERVICE } from '@app/shared-library';
 import { SessionRepository } from '../sessions/session-repo/session.repository';
 
 @Injectable()
-export class BidderEventService implements OnModuleInit {
+export class BidderEventService {
   checkout(id: any): Promise<any> {
     throw new Error('Method not implemented.');
   }
   constructor(
-    @Inject(BID_SERVICE) private readonly bidClient: ClientKafka,
+    @Inject(BID_SERVICE) private readonly bidClient: ClientProxy,
     private sessionRepository: SessionRepository,
   ) {}
 

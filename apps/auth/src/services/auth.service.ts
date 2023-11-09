@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../repositories/user-repo/user.repository';
 import { User } from '../entities/user.entity';
 import { ROLES, STATUS } from '@app/shared-library/types';
-import { LoginUserResponse, RegisterUserResponse } from '@app/shared-library';
+import { LoginUserResponse, RegisterUserResponse, RmqService } from '@app/shared-library';
 import * as bcrypt from 'bcrypt';
 import RegisterUserMessage from '@app/shared-library/messages/register-user.message';
 import SendValidationCodeEvent from '@app/shared-library/events/send-validation-code.event';

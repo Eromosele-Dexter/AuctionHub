@@ -21,6 +21,7 @@ export class AuctionManagementController {
 
   @MessagePattern(VIEW_CATALOG_MESSAGE_PATTERN)
   handleViewCatalog(data: ViewCatalogMessage) {
+    console.log('Auction Management Controller');
     return this.auctionManagementService.handleViewCatalog(data);
   }
 

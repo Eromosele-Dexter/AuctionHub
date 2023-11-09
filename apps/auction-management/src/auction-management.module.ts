@@ -5,28 +5,15 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuctionItemRepository } from './repositories/auction-item-repo/auction-item.repository';
 import { AuctionItem } from './entities/auction-item.entity';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { INVENTORY_SERVICE, INVENTORY_CLIENT_ID, INVENTORY_GROUP_ID } from '@app/shared-library';
+import { INVENTORY_SERVICE, RmqModule } from '@app/shared-library';
 
 @Module({
   imports: [
-    ClientsModule.register([
-      {
-        name: INVENTORY_SERVICE,
-        transport: Transport.KAFKA,
-        options: {
-          client: {
-            clientId: INVENTORY_CLIENT_ID,
-            brokers: ['localhost:9092'],
-          },
-          consumer: {
-            groupId: INVENTORY_GROUP_ID,
-          },
-        },
-      },
-    ]),
+    RmqModule.register({
+      name: INVENTORY_SERVICE,
+    }),
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      envFilePath: './apps/auction-management/.env',
       isGlobal: true,
     }),
     TypeOrmModule.forRoot({

@@ -9,7 +9,7 @@ import { PaymentRepository } from './repositories/payment-repo/payment.repositor
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      envFilePath: './apps/payment/.env',
       isGlobal: true,
     }),
     TypeOrmModule.forRoot({

@@ -1,16 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AuthModule } from './auth.module';
 import { MicroserviceOptions } from '@nestjs/microservices';
-import { authKafkaConfig, authKafkaOptions } from '@app/shared-library/configs/kafkaConfig';
+import { AUTH_SERVICE, RmqService } from '@app/shared-library';
 
 async function bootstrap() {
-  authKafkaOptions.client.brokers = [process.env.KAFKA_BROKER_HOST + ':' + process.env.KAFKA_BROKER_PORT];
-  authKafkaConfig.options = authKafkaOptions;
+  const app = await NestFactory.create(AuthModule);
+  console.log('Starting Auth Service');
+  const rmqMicroservice = app.get<RmqService>(RmqService);
+  const options = rmqMicroservice.getOptions(AUTH_SERVICE);
+  console.log('Options', options);
+  app.connectMicroservice<MicroserviceOptions>(rmqMicroservice.getOptions(AUTH_SERVICE));
 
-  console.log('auth kafka config: ', authKafkaConfig);
-
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AuthModule, authKafkaConfig);
-
-  await app.listen();
+  await app.startAllMicroservices();
 }
 bootstrap();

@@ -15,7 +15,7 @@ import { jwtModule } from './modules.config';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      envFilePath: './apps/bid/.env',
       isGlobal: true,
     }),
     TypeOrmModule.forRoot({
