@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { InventoryController } from './controllers/inventory.controller';
 import { InventoryService } from './services/inventory.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuctionType } from './entities/auction-type.entity';
 import { ItemKeyword } from './entities/item-keyword.entity';
@@ -22,15 +22,19 @@ import { AUCTION_MANAGEMENT_SERVICE, RmqModule } from '@app/shared-library';
       envFilePath: './apps/inventory/.env',
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: Number(process.env.POSTGRES_PORT),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_INVENTORY_DATABASE,
-      entities: [AuctionType, ItemKeyword, Item, Keyword],
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'postgres' as const,
+        host: configService.get<string>('POSTGRES_HOST'),
+        port: configService.get<number>('POSTGRES_PORT'),
+        username: configService.get<string>('POSTGRES_USER'),
+        password: configService.get<string>('POSTGRES_PASSWORD'),
+        database: configService.get<string>('POSTGRES_INVENTORY_DATABASE'),
+        entities: [AuctionType, ItemKeyword, Item, Keyword],
+        synchronize: true, // Be cautious with this in production
+      }),
     }),
     TypeOrmModule.forFeature([AuctionType, ItemKeyword, Item, Keyword]),
   ],

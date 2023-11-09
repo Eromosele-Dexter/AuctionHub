@@ -33,7 +33,6 @@ export class AppController {
     if (data?.error || !data) {
       return response.status(HttpStatus.BAD_REQUEST).json(data);
     }
-
     return response.status(HttpStatus.CREATED).json(data);
   }
 

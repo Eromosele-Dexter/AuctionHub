@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { BidController } from './controllers/bid.controller';
 import { BidService } from './services/bid.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Bid } from './entities/bid.entity';
 import { WatchList } from './entities/watch-list.entity';
@@ -18,15 +18,19 @@ import { jwtModule } from './modules.config';
       envFilePath: './apps/bid/.env',
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: Number(process.env.POSTGRES_PORT),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_BID_DATABASE,
-      entities: [Bid, WatchList, WatchListItem],
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'postgres' as const,
+        host: configService.get<string>('POSTGRES_HOST'),
+        port: configService.get<number>('POSTGRES_PORT'),
+        username: configService.get<string>('POSTGRES_USER'),
+        password: configService.get<string>('POSTGRES_PASSWORD'),
+        database: configService.get<string>('POSTGRES_BID_DATABASE'),
+        entities: [Bid, WatchList, WatchListItem],
+        synchronize: true, // Be cautious with this in production
+      }),
     }),
     TypeOrmModule.forFeature([Bid, WatchList, WatchListItem]),
     jwtModule,

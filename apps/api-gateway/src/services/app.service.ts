@@ -48,7 +48,7 @@ export class AppService {
   ) {}
 
   async registerUser(registerUserRequest: RegisterUserRequest): Promise<RegisterUserResponse> {
-    const response = new Promise<RegisterUserResponse>((resolve, reject) => {
+    const response = await new Promise<RegisterUserResponse>((resolve, reject) => {
       this.authClient
         .send(
           REGISTER_USER_MESSAGE_PATTERN,
@@ -76,7 +76,6 @@ export class AppService {
           },
         });
     });
-
     return response;
   }
 

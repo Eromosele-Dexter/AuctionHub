@@ -7,8 +7,6 @@ export class RmqService {
   constructor(private readonly configService: ConfigService) {}
 
   getOptions(queue: string, noAck = false): RmqOptions {
-    console.log('URL: ', this.configService.get<string>('RABBIT_MQ_URI'));
-    console.log('Queue: ', this.configService.get<string>(`RABBIT_MQ_${queue}_QUEUE`));
     return {
       transport: Transport.RMQ,
       options: {

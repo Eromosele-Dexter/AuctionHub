@@ -66,6 +66,7 @@ export class AuthService {
     }
 
     this.userRepository.createUser(user);
+
     //TODO: send welcome email
     return new RegisterUserResponse(user, 'User created', STATUS.SUCCESS);
   }
