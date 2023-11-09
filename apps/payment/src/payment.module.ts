@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from './entities/payment.entity';
 import { PaymentRepository } from './repositories/payment-repo/payment.repository';
+import { RmqModule } from '@app/shared-library';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { PaymentRepository } from './repositories/payment-repo/payment.repositor
       envFilePath: './apps/payment/.env',
       isGlobal: true,
     }),
+    RmqModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

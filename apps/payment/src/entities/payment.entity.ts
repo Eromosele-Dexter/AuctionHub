@@ -1,4 +1,4 @@
-import { User } from 'apps/auth/src/entities/user.entity';
+// import { User } from 'apps/auth/src/entities/user.entity';
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'payments' })
@@ -7,7 +7,7 @@ export class Payment {
   id: number;
 
   @Column()
-  @OneToOne(() => User, (user) => user.id, { nullable: false })
+  // @OneToOne(() => User, (user) => user.id, { nullable: false })
   bidderId: number;
 
   @Column()

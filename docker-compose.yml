@@ -10,6 +10,50 @@ services:
     networks:
       - backend
 
+  auction-management-db:
+    image: postgres:14
+    volumes:
+      - auction-management-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: auction_management
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Police123
+    networks:
+      - backend
+
+  bid-db:
+    image: postgres:14
+    volumes:
+      - bid-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: bid
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Police123
+    networks:
+      - backend
+
+  inventory-db:
+    image: postgres:14
+    volumes:
+      - inventory-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: inventory
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Police123
+    networks:
+      - backend
+
+  payment-db:
+    image: postgres:14
+    volumes:
+      - payment-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: payment
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Police123
+    networks:
+      - backend
+
   api-gateway:
     build:
       context: .
@@ -21,6 +65,10 @@ services:
     depends_on:
       - auth-db
       - auth
+      - auction-management
+      - bid
+      - inventory
+      - payment
       - rabbitmq
     volumes:
       - .:/usr/src/app
@@ -47,6 +95,78 @@ services:
     networks:
       - backend
 
+  auction-management:
+    build:
+      context: .
+      dockerfile: ./apps/auction-management/Dockerfile
+      target: development
+    command: npm run start:dev auction-management
+    env_file:
+      - ./apps/auction-management/.env
+    depends_on:
+      - auction-management-db
+      - inventory
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - backend
+
+  bid:
+    build:
+      context: .
+      dockerfile: ./apps/bid/Dockerfile
+      target: development
+    command: npm run start:dev bid
+    env_file:
+      - ./apps/bid/.env
+    depends_on:
+      - bid-db
+      - inventory
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '7081:7081'
+    networks:
+      - backend
+
+  inventory:
+    build:
+      context: .
+      dockerfile: ./apps/inventory/Dockerfile
+      target: development
+    command: npm run start:dev inventory
+    env_file:
+      - ./apps/inventory/.env
+    depends_on:
+      - inventory-db
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - backend
+
+  payment:
+    build:
+      context: .
+      dockerfile: ./apps/payment/Dockerfile
+      target: development
+    command: npm run start:dev payment
+    env_file:
+      - ./apps/payment/.env
+    depends_on:
+      - payment-db
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - backend
+
   rabbitmq:
     image: rabbitmq
     ports:
@@ -59,3 +179,7 @@ networks:
 
 volumes:
   auth-db-data:
+  auction-management-db-data:
+  bid-db-data:
+  payment-db-data:
+  inventory-db-data:
