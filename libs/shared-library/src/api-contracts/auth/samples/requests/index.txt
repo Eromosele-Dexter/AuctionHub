@@ -1,16 +1,16 @@
 Register User Request
 
 {
-    "firstName": "John",
-    "lastName": "Doe",
+    "first_name": "John",
+    "last_name": "Doe",
     "username": "Johnd",
     "password":"Jimpolss",
     "email": "john@gmail.com",
-    "streetName": "keele street",
-    "streetNumber": "4700",
+    "street_name": "keele street",
+    "street_number": "4700",
     "country": "Canada",
     "city": "Toronto",
-    "postalCode": "M3J 1p3",
+    "postal_code": "M3J 1p3",
     "isSeller": true
 }
 

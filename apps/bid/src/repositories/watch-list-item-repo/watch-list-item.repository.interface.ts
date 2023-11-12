@@ -7,8 +7,5 @@ export interface IWatchListItemRepository {
   updateWatchListItem(watchListItem: WatchListItem): Promise<WatchListItem>;
   deleteWatchListItem(id: number): Promise<void>;
   getWatchListItemsByUserId(userId: number): Promise<WatchListItem[]>;
-  getWatchListItemByUserIdAndAuctionItemId(
-    userId: number,
-    auctionItemId: number,
-  ): Promise<WatchListItem>;
+  getWatchListItemByUserIdAndAuctionitem_id(userId: number, auctionitem_id: number): Promise<WatchListItem>;
 }

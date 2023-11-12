@@ -1,9 +1,9 @@
 class ViewListingItemsMessage {
-  constructor(public readonly sellerId: number) {}
+  constructor(public readonly seller_id: number) {}
 
   toString() {
     return JSON.stringify({
-      sellerId: this.sellerId,
+      seller_id: this.seller_id,
     });
   }
 }

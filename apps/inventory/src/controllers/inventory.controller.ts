@@ -3,9 +3,14 @@ import { InventoryService } from '../services/inventory.service';
 import { Ctx, EventPattern, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 import CreateListingEvent from '@app/shared-library/events/create-listing.event';
 import { CREATE_LISTING_EVENT_PATTERN } from '@app/shared-library/events';
-import { GET_ALL_ACTIVE_ITEMS_MESSAGE_PATTERN, VIEW_LISTING_MESSAGE_PATTERN } from '@app/shared-library/messages';
+import {
+  GET_ALL_ACTIVE_ITEMS_MESSAGE_PATTERN,
+  GET_AUCTION_TYPE_MESSAGE_PATTERN,
+  VIEW_LISTING_MESSAGE_PATTERN,
+} from '@app/shared-library/messages';
 import ViewListingMessage from '@app/shared-library/messages/view-listing.message';
 import { RmqService } from '@app/shared-library';
+import GetAuctionTypeMessage from '@app/shared-library/messages/get-auction-type.message';
 
 @Controller()
 export class InventoryController {
@@ -20,13 +25,12 @@ export class InventoryController {
     return this.inventoryService.handleCreateListing(data);
   }
 
-  // @MessagePattern(VIEW_LISTING_MESSAGE_PATTERN)
-  // async handleViewListing(@Payload() data: ViewListingMessage, @Ctx() context: RmqContext) {
-  //   console.log('handleViewListing');
-  //   const handleViewListingResponse = this.inventoryService.handleViewListing(data);
-  //   this.rmqService.ack(context);
-  //   return handleViewListingResponse;
-  // }
+  @MessagePattern(GET_AUCTION_TYPE_MESSAGE_PATTERN)
+  async handleGetAuctionType(@Payload() data: GetAuctionTypeMessage, @Ctx() context: RmqContext) {
+    const handleGetAuctionTypeResponse = this.inventoryService.handleGetAuctionType(data);
+    this.rmqService.ack(context);
+    return handleGetAuctionTypeResponse;
+  }
 
   @MessagePattern(GET_ALL_ACTIVE_ITEMS_MESSAGE_PATTERN)
   async handleGetAllActiveItems(@Ctx() context: RmqContext) {

@@ -14,5 +14,5 @@ export class WatchListItem {
   // @ManyToOne(() => AuctionItem, (auctionItem) => auctionItem.id, {
   //   nullable: false,
   // })
-  auctionItemId: number;
+  auctionitem_id: number;
 }

@@ -25,13 +25,13 @@ export class AuctionItemRepository extends Repository<AuctionItem> implements IA
     return this.find();
   }
 
-  async getAuctionItemsBySellerId(sellerId: number): Promise<AuctionItem[]> {
-    return this.dataSource.manager.query(`SELECT * FROM auction_items WHERE seller_id = ${sellerId}`);
+  async getAuctionItemsByseller_id(seller_id: number): Promise<AuctionItem[]> {
+    return this.dataSource.manager.query(`SELECT * FROM auction_items WHERE seller_id = ${seller_id}`);
   }
 
   async updateAuctionItem(auctionItem: AuctionItem) {
     this.dataSource.manager.query(
-      `UPDATE auction_items SET end_time = '${auctionItem.endTime}', starting_bid_price = ${auctionItem.startingBidPrice}, current_bid_price = ${auctionItem.currentBidPrice}, decrement_amount = ${auctionItem.decrementAmount} WHERE id = ${auctionItem.id}`,
+      `UPDATE auction_items SET end_time = '${auctionItem.end_time}', starting_bid_price = ${auctionItem.starting_bid_price}, current_bid_price = ${auctionItem.current_bid_price}, decrement_amount = ${auctionItem.decrement_amount} WHERE id = ${auctionItem.id}`,
     );
     this.save(auctionItem);
   }

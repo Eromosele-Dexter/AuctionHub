@@ -15,7 +15,7 @@ export class BidderEventController {
     // try {
     //   const sessionData = req.session;
     //   sessionData.hasActiveBid = true;
-    //   sessionData.bidItemId = req.body.bidItemId;
+    //   sessionData.biditem_id = req.body.biditem_id;
     //   req.session.save();
     //   return req.session;
     // } catch (error) {

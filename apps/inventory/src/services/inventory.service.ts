@@ -25,6 +25,8 @@ import { ActiveItem } from '@app/shared-library/types/active-item';
 import { AuctionType } from '../entities/auction-type.entity';
 import CreateListingItemEvent from '@app/shared-library/events/create-listing-item.event';
 import { ViewListingItemsResponse } from '@app/shared-library/api-contracts/auction-management/responses/view-listing-items.response';
+import GetAuctionTypeMessage from '@app/shared-library/messages/get-auction-type.message';
+import { GetAuctionTypeResponse } from '@app/shared-library/api-contracts/inventory/responses/get-auction-type.response';
 
 @Injectable()
 export class InventoryService {
@@ -52,22 +54,22 @@ export class InventoryService {
 
     const auctionType = await this.auctionTypeRepository.getAuctionTypeByName(auctionTypeByName);
 
-    const auctionTypeId = auctionType.id;
+    const auction_type_id = auctionType.id;
 
     const item = new Item(
-      data.sellerId,
+      data.seller_id,
       data.name,
       data.description,
-      data.imageName,
+      data.image_name,
       data.created_at,
-      auctionTypeId,
+      auction_type_id,
       false,
-      data.startingBidPrice,
-      data.imageUrl,
+      data.starting_bid_price,
+      data.image_url,
     );
 
     // dont create item if the seller already has an item with the same name
-    const existingItem = await this.itemRepository.getItemByNameAndSellerId(item.name, item.sellerId);
+    const existingItem = await this.itemRepository.getItemByNameAndseller_id(item.name, item.seller_id);
 
     if (existingItem) {
       item.id = existingItem.id;
@@ -76,31 +78,30 @@ export class InventoryService {
       // TODO: update listing item in auction management service
     } else {
       // // create item
-      const end = new Date().setDate(new Date().getDate() + 7);
+
       await this.itemRepository.createItem(item);
       this.auctionManagementClient.emit(
         CREATE_LISTING_ITEM_EVENT_PATTERN,
         new CreateListingItemEvent(
           item.name,
           item.id,
-          item.sellerId,
-          item.startingBidPrice,
+          item.seller_id,
+          item.starting_bid_price,
           item.description,
-          item.imageName,
-          item.imageUrl,
-          item.auctionTypeId,
-          new Date(end), // remove
-          //data.endTime , //TODO: update this to be the end time of the auction
-          data.decrementAmount,
+          item.image_name,
+          item.image_url,
+          item.auction_type_id,
+          data.end_time,
+          data.decrement_amount,
           item.created_at,
-          item.hasBeenSold,
+          item.has_been_sold,
         ),
       );
     }
 
-    const createdItem = await this.itemRepository.getItemByNameAndSellerId(item.name, item.sellerId);
+    const createdItem = await this.itemRepository.getItemByNameAndseller_id(item.name, item.seller_id);
 
-    const itemId = createdItem.id;
+    const item_id = createdItem.id;
 
     const keyword1 = new Keyword(data.keyword1.toLowerCase());
     const keyword2 = new Keyword(data.keyword2.toLowerCase());
@@ -119,18 +120,18 @@ export class InventoryService {
 
       const keywordId1 = createdKeyword1.id;
 
-      const ItemKeyword1 = new ItemKeyword(itemId, keywordId1);
+      const ItemKeyword1 = new ItemKeyword(item_id, keywordId1);
 
       this.itemKeywordRepository.createItemKeyword(ItemKeyword1);
     } else {
       // if keyword already exists, associate it with the item
-      const itemKeywordExists = await this.itemKeywordRepository.getItemKeywordByItemIdAndKeywordId(
-        itemId,
+      const itemKeywordExists = await this.itemKeywordRepository.getItemKeywordByitem_idAndKeywordId(
+        item_id,
         existingKeyword1.id,
       );
 
       if (!itemKeywordExists) {
-        this.itemKeywordRepository.createItemKeyword(new ItemKeyword(itemId, existingKeyword1.id));
+        this.itemKeywordRepository.createItemKeyword(new ItemKeyword(item_id, existingKeyword1.id));
       }
     }
 
@@ -141,18 +142,18 @@ export class InventoryService {
 
       const keywordId2 = createdKeyword2.id;
 
-      const ItemKeyword2 = new ItemKeyword(itemId, keywordId2);
+      const ItemKeyword2 = new ItemKeyword(item_id, keywordId2);
 
       this.itemKeywordRepository.createItemKeyword(ItemKeyword2);
     } else {
       // if keyword already exists, associate it with the item
-      const itemKeywordExists = await this.itemKeywordRepository.getItemKeywordByItemIdAndKeywordId(
-        itemId,
+      const itemKeywordExists = await this.itemKeywordRepository.getItemKeywordByitem_idAndKeywordId(
+        item_id,
         existingKeyword2.id,
       );
 
       if (!itemKeywordExists) {
-        this.itemKeywordRepository.createItemKeyword(new ItemKeyword(itemId, existingKeyword2.id));
+        this.itemKeywordRepository.createItemKeyword(new ItemKeyword(item_id, existingKeyword2.id));
       }
     }
 
@@ -163,18 +164,18 @@ export class InventoryService {
 
       const keywordId3 = createdKeyword3.id;
 
-      const ItemKeyword3 = new ItemKeyword(itemId, keywordId3);
+      const ItemKeyword3 = new ItemKeyword(item_id, keywordId3);
 
       this.itemKeywordRepository.createItemKeyword(ItemKeyword3);
     } else {
       // if keyword already exists, associate it with the item
-      const itemKeywordExists = await this.itemKeywordRepository.getItemKeywordByItemIdAndKeywordId(
-        itemId,
+      const itemKeywordExists = await this.itemKeywordRepository.getItemKeywordByitem_idAndKeywordId(
+        item_id,
         existingKeyword3.id,
       );
 
       if (!itemKeywordExists) {
-        this.itemKeywordRepository.createItemKeyword(new ItemKeyword(itemId, existingKeyword3.id));
+        this.itemKeywordRepository.createItemKeyword(new ItemKeyword(item_id, existingKeyword3.id));
       }
     }
   }
@@ -183,12 +184,12 @@ export class InventoryService {
   // TODO: Need to include pagination in view catalog endpoint
 
   // async handleViewListing(data: ViewListingMessage): Promise<ViewListingResponse> {
-  //   const { sellerId } = data;
+  //   const { seller_id } = data;
 
   //   const listingItems = (
   //     await new Promise<ViewListingItemsResponse>((resolve, reject) => {
   //       this.auctionManagementClient
-  //         .send(VIEW_LISTING_ITEMS_MESSAGE_PATTERN, new ViewListingMessage(sellerId))
+  //         .send(VIEW_LISTING_ITEMS_MESSAGE_PATTERN, new ViewListingMessage(seller_id))
   //         .subscribe({
   //           next: (response) => {
   //             resolve(response);
@@ -203,7 +204,7 @@ export class InventoryService {
   //   const auctionItems = (
   //     await new Promise<GetAuctionItemsForSellerResponse>((resolve, reject) => {
   //       this.auctionManagementClient
-  //         .send(GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN, new GetAuctionItemsForSellerMessage(data.sellerId))
+  //         .send(GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN, new GetAuctionItemsForSellerMessage(data.seller_id))
   //         .subscribe({
   //           next: (response) => {
   //             resolve(response);
@@ -220,26 +221,26 @@ export class InventoryService {
   //   const viewListingItems: ViewListingItem[] = [];
 
   //   listingItems.forEach(async (item) => {
-  //     const matchingItem = auctionItems.find((auctionItem) => auctionItem.itemId === item.id);
-  //     const autId = item.auctionTypeId;
+  //     const matchingItem = auctionItems.find((auctionItem) => auctionItem.item_id === item.id);
+  //     const autId = item.auction_type_id;
   //     console.log('autId: ', autId);
   //     console.log('matchingItem: ', item);
-  //     const auctionType = await this.auctionTypeRepository.getAuctionTypeById(item.auctionTypeId);
+  //     const auctionType = await this.auctionTypeRepository.getAuctionTypeById(item.auction_type_id);
 
-  //     const endTime = item.endTime;
+  //     const end_time = item.end_time;
 
   //     let status;
 
-  //     // hasBeenSold -> status = sold
+  //     // has_been_sold -> status = sold
   //     // end time < current time -> status = expired
   //     // not matchingItem -> status = 'Draft'
   //     // matching -> status = ongoing
 
   //     console.log('auctionType: ', auctionType);
 
-  //     if (item.hasBeenSold) {
+  //     if (item.has_been_sold) {
   //       status = VIEW_LISTING_ITEM_STATUS.SOLD;
-  //     } else if (endTime <= new Date()) {
+  //     } else if (end_time <= new Date()) {
   //       status = VIEW_LISTING_ITEM_STATUS.EXPIRED;
   //     } else if (!matchingItem) {
   //       status = VIEW_LISTING_ITEM_STATUS.DRAFT;
@@ -247,18 +248,18 @@ export class InventoryService {
   //       status = VIEW_LISTING_ITEM_STATUS.ONGOING;
   //     }
 
-  //     const currentBidPrice = matchingItem ? matchingItem.currentBidPrice : item.startingBidPrice;
+  //     const current_bid_price = matchingItem ? matchingItem.current_bid_price : item.starting_bid_price;
 
   //     const viewListingItem = new ViewListingItem(
   //       item.id,
   //       item.name,
   //       item.description,
-  //       item.imageName,
+  //       item.image_name,
   //       auctionType.name,
   //       status,
-  //       endTime,
-  //       currentBidPrice,
-  //       item.imageUrl,
+  //       end_time,
+  //       current_bid_price,
+  //       item.image_url,
   //     );
 
   //     viewListingItems.push(viewListingItem);
@@ -266,23 +267,31 @@ export class InventoryService {
   //   return new ViewListingResponse(viewListingItems, 'Items successfully retrieved', STATUS.SUCCESS);
   // }
 
+  async handleGetAuctionType(data: GetAuctionTypeMessage) {
+    const { auction_type_id } = data;
+
+    const auctionType = await this.auctionTypeRepository.getAuctionTypeById(auction_type_id);
+
+    return new GetAuctionTypeResponse(auctionType.name, 'Auction type successfully retrieved', STATUS.SUCCESS);
+  }
+
   async handleGetAllActiveItems() {
     const items = await this.itemRepository.getAllActiveItems();
     const activeItems: ActiveItem[] = [];
 
     items.forEach(async (item) => {
-      const auctionType = await this.auctionTypeRepository.getAuctionTypeById(item.auctionTypeId);
+      const auctionType = await this.auctionTypeRepository.getAuctionTypeById(item.auction_type_id);
 
       const activeItem = new ActiveItem(
         item.id,
-        item.sellerId,
+        item.seller_id,
         item.name,
         item.description,
-        item.imageName,
+        item.image_name,
         item.created_at,
-        item.hasBeenSold,
+        item.has_been_sold,
         auctionType.name,
-        item.imageUrl,
+        item.image_url,
       );
 
       activeItems.push(activeItem);

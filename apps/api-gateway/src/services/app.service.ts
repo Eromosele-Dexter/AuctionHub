@@ -54,18 +54,18 @@ export class AppService {
         .send(
           REGISTER_USER_MESSAGE_PATTERN,
           new RegisterUserMessage(
-            registerUserRequest.firstName,
-            registerUserRequest.lastName,
+            registerUserRequest.first_name,
+            registerUserRequest.last_name,
             registerUserRequest.username,
             registerUserRequest.password,
             registerUserRequest.email,
-            registerUserRequest.streetName,
-            registerUserRequest.streetNumber,
+            registerUserRequest.street_name,
+            registerUserRequest.street_number,
             registerUserRequest.country,
             registerUserRequest.city,
-            registerUserRequest.postalCode,
+            registerUserRequest.postal_code,
             registerUserRequest.isSeller,
-            new Date(),
+            new Date().getTime(),
           ),
         )
         .subscribe({
@@ -172,16 +172,16 @@ export class AppService {
           EDIT_PROFILE_MESSAGE_PATTERN,
           new EditProfileMessage(
             userId,
-            editProfileRequest.firstName,
-            editProfileRequest.lastName,
+            editProfileRequest.first_name,
+            editProfileRequest.last_name,
             editProfileRequest.username,
             editProfileRequest.email,
-            editProfileRequest.streetName,
-            editProfileRequest.streetNumber,
-            editProfileRequest.postalCode,
+            editProfileRequest.street_name,
+            editProfileRequest.street_number,
+            editProfileRequest.postal_code,
             editProfileRequest.city,
             editProfileRequest.country,
-            new Date(),
+            new Date().getTime(),
           ),
         )
         .subscribe({

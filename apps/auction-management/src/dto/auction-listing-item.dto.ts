@@ -10,5 +10,5 @@ export class AuctionListingItemDto {
 
   @IsInt()
   @IsNotEmpty()
-  itemId: number;
+  item_id: number;
 }

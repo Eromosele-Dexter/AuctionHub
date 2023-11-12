@@ -1,45 +1,45 @@
 export class EditProfileUser {
-  firstName: string;
+  first_name: string;
 
-  lastName: string;
+  last_name: string;
 
   username: string;
 
   email: string;
 
-  streetName: string;
+  street_name: string;
 
-  streetNumber: string;
+  street_number: string;
 
-  postalCode: string;
+  postal_code: string;
 
   city: string;
 
   country: string;
 
-  updatedAt: Date;
+  updated_at: number;
 
   constructor(
-    firstName: string,
-    lastName: string,
+    first_name: string,
+    last_name: string,
     username: string,
     email: string,
-    streetName: string,
-    streetNumber: string,
-    postalCode: string,
+    street_name: string,
+    street_number: string,
+    postal_code: string,
     city: string,
     country: string,
-    updatedAt: Date,
+    updated_at: number,
   ) {
-    this.firstName = firstName;
-    this.lastName = lastName;
+    this.first_name = first_name;
+    this.last_name = last_name;
     this.username = username;
     this.email = email;
-    this.streetName = streetName;
-    this.streetNumber = streetNumber;
-    this.postalCode = postalCode;
+    this.street_name = street_name;
+    this.street_number = street_number;
+    this.postal_code = postal_code;
     this.city = city;
     this.country = country;
-    this.updatedAt = updatedAt;
+    this.updated_at = updated_at;
   }
 }

@@ -3,18 +3,16 @@ import { JwtService } from '@nestjs/jwt';
 import { SocketWithAuth } from '../types/types';
 
 export const createWSTokenMiddleware =
-  (jwtService: JwtService, logger: Logger) =>
-  (socket: SocketWithAuth, next) => {
+  (jwtService: JwtService, logger: Logger) => (socket: SocketWithAuth, next) => {
     // for Postman testing support, fallback to token header
-    const token =
-      socket.handshake.auth.token || socket.handshake.headers['token'];
+    const token = socket.handshake.auth.token || socket.handshake.headers['token'];
 
     logger.debug(`Validating auth token before connection: ${token}`);
 
     try {
       const payload = jwtService.verify(token);
       socket.userId = payload.sub;
-      //   socket.auctionItemId = payload.auctionItemId;
+      //   socket.auctionitem_id = payload.auctionitem_id;
       socket.name = payload.name;
       next();
     } catch {

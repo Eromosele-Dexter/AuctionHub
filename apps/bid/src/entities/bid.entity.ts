@@ -13,11 +13,11 @@ export class Bid {
 
   @Column()
   // @ManyToOne(() => Item, (item) => item.id, { nullable: false })
-  itemId: number;
+  item_id: number;
 
   @Column()
   bidAmount: number;
 
-  @Column()
-  created_at: Date;
+  @Column({ type: 'bigint' })
+  created_at: number;
 }

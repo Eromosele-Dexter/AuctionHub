@@ -48,18 +48,11 @@ export class AuctionManagementController {
     return handleViewListingItemsResponse;
   }
 
-  // @MessagePattern(VIEW_LISTING_ITEMS_MESSAGE_PATTERN)
-  // handleViewListingItems(@Payload() data: ViewListingItemsMessage, @Ctx() context: RmqContext) {
-  //   const handleViewListingItemsResponse = this.auctionManagementService.handleViewListingItems(data);
-  //   this.rmqService.ack(context);
-  //   return handleViewListingItemsResponse;
-  // }
-
-  // @EventPattern(START_AUCTION_EVENT_PATTERN)
-  // handleStartAuction(@Payload() data: StartAuctionEvent, @Ctx() context: RmqContext) {
-  //   this.rmqService.ack(context);
-  //   return this.auctionManagementService.handleStartAuction(data);
-  // }
+  @EventPattern(START_AUCTION_EVENT_PATTERN)
+  handleStartAuction(@Payload() data: StartAuctionEvent, @Ctx() context: RmqContext) {
+    this.rmqService.ack(context);
+    return this.auctionManagementService.handleStartAuction(data);
+  }
 
   @MessagePattern(VIEW_CATALOG_MESSAGE_PATTERN)
   handleViewCatalog(@Payload() data: ViewCatalogMessage, @Ctx() context: RmqContext) {

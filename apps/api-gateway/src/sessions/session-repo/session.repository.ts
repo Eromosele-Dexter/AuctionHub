@@ -26,7 +26,7 @@ export class SessionRepository extends Repository<Session> {
     // token = '${session.token}',
     // expiresAt = '${session.expiresAt}',
     // created_at = '${session.created_at}',
-    // updatedAt = '${session.updatedAt}'
+    // updated_at = '${session.updated_at}'
     // WHERE id = ${session.id}`);
   }
   async deleteSession(id: number): Promise<void> {

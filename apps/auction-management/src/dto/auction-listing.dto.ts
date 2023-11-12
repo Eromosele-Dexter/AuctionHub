@@ -1,10 +1,10 @@
-import { IsInt, IsNotEmpty } from "class-validator";
+import { IsInt, IsNotEmpty } from 'class-validator';
 
 export class AuctionListingDto {
-    @IsInt()
-    _id: number;
+  @IsInt()
+  _id: number;
 
-    @IsInt()
-    @IsNotEmpty()
-    sellerId: number;
+  @IsInt()
+  @IsNotEmpty()
+  seller_id: number;
 }

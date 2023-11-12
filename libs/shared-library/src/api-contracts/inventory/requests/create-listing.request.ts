@@ -11,7 +11,7 @@ export class CreateListingRequest {
 
   // @IsInt()
   // @IsNotEmpty()
-  sellerId: number;
+  seller_id: number;
 
   // @IsNotEmpty()
   image: any;
@@ -28,9 +28,11 @@ export class CreateListingRequest {
   @IsNotEmpty()
   auctionType: string;
 
-  startingBidPrice: number;
+  @IsNotEmpty()
+  starting_bid_price: number;
 
-  endTime: Date;
+  @IsNotEmpty()
+  end_time: number;
 
-  decrementAmount: number;
+  decrement_amount: number;
 }

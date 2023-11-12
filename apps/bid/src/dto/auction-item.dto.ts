@@ -1,29 +1,29 @@
-import { IsNotEmpty, IsInt, IsNumber, IsOptional } from "class-validator";
+import { IsNotEmpty, IsInt, IsNumber, IsOptional } from 'class-validator';
 
 export class AuctionItemDto {
-    // @IsInt()
-    // _id: number;
+  // @IsInt()
+  // _id: number;
 
-    @IsInt()
-    @IsNotEmpty()
-    itemId: number;
+  @IsInt()
+  @IsNotEmpty()
+  item_id: number;
 
-    @IsInt()
-    @IsNotEmpty()
-    auctionTypeId: number;
+  @IsInt()
+  @IsNotEmpty()
+  auction_type_id: number;
 
-    @IsNumber()
-    @IsNotEmpty()
-    startingBidPrice: number;
+  @IsNumber()
+  @IsNotEmpty()
+  starting_bid_price: number;
 
-    @IsNotEmpty()
-    duration: number;
+  @IsNotEmpty()
+  duration: number;
 
-    @IsOptional()
-    @IsInt()
-    currentBidPrice?: number;
+  @IsOptional()
+  @IsInt()
+  current_bid_price?: number;
 
-    @IsOptional()
-    @IsInt()
-    decrementAmount?: number;
+  @IsOptional()
+  @IsInt()
+  decrement_amount?: number;
 }

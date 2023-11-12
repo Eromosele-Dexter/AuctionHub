@@ -4,6 +4,7 @@ import StartAuctionEvent from '@app/shared-library/events/start-auction.event';
 import { AuctionItemRepository } from '../repositories/auction-item-repo/auction-item.repository';
 import {
   GET_ALL_ACTIVE_ITEMS_MESSAGE_PATTERN,
+  GET_AUCTION_TYPE_MESSAGE_PATTERN,
   INVENTORY_SERVICE,
   START_AUCTION_MESSAGE_PATTERN,
 } from '@app/shared-library';
@@ -30,6 +31,8 @@ import { ViewListingItemsResponse } from '@app/shared-library/api-contracts/auct
 import ViewListingMessage from '@app/shared-library/messages/view-listing.message';
 import { ViewListingResponse } from '@app/shared-library/api-contracts/auction-management/responses/view-listing.response';
 import { ViewListingItem } from '@app/shared-library/types/view-listing-item';
+import { GetAuctionTypeResponse } from '@app/shared-library/api-contracts/inventory/responses/get-auction-type.response';
+import GetAuctionTypeMessage from '@app/shared-library/messages/get-auction-type.message';
 
 @Injectable()
 export class AuctionManagementService {
@@ -42,17 +45,17 @@ export class AuctionManagementService {
   handleCreateListingItem(data: CreateListingItemEvent) {
     const listingItem = new ListingItem(
       data.name,
-      data.itemId,
-      data.sellerId,
-      data.startingBidPrice,
+      data.item_id,
+      data.seller_id,
+      data.starting_bid_price,
       data.description,
-      data.imageName,
-      data.imageUrl,
-      data.auctionTypeId,
-      data.endTime,
-      data.decrementAmount,
+      data.image_name,
+      data.image_url,
+      data.auction_type_id,
+      data.end_time,
+      data.decrement_amount,
       data.created_at,
-      data.hasBeenSold,
+      data.has_been_sold,
     );
 
     this.listingItemRepository.createListingItem(listingItem);
@@ -61,9 +64,9 @@ export class AuctionManagementService {
   async handleGetAllAuctionItemsForSeller(
     data: GetAuctionItemsForSellerMessage,
   ): Promise<GetAuctionItemsForSellerResponse> {
-    const { sellerId } = data;
+    const { seller_id } = data;
 
-    const auctionItems = await this.auctionItemRepository.getAuctionItemsBySellerId(sellerId);
+    const auctionItems = await this.auctionItemRepository.getAuctionItemsByseller_id(seller_id);
 
     return new GetAuctionItemsForSellerResponse(
       auctionItems,
@@ -73,48 +76,55 @@ export class AuctionManagementService {
   }
 
   async handleViewListingItems(data: ViewListingItemsMessage): Promise<ViewListingItemsResponse> {
-    const { sellerId } = data;
+    const { seller_id } = data;
 
-    const listingItems = await this.listingItemRepository.getListingItemsBySellerId(sellerId);
-
-    console.log('listingItems: ', listingItems);
+    const listingItems = await this.listingItemRepository.getListingItemsByseller_id(seller_id);
 
     return new ViewListingItemsResponse(listingItems, 'Listing items retrieved successfully', STATUS.SUCCESS);
   }
 
   async handleViewListing(data: ViewListingMessage): Promise<ViewListingResponse> {
-    const { sellerId } = data;
+    const { seller_id } = data;
 
-    const listingItems: ListingItem[] = (await this.handleViewListingItems(new ViewListingItemsMessage(sellerId)))
+    const listingItems: ListingItem[] = (await this.handleViewListingItems(new ViewListingItemsMessage(seller_id)))
       .data;
 
     const auctionItems = (
-      await this.handleGetAllAuctionItemsForSeller(new GetAuctionItemsForSellerMessage(sellerId))
+      await this.handleGetAllAuctionItemsForSeller(new GetAuctionItemsForSellerMessage(seller_id))
     ).data;
-
-    console.log('auctionItems: ', auctionItems);
 
     const viewListingItems: ViewListingItem[] = [];
 
-    listingItems.forEach(async (item: ListingItem) => {
-      const matchingItem = auctionItems.find((auctionItem) => auctionItem.itemId === item.id);
+    for (const listingItem of listingItems) {
+      const matchingItem = auctionItems.find((auctionItem) => auctionItem.listing_item_id === listingItem.id);
 
-      const auctionType = { name: 'dutch' };
-      // const auctionType = await this.auctionTypeRepository.getAuctionTypeById(item.auctionTypeId); // TODO: fix this
-      const endTime = item.endTime;
+      const auctionType = (
+        await new Promise<GetAuctionTypeResponse>((resolve, reject) => {
+          this.inventoryClient
+            .send(GET_AUCTION_TYPE_MESSAGE_PATTERN, new GetAuctionTypeMessage(listingItem.auction_type_id))
+            .subscribe({
+              next: (response) => {
+                resolve(response);
+              },
+              error: (error) => {
+                reject(error);
+              },
+            });
+        })
+      ).data;
+
+      const end_time = listingItem.end_time;
 
       let status;
 
-      // hasBeenSold -> status = sold
+      // has_been_sold -> status = sold
       // end time < current time -> status = expired
       // not matchingItem -> status = 'Draft'
       // matching -> status = ongoing
 
-      console.log('auctionType: ', auctionType);
-
-      if (item.hasBeenSold) {
+      if (listingItem.has_been_sold) {
         status = VIEW_LISTING_ITEM_STATUS.SOLD;
-      } else if (endTime <= new Date()) {
+      } else if (end_time <= new Date().getTime()) {
         status = VIEW_LISTING_ITEM_STATUS.EXPIRED;
       } else if (!matchingItem) {
         status = VIEW_LISTING_ITEM_STATUS.DRAFT;
@@ -122,54 +132,47 @@ export class AuctionManagementService {
         status = VIEW_LISTING_ITEM_STATUS.ONGOING;
       }
 
-      const currentBidPrice = matchingItem ? matchingItem.currentBidPrice : item.startingBidPrice;
+      const current_bid_price = matchingItem ? matchingItem.current_bid_price : listingItem.starting_bid_price;
 
       const viewListingItem = new ViewListingItem(
-        item.id,
-        item.name,
-        item.description,
-        item.imageName,
-        auctionType.name,
+        listingItem.id,
+        listingItem.name,
+        listingItem.description,
+        listingItem.image_name,
+        auctionType,
         status,
-        endTime,
-        currentBidPrice,
-        item.imageUrl,
+        end_time,
+        current_bid_price,
+        listingItem.image_url,
       );
 
       viewListingItems.push(viewListingItem);
-    });
-    console.log('viewListingItems: ', viewListingItems);
+    }
     return new ViewListingResponse(viewListingItems, 'Items successfully retrieved', STATUS.SUCCESS);
   }
 
-  // async handleStartAuction(data: StartAuctionEvent) {
-  //   const { itemId, sellerId, endTime, startingBidPrice, decrementAmount } = data;
+  async handleStartAuction(data: StartAuctionEvent) {
+    const { listing_item_id, seller_id } = data;
 
-  //   const itemExists = await new Promise<StartAuctionResponse>((resolve, reject) => {
-  //     this.inventoryClient.send(START_AUCTION_MESSAGE_PATTERN, new StartAuctionMessage(itemId)).subscribe({
-  //       next: (response) => {
-  //         resolve(response);
-  //       },
-  //       error: (error) => {
-  //         reject(error);
-  //       },
-  //     });
-  //   });
+    const listingItem = await this.listingItemRepository.getListingItemById(listing_item_id);
 
-  //   if (!itemExists) {
-  //     return;
-  //   }
+    const isValidSeller = listingItem && listingItem.seller_id === seller_id;
 
-  //   const isValidSeller = itemExists.item.sellerId === sellerId;
+    if (!isValidSeller) {
+      return;
+    }
 
-  //   if (!isValidSeller) {
-  //     return;
-  //   }
+    const auctionItem = new AuctionItem(
+      listing_item_id,
+      listingItem.seller_id,
+      listingItem.end_time,
+      listingItem.starting_bid_price,
+      listingItem.starting_bid_price,
+      listingItem.decrement_amount,
+    );
 
-  //   const auctionItem = new AuctionItem(itemId, sellerId, endTime, startingBidPrice, startingBidPrice, decrementAmount);
-
-  //   this.auctionItemRepository.createAuctionItem(auctionItem);
-  // }
+    this.auctionItemRepository.createAuctionItem(auctionItem);
+  }
 
   async getCatalogItems(): Promise<CatalogItem[]> {
     const auctionItems = await this.auctionItemRepository.getAuctionItems();
@@ -190,19 +193,19 @@ export class AuctionManagementService {
     const viewCatalogItems: CatalogItem[] = [];
 
     auctionItems.forEach((auctionItem) => {
-      const matchingItem = activeItems.find((activeItem) => activeItem.id === auctionItem.itemId);
+      const matchingItem = activeItems.find((activeItem) => activeItem.id === auctionItem.listing_item_id);
 
       // check if the auctionItem has expired
-      if (auctionItem.endTime > new Date().getTime()) {
+      if (auctionItem.end_time > new Date().getTime()) {
         const viewCatalogItem = new CatalogItem(
-          auctionItem.itemId,
+          auctionItem.listing_item_id,
           matchingItem.name,
           matchingItem.description,
-          matchingItem.imageName,
+          matchingItem.image_name,
           matchingItem.auctionType,
-          auctionItem.endTime,
-          auctionItem.currentBidPrice,
-          matchingItem.imageUrl,
+          auctionItem.end_time,
+          auctionItem.current_bid_price,
+          matchingItem.image_url,
         );
 
         viewCatalogItems.push(viewCatalogItem);
@@ -223,12 +226,12 @@ export class AuctionManagementService {
   }
 
   getUniqueCatalogItems(searchResults: any[]): any[] {
-    const uniqueItemIds = new Set<string>();
+    const uniqueitem_ids = new Set<string>();
     const uniqueItems: any[] = [];
 
     for (const item of searchResults) {
-      if (!uniqueItemIds.has(item.itemId)) {
-        uniqueItemIds.add(item.itemId);
+      if (!uniqueitem_ids.has(item.item_id)) {
+        uniqueitem_ids.add(item.item_id);
         uniqueItems.push(item);
       }
     }
@@ -254,15 +257,15 @@ export class AuctionManagementService {
     const searchCatalogItems: CatalogItem[] = [];
 
     uniqueItems.forEach((item) => {
-      if (item.endTime > new Date().getTime()) {
+      if (item.end_time > new Date().getTime()) {
         const searchCatalogItem = new CatalogItem(
-          item.itemId,
+          item.item_id,
           item.name,
           item.description,
           item.image,
           item.auctionType,
-          item.endTime,
-          item.currentBidPrice,
+          item.end_time,
+          item.current_bid_price,
         );
         searchCatalogItems.push(searchCatalogItem);
       }

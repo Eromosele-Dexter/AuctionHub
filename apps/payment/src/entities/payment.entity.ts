@@ -16,6 +16,6 @@ export class Payment {
   @Column()
   amount: number;
 
-  @Column()
-  created_at: Date;
+  @Column({ type: 'bigint' })
+  created_at: number;
 }

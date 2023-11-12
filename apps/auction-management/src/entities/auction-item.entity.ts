@@ -5,39 +5,39 @@ export class AuctionItem {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'item_id' })
+  @Column({ name: 'listing_item_id' })
   // @OneToOne(() => Item, (item) => item.id, { nullable: false })
-  itemId: number;
+  listing_item_id: number;
 
   @Column({ name: 'seller_id' })
-  sellerId: number;
+  seller_id: number;
 
   // this is the time the auction ends
   @Column({ name: 'end_time', type: 'bigint' })
-  endTime: number; // if it is a dutch auction, this value is not shown to the bidders
+  end_time: number; // if it is a dutch auction, this value is not shown to the bidders
 
   @Column({ name: 'starting_bid_price' })
-  startingBidPrice: number;
+  starting_bid_price: number;
 
   @Column({ name: 'current_bid_price' })
-  currentBidPrice: number;
+  current_bid_price: number;
 
   @Column({ name: 'decrement_amount', nullable: true })
-  decrementAmount: number; // if the auction is a dutch auction, this is the amount to decrement the price by
+  decrement_amount: number; // if the auction is a dutch auction, this is the amount to decrement the price by
 
   constructor(
-    itemId: number,
-    sellerId: number,
-    endTime: number,
-    startingBidPrice: number,
-    currentBidPrice: number,
-    decrementAmount?: number,
+    listing_item_id: number,
+    seller_id: number,
+    end_time: number,
+    starting_bid_price: number,
+    current_bid_price: number,
+    decrement_amount?: number,
   ) {
-    this.itemId = itemId;
-    this.sellerId = sellerId;
-    this.endTime = endTime;
-    this.startingBidPrice = startingBidPrice;
-    this.currentBidPrice = currentBidPrice;
-    this.decrementAmount = decrementAmount;
+    this.listing_item_id = listing_item_id;
+    this.seller_id = seller_id;
+    this.end_time = end_time;
+    this.starting_bid_price = starting_bid_price;
+    this.current_bid_price = current_bid_price;
+    this.decrement_amount = decrement_amount;
   }
 }

@@ -22,7 +22,7 @@ export class AuctionTypeRepository extends Repository<AuctionType> implements IA
     return auctionType[0];
   }
   async getAuctionTypeById(id: number): Promise<AuctionType> {
-    const auctionType = this.dataSource.manager.query('SELECT * FROM auction_types WHERE id = $1', [id]);
+    const auctionType = await this.dataSource.manager.query(`SELECT * FROM auction_types WHERE id = '${id}'`);
     return auctionType[0];
   }
   async getAuctionTypes(): Promise<AuctionType[]> {

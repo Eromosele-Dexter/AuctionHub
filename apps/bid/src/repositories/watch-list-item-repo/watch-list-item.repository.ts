@@ -4,10 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { IWatchListItemRepository } from './watch-list-item.repository.interface';
 
 @Injectable()
-export class WatchListItemRepository
-  extends Repository<WatchListItem>
-  implements IWatchListItemRepository
-{
+export class WatchListItemRepository extends Repository<WatchListItem> implements IWatchListItemRepository {
   private readonly logger = new Logger(WatchListItemRepository.name);
 
   constructor(private dataSource: DataSource) {
@@ -17,9 +14,7 @@ export class WatchListItemRepository
     throw new Error('Method not implemented.');
   }
 
-  async createWatchListItem(
-    watchListItem: WatchListItem,
-  ): Promise<WatchListItem> {
+  async createWatchListItem(watchListItem: WatchListItem): Promise<WatchListItem> {
     throw new Error('Method not implemented.');
   }
   async getWatchListItemById(id: number): Promise<WatchListItem> {
@@ -28,19 +23,14 @@ export class WatchListItemRepository
   async getWatchListItems(): Promise<WatchListItem[]> {
     throw new Error('Method not implemented.');
   }
-  async updateWatchListItem(
-    watchListItem: WatchListItem,
-  ): Promise<WatchListItem> {
+  async updateWatchListItem(watchListItem: WatchListItem): Promise<WatchListItem> {
     throw new Error('Method not implemented.');
   }
   async deleteWatchListItem(id: number): Promise<void> {
     throw new Error('Method not implemented.');
   }
 
-  async getWatchListItemByUserIdAndAuctionItemId(
-    userId: number,
-    auctionItemId: number,
-  ): Promise<WatchListItem> {
+  async getWatchListItemByUserIdAndAuctionitem_id(userId: number, auctionitem_id: number): Promise<WatchListItem> {
     throw new Error('Method not implemented.');
   }
 }

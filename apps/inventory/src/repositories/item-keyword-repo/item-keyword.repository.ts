@@ -16,9 +16,9 @@ export class ItemKeywordRepository extends Repository<ItemKeyword> implements II
     return this.save(itemKeyword);
   }
 
-  getItemKeywordByItemIdAndKeywordId(itemId: number, keywordId: number): Promise<ItemKeyword> {
+  getItemKeywordByitem_idAndKeywordId(item_id: number, keywordId: number): Promise<ItemKeyword> {
     const itemKeyword = this.dataSource.manager.query(
-      `SELECT * FROM item_keywords WHERE item_id = ${itemId} AND keyword_id = ${keywordId}`,
+      `SELECT * FROM item_keywords WHERE item_id = ${item_id} AND keyword_id = ${keywordId}`,
     );
     return itemKeyword[0];
   }
@@ -32,7 +32,7 @@ export class ItemKeywordRepository extends Repository<ItemKeyword> implements II
   async deleteItemKeyword(id: number): Promise<void> {
     throw new Error('Method not implemented.');
   }
-  async getItemKeywordByItemId(itemId: number): Promise<ItemKeyword> {
+  async getItemKeywordByitem_id(item_id: number): Promise<ItemKeyword> {
     throw new Error('Method not implemented.');
   }
 }

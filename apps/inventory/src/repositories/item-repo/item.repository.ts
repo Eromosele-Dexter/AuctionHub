@@ -16,7 +16,7 @@ export class ItemRepository extends Repository<Item> implements IItemRepository 
     return this.save(item);
   }
 
-  async getItemByNameAndSellerId(itemName: string, userId: number): Promise<Item> {
+  async getItemByNameAndseller_id(itemName: string, userId: number): Promise<Item> {
     const item = await this.dataSource.manager.query(`SELECT * FROM items WHERE name = $1 AND seller_id = $2`, [
       itemName,
       userId,
@@ -24,7 +24,7 @@ export class ItemRepository extends Repository<Item> implements IItemRepository 
     return item[0];
   }
 
-  async getItemsBySellerId(userId: number): Promise<Item[]> {
+  async getItemsByseller_id(userId: number): Promise<Item[]> {
     const items = await this.dataSource.manager.query(`SELECT * FROM items WHERE seller_id = $1`, [userId]);
     return items;
   }
@@ -38,7 +38,7 @@ export class ItemRepository extends Repository<Item> implements IItemRepository 
   }
   async updateItem(item: Item) {
     this.dataSource.manager.query(
-      `UPDATE items SET name = '${item.name}', description = '${item.description}', image_name = '${item.imageName}', auction_type_id = ${item.auctionTypeId}, image_url = '${item.imageUrl}' WHERE id = ${item.id}`,
+      `UPDATE items SET name = '${item.name}', description = '${item.description}', image_name = '${item.image_name}', auction_type_id = ${item.auction_type_id}, image_url = '${item.image_url}' WHERE id = ${item.id}`,
     );
     this.save(item);
   }

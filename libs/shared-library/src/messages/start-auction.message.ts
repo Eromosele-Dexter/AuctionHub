@@ -1,9 +1,9 @@
 class StartAuctionMessage {
-  constructor(public readonly itemId: number) {}
+  constructor(public readonly item_id: number) {}
 
   toString() {
     return JSON.stringify({
-      itemId: this.itemId,
+      item_id: this.item_id,
     });
   }
 }

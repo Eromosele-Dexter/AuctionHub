@@ -7,7 +7,7 @@ export class Item {
 
   // @ManyToOne(() => User, (user) => user.id, { nullable: false })
   @Column({ name: 'seller_id' })
-  sellerId: number;
+  seller_id: number;
 
   @Column()
   name: string;
@@ -16,42 +16,42 @@ export class Item {
   description: string;
 
   @Column({ name: 'image_name' })
-  imageName: string;
+  image_name: string;
 
-  @Column({ name: 'created_at' })
-  created_at: Date;
+  @Column({ name: 'created_at', type: 'bigint' })
+  created_at: number;
 
   @Column({ name: 'auction_type_id' })
-  auctionTypeId: number;
+  auction_type_id: number;
 
   @Column({ name: 'has_been_sold' })
-  hasBeenSold: boolean;
+  has_been_sold: boolean;
 
   @Column({ name: 'starting_bid_price', default: 0 })
-  startingBidPrice: number; //remove later
+  starting_bid_price: number; //remove later
 
   @Column({ name: 'image_url' })
-  imageUrl: string;
+  image_url: string;
 
   constructor(
-    sellerId: number,
+    seller_id: number,
     name: string,
     description: string,
-    imageName: string,
-    created_at: Date,
-    auctionTypeId: number,
-    hasBeenSold: boolean,
-    startingBidPrice: number,
-    imageUrl?: string,
+    image_name: string,
+    created_at: number,
+    auction_type_id: number,
+    has_been_sold: boolean,
+    starting_bid_price: number,
+    image_url?: string,
   ) {
-    this.sellerId = sellerId;
+    this.seller_id = seller_id;
     this.name = name;
     this.description = description;
-    this.imageName = imageName;
+    this.image_name = image_name;
     this.created_at = created_at;
-    this.auctionTypeId = auctionTypeId;
-    this.hasBeenSold = hasBeenSold;
-    this.startingBidPrice = startingBidPrice;
-    this.imageUrl = imageUrl;
+    this.auction_type_id = auction_type_id;
+    this.has_been_sold = has_been_sold;
+    this.starting_bid_price = starting_bid_price;
+    this.image_url = image_url;
   }
 }

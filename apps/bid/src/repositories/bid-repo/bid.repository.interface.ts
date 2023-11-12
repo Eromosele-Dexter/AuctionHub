@@ -6,6 +6,6 @@ export interface IBidRepository {
   getBids(): Promise<Bid[]>;
   updateBid(bid: Bid): Promise<Bid>;
   deleteBid(id: number): Promise<void>;
-  getBidsByAuctionItemId(auctionItemId: number): Promise<Bid[]>;
-  getHighestBidByAuctionItemId(auctionItemId: number): Promise<Bid>;
+  getBidsByAuctionitem_id(auctionitem_id: number): Promise<Bid[]>;
+  getHighestBidByAuctionitem_id(auctionitem_id: number): Promise<Bid>;
 }

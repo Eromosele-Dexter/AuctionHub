@@ -1,41 +1,41 @@
 export class ViewListingItem {
-  itemId: number; // itemId
+  listing_item_id: number;
 
   name: string;
 
   description: string;
 
-  imageName: string;
+  image_name: string;
 
   auctionType: string;
 
   status: string;
 
-  endTime: Date;
+  end_time: number;
 
-  currentBidPrice: number;
+  current_bid_price: number;
 
-  imageUrl: string;
+  image_url: string;
 
   constructor(
-    itemId: number, // itemId
+    listing_item_id: number,
     name: string,
     description: string,
-    imageName: string,
+    image_name: string,
     auctionType: string,
     status: string,
-    endTime: Date,
-    currentBidPrice: number,
-    imageUrl?: string,
+    end_time: number,
+    current_bid_price: number,
+    image_url?: string,
   ) {
-    this.itemId = itemId;
+    this.listing_item_id = listing_item_id;
     this.name = name;
     this.description = description;
-    this.imageName = imageName;
+    this.image_name = image_name;
     this.auctionType = auctionType;
     this.status = status;
-    this.endTime = endTime;
-    this.currentBidPrice = currentBidPrice;
-    this.imageUrl = imageUrl;
+    this.end_time = end_time;
+    this.current_bid_price = current_bid_price;
+    this.image_url = image_url;
   }
 }

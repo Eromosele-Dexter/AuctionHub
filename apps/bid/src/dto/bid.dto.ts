@@ -10,12 +10,12 @@ export class BidDto {
 
   @IsNotEmpty()
   @IsInt()
-  itemId: number;
+  item_id: number;
 
   @IsNotEmpty()
   @IsNumber()
   bidAmount: number;
 
   @IsNotEmpty()
-  created_at: Date;
+  created_at: number;
 }

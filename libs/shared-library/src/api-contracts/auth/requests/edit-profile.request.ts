@@ -3,11 +3,11 @@ import { IsString, IsNotEmpty, IsEmail } from 'class-validator';
 export class EditProfileRequest {
   @IsString()
   @IsNotEmpty()
-  firstName: string;
+  first_name: string;
 
   @IsString()
   @IsNotEmpty()
-  lastName: string;
+  last_name: string;
 
   @IsString()
   @IsNotEmpty()
@@ -20,11 +20,11 @@ export class EditProfileRequest {
 
   @IsString()
   @IsNotEmpty()
-  streetName: string;
+  street_name: string;
 
   @IsString()
   @IsNotEmpty()
-  streetNumber: string;
+  street_number: string;
 
   @IsString()
   @IsNotEmpty()
@@ -36,5 +36,5 @@ export class EditProfileRequest {
 
   @IsString()
   @IsNotEmpty()
-  postalCode: string;
+  postal_code: string;
 }

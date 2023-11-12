@@ -26,10 +26,10 @@ export class BidRepository extends Repository<Bid> implements IBidRepository {
   async deleteBid(id: number): Promise<void> {
     throw new Error('Method not implemented.');
   }
-  async getBidsByAuctionItemId(auctionItemId: number): Promise<Bid[]> {
+  async getBidsByAuctionitem_id(auctionitem_id: number): Promise<Bid[]> {
     throw new Error('Method not implemented.');
   }
-  async getHighestBidByAuctionItemId(auctionItemId: number): Promise<Bid> {
+  async getHighestBidByAuctionitem_id(auctionitem_id: number): Promise<Bid> {
     throw new Error('Method not implemented.');
   }
 }

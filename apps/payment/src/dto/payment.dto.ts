@@ -14,5 +14,5 @@ export class PaymentDto {
   amount: number;
 
   @IsNotEmpty()
-  created_at: Date;
+  created_at: number;
 }

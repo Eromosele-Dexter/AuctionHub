@@ -1,31 +1,31 @@
 class RegisterUserMessage {
   constructor(
-    public readonly firstName: string,
-    public readonly lastName: string,
+    public readonly first_name: string,
+    public readonly last_name: string,
     public readonly username: string,
     public readonly password: string,
     public readonly email: string,
-    public readonly streetName: string,
-    public readonly streetNumber: string,
+    public readonly street_name: string,
+    public readonly street_number: string,
     public readonly country: string,
     public readonly city: string,
-    public readonly postalCode: string,
+    public readonly postal_code: string,
     public readonly isSeller: boolean,
-    public readonly dateRegistered: Date,
+    public readonly dateRegistered: number,
   ) {}
 
   toString() {
     return JSON.stringify({
-      firstName: this.firstName,
-      lastName: this.lastName,
+      first_name: this.first_name,
+      last_name: this.last_name,
       username: this.username,
       password: this.password,
       email: this.email,
-      streetName: this.streetName,
-      streetNumber: this.streetNumber,
+      street_name: this.street_name,
+      street_number: this.street_number,
       country: this.country,
       city: this.city,
-      postalCode: this.postalCode,
+      postal_code: this.postal_code,
       isSeller: this.isSeller,
       dateRegistered: this.dateRegistered,
     });

@@ -2,12 +2,12 @@ import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class StartAuctionRequest {
   @IsNotEmpty()
-  endTime: number;
+  end_time: number;
 
   @IsNotEmpty()
   @IsNumber()
-  startingBidPrice: number;
+  starting_bid_price: number;
 
   @IsNumber()
-  decrementAmount: number;
+  decrement_amount: number;
 }

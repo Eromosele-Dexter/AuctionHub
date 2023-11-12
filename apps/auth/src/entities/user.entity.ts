@@ -6,10 +6,10 @@ export class User {
   id: number;
 
   @Column({ name: 'first_name' })
-  firstName: string;
+  first_name: string;
 
   @Column({ name: 'last_name' })
-  lastName: string;
+  last_name: string;
 
   @Column()
   username: string;
@@ -24,13 +24,13 @@ export class User {
   role: string;
 
   @Column({ name: 'street_name' })
-  streetName: string;
+  street_name: string;
 
   @Column({ name: 'street_number' })
-  streetNumber: string;
+  street_number: string;
 
   @Column({ name: 'postal_code' })
-  postalCode: string;
+  postal_code: string;
 
   @Column()
   city: string;
@@ -38,39 +38,39 @@ export class User {
   @Column()
   country: string;
 
-  @Column({ name: 'created_at' })
-  created_at: Date;
+  @Column({ name: 'created_at', type: 'bigint' })
+  created_at: number;
 
-  @Column({ name: 'updated_at', nullable: true })
-  updatedAt: Date;
+  @Column({ name: 'updated_at', nullable: true, type: 'bigint' })
+  updated_at: number;
 
   constructor(
-    firstName: string,
-    lastName: string,
+    first_name: string,
+    last_name: string,
     username: string,
     password: string,
     email: string,
     role: string,
-    streetName: string,
-    streetNumber: string,
-    postalCode: string,
+    street_name: string,
+    street_number: string,
+    postal_code: string,
     city: string,
     country: string,
-    created_at: Date,
-    updatedAt?: Date,
+    created_at: number,
+    updated_at?: number,
   ) {
-    this.firstName = firstName;
-    this.lastName = lastName;
+    this.first_name = first_name;
+    this.last_name = last_name;
     this.username = username;
     this.password = password;
     this.email = email;
     this.role = role;
-    this.streetName = streetName;
-    this.streetNumber = streetNumber;
-    this.postalCode = postalCode;
+    this.street_name = street_name;
+    this.street_number = street_number;
+    this.postal_code = postal_code;
     this.city = city;
     this.country = country;
     this.created_at = created_at;
-    this.updatedAt = updatedAt;
+    this.updated_at = updated_at;
   }
 }

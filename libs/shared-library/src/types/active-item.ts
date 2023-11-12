@@ -1,41 +1,41 @@
 export class ActiveItem {
   id: number;
 
-  sellerId: number;
+  seller_id: number;
 
   name: string;
 
   description: string;
 
-  imageName: string;
+  image_name: string;
 
-  created_at: Date;
+  created_at: number;
 
-  hasBeenSold: boolean;
+  has_been_sold: boolean;
 
   auctionType: string;
 
-  imageUrl: string;
+  image_url: string;
 
   constructor(
     id: number,
-    sellerId: number,
+    seller_id: number,
     name: string,
     description: string,
-    imageName: string,
-    created_at: Date,
-    hasBeenSold: boolean,
+    image_name: string,
+    created_at: number,
+    has_been_sold: boolean,
     auctionType: string,
-    imageUrl?: string,
+    image_url?: string,
   ) {
     this.id = id;
-    this.sellerId = sellerId;
+    this.seller_id = seller_id;
     this.name = name;
     this.description = description;
-    this.imageName = imageName;
+    this.image_name = image_name;
     this.created_at = created_at;
-    this.hasBeenSold = hasBeenSold;
+    this.has_been_sold = has_been_sold;
     this.auctionType = auctionType;
-    this.imageUrl = imageUrl;
+    this.image_url = image_url;
   }
 }

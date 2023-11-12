@@ -3,11 +3,11 @@ import { IsString, IsNotEmpty, IsBoolean, IsEmail, Length } from 'class-validato
 export class RegisterUserRequest {
   @IsString()
   @IsNotEmpty()
-  firstName: string;
+  first_name: string;
 
   @IsString()
   @IsNotEmpty()
-  lastName: string;
+  last_name: string;
 
   @IsString()
   @IsNotEmpty()
@@ -25,11 +25,11 @@ export class RegisterUserRequest {
 
   @IsString()
   @IsNotEmpty()
-  streetName: string;
+  street_name: string;
 
   @IsString()
   @IsNotEmpty()
-  streetNumber: string;
+  street_number: string;
 
   @IsString()
   @IsNotEmpty()
@@ -41,7 +41,7 @@ export class RegisterUserRequest {
 
   @IsString()
   @IsNotEmpty()
-  postalCode: string;
+  postal_code: string;
 
   @IsBoolean()
   @IsNotEmpty()

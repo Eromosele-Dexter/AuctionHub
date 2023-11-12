@@ -41,10 +41,10 @@ export class SellerEventService {
         Body: image,
       })
       .promise();
-    return await this.getImageUrl(fileName);
+    return await this.getimage_url(fileName);
   }
 
-  async getImageUrl(fileName: string) {
+  async getimage_url(fileName: string) {
     const response = this.s3.getSignedUrlPromise('getObject', {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
       Key: fileName,
@@ -68,54 +68,50 @@ export class SellerEventService {
   }
 
   async createListing(createListingRequest: CreateListingRequest) {
-    const imageName = createListingRequest.image.originalname;
-    const imageUrl = await this.uploadImage(imageName, createListingRequest.image.buffer);
+    const image_name = createListingRequest.image.originalname;
+    const image_url = await this.uploadImage(image_name, createListingRequest.image.buffer);
 
     this.inventoryClient.emit(
       CREATE_LISTING_EVENT_PATTERN,
       new CreateListingEvent(
-        createListingRequest.sellerId,
+        createListingRequest.seller_id,
         createListingRequest.name,
         createListingRequest.description,
-        imageName,
-        imageUrl,
-        new Date(),
+        image_name,
+        image_url,
+        new Date().getTime(),
         createListingRequest.auctionType,
         createListingRequest.keyword1,
         createListingRequest.keyword2,
         createListingRequest.keyword3,
-        createListingRequest.startingBidPrice,
-        createListingRequest.endTime,
-        createListingRequest.decrementAmount,
+        createListingRequest.starting_bid_price,
+        createListingRequest.end_time,
+        createListingRequest.decrement_amount,
       ),
     );
   }
 
-  async viewListing(sellerId: number): Promise<ViewListingResponse> {
+  async viewListing(seller_id: number): Promise<ViewListingResponse> {
     const response = new Promise<ViewListingResponse>((resolve, reject) => {
-      this.auctionManagementClient.send(VIEW_LISTING_MESSAGE_PATTERN, new ViewListingMessage(sellerId)).subscribe({
-        next: (response) => {
-          resolve(response);
-        },
-        error: (error) => {
-          reject(error);
-        },
-      });
+      this.auctionManagementClient
+        .send(VIEW_LISTING_MESSAGE_PATTERN, new ViewListingMessage(seller_id))
+        .subscribe({
+          next: (response) => {
+            resolve(response);
+          },
+          error: (error) => {
+            reject(error);
+          },
+        });
     });
 
     return response;
   }
 
-  async startAuction(itemId: number, sellerId: number, startAuctionRequest: StartAuctionRequest) {
-    this.inventoryClient.emit(
+  async startAuction(listing_item_id: number, seller_id: number) {
+    this.auctionManagementClient.emit(
       START_AUCTION_EVENT_PATTERN,
-      new StartAuctionEvent(
-        itemId,
-        sellerId,
-        startAuctionRequest.endTime,
-        startAuctionRequest.startingBidPrice,
-        startAuctionRequest.decrementAmount,
-      ),
+      new StartAuctionEvent(listing_item_id, seller_id),
     );
   }
 }

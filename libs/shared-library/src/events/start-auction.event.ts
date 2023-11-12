@@ -1,19 +1,13 @@
 class StartAuctionEvent {
   constructor(
-    public readonly itemId: number,
-    public readonly sellerId: number,
-    public readonly endTime: number,
-    public readonly startingBidPrice: number,
-    public readonly decrementAmount: number,
+    public readonly listing_item_id: number,
+    public readonly seller_id: number,
   ) {}
 
   toString() {
     return JSON.stringify({
-      itemId: this.itemId,
-      sellerId: this.sellerId,
-      endTime: this.endTime,
-      startingBidPrice: this.startingBidPrice,
-      decrementAmount: this.decrementAmount,
+      listing_item_id: this.listing_item_id,
+      seller_id: this.seller_id,
     });
   }
 }

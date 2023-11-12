@@ -9,14 +9,14 @@ export class ItemKeyword {
 
   @Column({ name: 'item_id' })
   // @ManyToOne(() => Item, (item) => item.id, { nullable: false })
-  itemId: number;
+  item_id: number;
 
   @Column({ name: 'keyword_id' })
   // @ManyToOne(() => Keyword, (keyword) => keyword.id, { nullable: false })
   keywordId: number;
 
-  constructor(itemId: number, keywordId: number) {
-    this.itemId = itemId;
+  constructor(item_id: number, keywordId: number) {
+    this.item_id = item_id;
     this.keywordId = keywordId;
   }
 }

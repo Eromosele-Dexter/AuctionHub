@@ -29,23 +29,21 @@ export class AuthService {
 
   async handleRegisterUser(registerUserMessage: RegisterUserMessage): Promise<RegisterUserResponse> {
     const user = new User(
-      registerUserMessage.firstName,
-      registerUserMessage.lastName,
+      registerUserMessage.first_name,
+      registerUserMessage.last_name,
       registerUserMessage.username,
       registerUserMessage.password,
       registerUserMessage.email,
       registerUserMessage.isSeller ? ROLES.SELLER : ROLES.BUYER,
-      registerUserMessage.streetName,
-      registerUserMessage.streetNumber,
-      registerUserMessage.postalCode,
+      registerUserMessage.street_name,
+      registerUserMessage.street_number,
+      registerUserMessage.postal_code,
       registerUserMessage.city,
       registerUserMessage.country,
       registerUserMessage.dateRegistered,
     );
 
     const usernameExists = await this.userRepository.getUserByUsername(user.username);
-
-    console.log('userE: ', usernameExists.firstName);
 
     const emailExists = await this.userRepository.getUserByEmail(user.email);
 
@@ -130,16 +128,16 @@ export class AuthService {
   async handleEditProfile(data: EditProfileMessage): Promise<EditProfileResponse> {
     const {
       userId,
-      firstName,
-      lastName,
+      first_name,
+      last_name,
       username,
       email,
-      streetName,
-      streetNumber,
-      postalCode,
+      street_name,
+      street_number,
+      postal_code,
       city,
       country,
-      updatedAt,
+      updated_at,
     } = data;
 
     const user = await this.userRepository.getUserById(userId);
@@ -149,16 +147,16 @@ export class AuthService {
       return new EditProfileResponse(null, 'User not found', STATUS.FAILED, 'Error editing profile');
     }
 
-    user.firstName = firstName;
-    user.lastName = lastName;
+    user.first_name = first_name;
+    user.last_name = last_name;
     user.username = username;
     user.email = email;
-    user.streetName = streetName;
-    user.streetNumber = streetNumber;
-    user.postalCode = postalCode;
+    user.street_name = street_name;
+    user.street_number = street_number;
+    user.postal_code = postal_code;
     user.city = city;
     user.country = country;
-    user.updatedAt = updatedAt;
+    user.updated_at = updated_at;
 
     await this.userRepository.updateUser(user);
 

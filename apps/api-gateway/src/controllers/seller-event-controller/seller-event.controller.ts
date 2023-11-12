@@ -50,7 +50,7 @@ export class SellerEventController {
   ) {
     try {
       createListingRequest.image = image;
-      createListingRequest.sellerId = req.user.id;
+      createListingRequest.seller_id = req.user.id;
 
       this.sellerService.createListing(createListingRequest);
     } catch (error) {
@@ -62,24 +62,19 @@ export class SellerEventController {
   // start an auction - auction management service
 
   @UseGuards(AuthenticatedGuard)
-  @Post('/start-auction/:itemId')
-  async startAuction(
-    @Body() startAuctionRequest: StartAuctionRequest,
-    @Param('itemId') itemId,
-    @Request() req,
-    @Res() response: Response,
-  ) {
+  @Post('/start-auction/:listingItemId')
+  async startAuction(@Param('listingItemId') listing_item_id, @Request() req, @Res() response: Response) {
     try {
-      const sellerId = req.user.id;
-      this.sellerService.startAuction(itemId, sellerId, startAuctionRequest);
+      const seller_id = req.user.id;
+      this.sellerService.startAuction(listing_item_id, seller_id);
     } catch (error) {
       return response
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: `Error starting auction for item with id: ${itemId}`, error });
+        .json({ message: `Error starting auction for item with id: ${listing_item_id}`, error });
     }
     return response
       .status(HttpStatus.OK)
-      .json({ message: `Auction started for item with id: ${itemId} successfully` });
+      .json({ message: `Auction started for item with id: ${listing_item_id} successfully` });
   }
 
   // view item listing - inventory service
@@ -113,11 +108,11 @@ export class SellerEventController {
     @Res() response: Response,
   ) {
     try {
-      const imageUrl = await this.sellerService.uploadImage(image.originalname, image.buffer);
+      const image_url = await this.sellerService.uploadImage(image.originalname, image.buffer);
 
       response
         .status(HttpStatus.CREATED)
-        .json({ message: 'Uploaded image successfully', imageUploadUrl: imageUrl, errror: null });
+        .json({ message: 'Uploaded image successfully', imageUploadUrl: image_url, errror: null });
     } catch (error) {
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error uploading image', error });
     }
@@ -131,9 +126,9 @@ export class SellerEventController {
         throw new NotFoundException('Image not found');
       }
 
-      const imageUrl = await this.sellerService.getImageUrl(imageKey);
+      const image_url = await this.sellerService.getimage_url(imageKey);
 
-      return response.status(HttpStatus.OK).json({ message: 'Retrieved image url successfully', url: imageUrl });
+      return response.status(HttpStatus.OK).json({ message: 'Retrieved image url successfully', url: image_url });
     } catch (error) {
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error retrieving image', error });
     }

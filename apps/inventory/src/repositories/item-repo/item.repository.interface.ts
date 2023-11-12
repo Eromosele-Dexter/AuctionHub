@@ -6,5 +6,5 @@ export interface IItemRepository {
   getItems(): Promise<Item[]>;
   updateItem(item: Item);
   deleteItem(id: number): Promise<void>;
-  getItemByNameAndSellerId(itemName: string, userId: number): Promise<Item>;
+  getItemByNameAndseller_id(itemName: string, userId: number): Promise<Item>;
 }

@@ -20,9 +20,9 @@ export class ListingItemRepository extends Repository<ListingItem> implements IL
     return listingItem[0];
   }
 
-  async getListingItemsBySellerId(sellerId: number): Promise<ListingItem[]> {
+  async getListingItemsByseller_id(seller_id: number): Promise<ListingItem[]> {
     const listingItems = await this.dataSource.manager.query(
-      `SELECT * FROM listing_items WHERE seller_id = ${sellerId}`,
+      `SELECT * FROM listing_items WHERE seller_id = ${seller_id}`,
     );
     return listingItems;
   }
@@ -33,9 +33,9 @@ export class ListingItemRepository extends Repository<ListingItem> implements IL
 
   async updateListingItem(listingItem: ListingItem) {
     this.dataSource.manager.query(
-      `UPDATE listing_items SET name = '${listingItem.name}', starting_bid_price = '${listingItem.startingBidPrice}',
-        description = '${listingItem.description}', image_name = '${listingItem.imageName}', image_url = '${listingItem.imageUrl}',
-        auction_type_id = '${listingItem.auctionTypeId}', end_time = '${listingItem.endTime}', decrement_amount = '${listingItem.decrementAmount}',
+      `UPDATE listing_items SET name = '${listingItem.name}', starting_bid_price = '${listingItem.starting_bid_price}',
+        description = '${listingItem.description}', image_name = '${listingItem.image_name}', image_url = '${listingItem.image_url}',
+        auction_type_id = '${listingItem.auction_type_id}', end_time = '${listingItem.end_time}', decrement_amount = '${listingItem.decrement_amount}',
         created_at = '${listingItem.created_at}' 
        WHERE id = ${listingItem.id}`,
     );

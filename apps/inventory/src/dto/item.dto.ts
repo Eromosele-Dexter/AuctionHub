@@ -1,21 +1,21 @@
 import { IsString, IsNotEmpty, IsInt } from 'class-validator';
 
 export class ItemDto {
-    @IsString()
-    @IsNotEmpty()
-    name: string;
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
-    @IsString()
-    @IsNotEmpty()
-    description: string;
+  @IsString()
+  @IsNotEmpty()
+  description: string;
 
-    @IsInt()
-    @IsNotEmpty()
-    sellerId: number;
+  @IsInt()
+  @IsNotEmpty()
+  seller_id: number;
 
-    @IsNotEmpty()
-    image: any;
+  @IsNotEmpty()
+  image: any;
 
-    @IsNotEmpty()
-    dateAdded: Date;
+  @IsNotEmpty()
+  dateAdded: number;
 }
