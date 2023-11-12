@@ -1,4 +1,4 @@
-class CreateListingItemEvent {
+class CreateListingItemMessage {
   constructor(
     public readonly name: string,
     public readonly item_id: number,
@@ -32,4 +32,4 @@ class CreateListingItemEvent {
   }
 }
 
-export default CreateListingItemEvent;
+export default CreateListingItemMessage;

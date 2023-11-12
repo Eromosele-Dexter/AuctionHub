@@ -12,8 +12,9 @@ import { ViewListingResponse } from '@app/shared-library/api-contracts/inventory
 import { STATUS, VIEW_LISTING_ITEM_STATUS } from '@app/shared-library/types/status';
 import {
   AUCTION_MANAGEMENT_SERVICE,
-  CREATE_LISTING_ITEM_EVENT_PATTERN,
+  CREATE_LISTING_ITEM_MESSAGE_PATTERN,
   GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN,
+  GET_LISTING_ITEM_MESSAGE_PATTERN,
   VIEW_LISTING_ITEMS_MESSAGE_PATTERN,
 } from '@app/shared-library';
 import { ClientProxy } from '@nestjs/microservices';
@@ -23,10 +24,15 @@ import { ViewListingItem } from '@app/shared-library/types/view-listing-item';
 import { GetAllActiveItemsResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-all-active-items.response';
 import { ActiveItem } from '@app/shared-library/types/active-item';
 import { AuctionType } from '../entities/auction-type.entity';
-import CreateListingItemEvent from '@app/shared-library/events/create-listing-item.event';
+import CreateListingItemEvent from '@app/shared-library/messages/create-listing-item.message';
 import { ViewListingItemsResponse } from '@app/shared-library/api-contracts/auction-management/responses/view-listing-items.response';
 import GetAuctionTypeMessage from '@app/shared-library/messages/get-auction-type.message';
 import { GetAuctionTypeResponse } from '@app/shared-library/api-contracts/inventory/responses/get-auction-type.response';
+import { CreateListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/create-listing-item.response.message';
+import { GetListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-listing-item.response.message';
+import GetListingItemMessage from '@app/shared-library/messages/get-listing-item.message';
+import SearchForListingItemsIdByKeywordMessage from '@app/shared-library/messages/search-for-listing-items-id-by-keyword.message';
+import { SearchForListingItemsIdByKeywordResponse } from '@app/shared-library/api-contracts/inventory/responses/search-listing-items-id.response';
 
 @Injectable()
 export class InventoryService {
@@ -58,7 +64,7 @@ export class InventoryService {
 
     const item = new Item(
       data.seller_id,
-      data.name,
+      data.name.toLocaleLowerCase(),
       data.description,
       data.image_name,
       data.created_at,
@@ -80,28 +86,53 @@ export class InventoryService {
       // // create item
 
       await this.itemRepository.createItem(item);
-      this.auctionManagementClient.emit(
-        CREATE_LISTING_ITEM_EVENT_PATTERN,
-        new CreateListingItemEvent(
-          item.name,
-          item.id,
-          item.seller_id,
-          item.starting_bid_price,
-          item.description,
-          item.image_name,
-          item.image_url,
-          item.auction_type_id,
-          data.end_time,
-          data.decrement_amount,
-          item.created_at,
-          item.has_been_sold,
-        ),
-      );
+
+      await new Promise<CreateListingItemResponse>((resolve, reject) => {
+        this.auctionManagementClient
+          .send(
+            CREATE_LISTING_ITEM_MESSAGE_PATTERN,
+            new CreateListingItemEvent(
+              item.name,
+              item.id,
+              item.seller_id,
+              item.starting_bid_price,
+              item.description,
+              item.image_name,
+              item.image_url,
+              item.auction_type_id,
+              data.end_time,
+              data.decrement_amount,
+              item.created_at,
+              item.has_been_sold,
+            ),
+          )
+          .subscribe({
+            next: (response) => {
+              resolve(response);
+            },
+            error: (error) => {
+              reject(error);
+            },
+          });
+      });
     }
 
-    const createdItem = await this.itemRepository.getItemByNameAndseller_id(item.name, item.seller_id);
+    const createdListingItem = (
+      await new Promise<GetListingItemResponse>((resolve, reject) => {
+        this.auctionManagementClient
+          .send(GET_LISTING_ITEM_MESSAGE_PATTERN, new GetListingItemMessage(item.name, item.seller_id))
+          .subscribe({
+            next: (response) => {
+              resolve(response);
+            },
+            error: (error) => {
+              reject(error);
+            },
+          });
+      })
+    ).data;
 
-    const item_id = createdItem.id;
+    const listing_item_id = createdListingItem.id;
 
     const keyword1 = new Keyword(data.keyword1.toLowerCase());
     const keyword2 = new Keyword(data.keyword2.toLowerCase());
@@ -120,18 +151,18 @@ export class InventoryService {
 
       const keywordId1 = createdKeyword1.id;
 
-      const ItemKeyword1 = new ItemKeyword(item_id, keywordId1);
+      const ItemKeyword1 = new ItemKeyword(listing_item_id, keywordId1);
 
       this.itemKeywordRepository.createItemKeyword(ItemKeyword1);
     } else {
       // if keyword already exists, associate it with the item
-      const itemKeywordExists = await this.itemKeywordRepository.getItemKeywordByitem_idAndKeywordId(
-        item_id,
+      const itemKeywordExists = await this.itemKeywordRepository.getItemKeywordByListingItemAndKeywordId(
+        listing_item_id,
         existingKeyword1.id,
       );
 
       if (!itemKeywordExists) {
-        this.itemKeywordRepository.createItemKeyword(new ItemKeyword(item_id, existingKeyword1.id));
+        this.itemKeywordRepository.createItemKeyword(new ItemKeyword(listing_item_id, existingKeyword1.id));
       }
     }
 
@@ -142,18 +173,18 @@ export class InventoryService {
 
       const keywordId2 = createdKeyword2.id;
 
-      const ItemKeyword2 = new ItemKeyword(item_id, keywordId2);
+      const ItemKeyword2 = new ItemKeyword(listing_item_id, keywordId2);
 
       this.itemKeywordRepository.createItemKeyword(ItemKeyword2);
     } else {
       // if keyword already exists, associate it with the item
-      const itemKeywordExists = await this.itemKeywordRepository.getItemKeywordByitem_idAndKeywordId(
-        item_id,
+      const itemKeywordExists = await this.itemKeywordRepository.getItemKeywordByListingItemAndKeywordId(
+        listing_item_id,
         existingKeyword2.id,
       );
 
       if (!itemKeywordExists) {
-        this.itemKeywordRepository.createItemKeyword(new ItemKeyword(item_id, existingKeyword2.id));
+        this.itemKeywordRepository.createItemKeyword(new ItemKeyword(listing_item_id, existingKeyword2.id));
       }
     }
 
@@ -164,18 +195,18 @@ export class InventoryService {
 
       const keywordId3 = createdKeyword3.id;
 
-      const ItemKeyword3 = new ItemKeyword(item_id, keywordId3);
+      const ItemKeyword3 = new ItemKeyword(listing_item_id, keywordId3);
 
       this.itemKeywordRepository.createItemKeyword(ItemKeyword3);
     } else {
       // if keyword already exists, associate it with the item
-      const itemKeywordExists = await this.itemKeywordRepository.getItemKeywordByitem_idAndKeywordId(
-        item_id,
+      const itemKeywordExists = await this.itemKeywordRepository.getItemKeywordByListingItemAndKeywordId(
+        listing_item_id,
         existingKeyword3.id,
       );
 
       if (!itemKeywordExists) {
-        this.itemKeywordRepository.createItemKeyword(new ItemKeyword(item_id, existingKeyword3.id));
+        this.itemKeywordRepository.createItemKeyword(new ItemKeyword(listing_item_id, existingKeyword3.id));
       }
     }
   }
@@ -275,28 +306,17 @@ export class InventoryService {
     return new GetAuctionTypeResponse(auctionType.name, 'Auction type successfully retrieved', STATUS.SUCCESS);
   }
 
-  async handleGetAllActiveItems() {
-    const items = await this.itemRepository.getAllActiveItems();
-    const activeItems: ActiveItem[] = [];
+  async handleSearchForListingItemsIdByKeyword(
+    data: SearchForListingItemsIdByKeywordMessage,
+  ): Promise<SearchForListingItemsIdByKeywordResponse> {
+    const { keyword } = data;
 
-    items.forEach(async (item) => {
-      const auctionType = await this.auctionTypeRepository.getAuctionTypeById(item.auction_type_id);
+    const listingItemsIds = await this.itemKeywordRepository.searchForListingItemsIdByKeyword(keyword);
 
-      const activeItem = new ActiveItem(
-        item.id,
-        item.seller_id,
-        item.name,
-        item.description,
-        item.image_name,
-        item.created_at,
-        item.has_been_sold,
-        auctionType.name,
-        item.image_url,
-      );
-
-      activeItems.push(activeItem);
-    });
-
-    return new GetAllActiveItemsResponse(activeItems, 'All active Items successfully retrieved', STATUS.SUCCESS);
+    return new SearchForListingItemsIdByKeywordResponse(
+      listingItemsIds,
+      'Listing items ids successfully retrieved',
+      STATUS.SUCCESS,
+    );
   }
 }

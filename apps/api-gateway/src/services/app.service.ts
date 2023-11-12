@@ -108,7 +108,7 @@ export class AppService {
   }
 
   async resetPassword(resetPasswordRequest: ResetPasswordRequest): Promise<ResetPasswordResponse> {
-    const response = new Promise<ResetPasswordResponse>((resolve, reject) => {
+    const response = await new Promise<ResetPasswordResponse>((resolve, reject) => {
       this.authClient
         .send(
           RESET_PASSWORD_MESSAGE_PATTERN,
@@ -132,7 +132,7 @@ export class AppService {
   }
 
   async viewCatalog(userId: number): Promise<ViewCatalogResponse> {
-    const response = new Promise<ViewCatalogResponse>((resolve, reject) => {
+    const response = await new Promise<ViewCatalogResponse>((resolve, reject) => {
       this.auctionManagementClient.send(VIEW_CATALOG_MESSAGE_PATTERN, new ViewCatalogMessage(userId)).subscribe({
         next: (response) => {
           resolve(response);
@@ -146,7 +146,8 @@ export class AppService {
   }
 
   async searchCatalog(searchkeyword: string): Promise<SearchCatalogResponse> {
-    const response = new Promise<SearchCatalogResponse>((resolve, reject) => {
+    console.log('searchCatalog');
+    const response = await new Promise<SearchCatalogResponse>((resolve, reject) => {
       this.auctionManagementClient
         .send(SEARCH_CATALOG_MESSAGE_PATTERN, new SearchCatalogMessage(searchkeyword))
         .subscribe({
@@ -166,7 +167,7 @@ export class AppService {
   }
 
   async editProfile(userId: number, editProfileRequest: EditProfileRequest): Promise<EditProfileResponse> {
-    const response = new Promise<EditProfileResponse>((resolve, reject) => {
+    const response = await new Promise<EditProfileResponse>((resolve, reject) => {
       this.authClient
         .send(
           EDIT_PROFILE_MESSAGE_PATTERN,

@@ -6,6 +6,7 @@ import {
   GET_ALL_ACTIVE_ITEMS_MESSAGE_PATTERN,
   GET_AUCTION_TYPE_MESSAGE_PATTERN,
   INVENTORY_SERVICE,
+  SEARCH_FOR_LISTING_ITEMS_ID_BY_KEYWORD_MESSAGE_PATTERN,
   START_AUCTION_MESSAGE_PATTERN,
 } from '@app/shared-library';
 import { ClientProxy } from '@nestjs/microservices';
@@ -22,7 +23,6 @@ import SearchCatalogMessage from '@app/shared-library/messages/search-catalog.me
 import { SearchCatalogResponse } from '@app/shared-library/api-contracts/auction-management/responses/search-catalog.response';
 import GetAuctionItemsForSellerMessage from '@app/shared-library/messages/get-auction-items-for-seller.message';
 import { GetAuctionItemsForSellerResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-auction-items-for-seller.response';
-import CreateListingItemEvent from '@app/shared-library/events/create-listing-item.event';
 import { ListingItemRepository } from '../repositories/listing-item-repo/listing-item.repository';
 import { ListingItem } from '../entities/listing-item.entity';
 import ViewListingItemsMessage from '@app/shared-library/messages/view-listing-items.message';
@@ -33,6 +33,11 @@ import { ViewListingResponse } from '@app/shared-library/api-contracts/auction-m
 import { ViewListingItem } from '@app/shared-library/types/view-listing-item';
 import { GetAuctionTypeResponse } from '@app/shared-library/api-contracts/inventory/responses/get-auction-type.response';
 import GetAuctionTypeMessage from '@app/shared-library/messages/get-auction-type.message';
+import CreateListingItemMessage from '@app/shared-library/messages/create-listing-item.message';
+import { CreateListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/create-listing-item.response.message';
+import { GetListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-listing-item.response.message';
+import { SearchForListingItemsIdByKeywordResponse } from '@app/shared-library/api-contracts/inventory/responses/search-listing-items-id.response';
+import SearchForListingItemsIdByKeywordMessage from '@app/shared-library/messages/search-for-listing-items-id-by-keyword.message';
 
 @Injectable()
 export class AuctionManagementService {
@@ -42,7 +47,7 @@ export class AuctionManagementService {
     @Inject(INVENTORY_SERVICE) private readonly inventoryClient: ClientProxy,
   ) {}
 
-  handleCreateListingItem(data: CreateListingItemEvent) {
+  async handleCreateListingItem(data: CreateListingItemMessage): Promise<CreateListingItemResponse> {
     const listingItem = new ListingItem(
       data.name,
       data.item_id,
@@ -58,7 +63,17 @@ export class AuctionManagementService {
       data.has_been_sold,
     );
 
-    this.listingItemRepository.createListingItem(listingItem);
+    const createdlistingItem = await this.listingItemRepository.createListingItem(listingItem);
+
+    return new CreateListingItemResponse(createdlistingItem, 'Listing item created successfully', STATUS.SUCCESS);
+  }
+
+  async handleGetListingItem(data: CreateListingItemMessage): Promise<GetListingItemResponse> {
+    const { name, seller_id } = data;
+
+    const listingItem = await this.listingItemRepository.getListingItemByNameAndSellerId(name, seller_id);
+
+    return new GetListingItemResponse(listingItem, 'Listing item retrieved successfully', STATUS.SUCCESS);
   }
 
   async handleGetAllAuctionItemsForSeller(
@@ -168,57 +183,18 @@ export class AuctionManagementService {
       listingItem.end_time,
       listingItem.starting_bid_price,
       listingItem.starting_bid_price,
+      listingItem.name,
+      listingItem.description,
       listingItem.decrement_amount,
     );
 
     this.auctionItemRepository.createAuctionItem(auctionItem);
   }
 
-  async getCatalogItems(): Promise<CatalogItem[]> {
-    const auctionItems = await this.auctionItemRepository.getAuctionItems();
-
-    const activeItems = (
-      await new Promise<GetAllActiveItemsResponse>((resolve, reject) => {
-        this.inventoryClient.send(GET_ALL_ACTIVE_ITEMS_MESSAGE_PATTERN, new GetAllActiveItemsMessage()).subscribe({
-          next: (response) => {
-            resolve(response);
-          },
-          error: (error) => {
-            reject(error);
-          },
-        });
-      })
-    ).data;
-
-    const viewCatalogItems: CatalogItem[] = [];
-
-    auctionItems.forEach((auctionItem) => {
-      const matchingItem = activeItems.find((activeItem) => activeItem.id === auctionItem.listing_item_id);
-
-      // check if the auctionItem has expired
-      if (auctionItem.end_time > new Date().getTime()) {
-        const viewCatalogItem = new CatalogItem(
-          auctionItem.listing_item_id,
-          matchingItem.name,
-          matchingItem.description,
-          matchingItem.image_name,
-          matchingItem.auctionType,
-          auctionItem.end_time,
-          auctionItem.current_bid_price,
-          matchingItem.image_url,
-        );
-
-        viewCatalogItems.push(viewCatalogItem);
-      }
-    });
-
-    return viewCatalogItems;
-  }
-
   async handleViewCatalog(data: ViewCatalogMessage): Promise<ViewCatalogResponse> {
     const { userId } = data;
 
-    const viewCatalogItems = await this.getCatalogItems();
+    const viewCatalogItems = await this.auctionItemRepository.getAuctionItems();
 
     Logger.log(`User with id ${userId} requested to view catalog`);
 
@@ -244,28 +220,53 @@ export class AuctionManagementService {
 
     // find if the keyword exists in the db and filter items
 
-    const catalogItems = await this.getCatalogItems();
+    const catalogItems = await this.auctionItemRepository.getAuctionItems();
 
-    const searchResultsKeyword = await this.auctionItemRepository.searchAuctionItems(searchkeyword);
+    const listingItemIds = (
+      await new Promise<SearchForListingItemsIdByKeywordResponse>((resolve, reject) => {
+        this.inventoryClient
+          .send(
+            SEARCH_FOR_LISTING_ITEMS_ID_BY_KEYWORD_MESSAGE_PATTERN,
+            new SearchForListingItemsIdByKeywordMessage(searchkeyword),
+          )
+          .subscribe({
+            next: (response) => {
+              resolve(response);
+            },
+            error: (error) => {
+              reject(error);
+            },
+          });
+      })
+    ).data;
+
+    const searchResultsKeyword = catalogItems.filter((item) => listingItemIds.includes(item.listing_item_id));
+
+    console.log('search by keyword: ', searchResultsKeyword);
 
     const searchResultsFilter = catalogItems.filter((item) => item.name.includes(searchkeyword));
+
+    console.log('catalogItems: ', catalogItems);
+
+    console.log('search by name: ', searchResultsFilter);
 
     const searchResults = searchResultsKeyword.concat(searchResultsFilter);
 
     const uniqueItems = this.getUniqueCatalogItems(searchResults);
 
-    const searchCatalogItems: CatalogItem[] = [];
+    const searchCatalogItems: AuctionItem[] = [];
 
     uniqueItems.forEach((item) => {
       if (item.end_time > new Date().getTime()) {
-        const searchCatalogItem = new CatalogItem(
+        const searchCatalogItem = new AuctionItem(
           item.item_id,
+          item.seller_id,
+          item.end_time,
+          item.starting_bid_price,
+          item.current_bid_price,
           item.name,
           item.description,
-          item.image,
-          item.auctionType,
-          item.end_time,
-          item.current_bid_price,
+          item.decrement_amount,
         );
         searchCatalogItems.push(searchCatalogItem);
       }

@@ -11,5 +11,9 @@ export const GET_ALL_ACTIVE_ITEMS_FOR_KEYWORD_MESSAGE_PATTERN = 'get_all_active_
 export const EDIT_PROFILE_MESSAGE_PATTERN = 'edit_profile';
 export const VIEW_LISTING_ITEMS_MESSAGE_PATTERN = 'view_listing_items_message';
 export const GET_AUCTION_TYPE_MESSAGE_PATTERN = 'get_auction_type_message';
+export const CREATE_LISTING_ITEM_MESSAGE_PATTERN = 'create_listing_item_message';
+export const GET_LISTING_ITEM_MESSAGE_PATTERN = 'get_listing_item_message';
+export const SEARCH_FOR_LISTING_ITEMS_ID_BY_KEYWORD_MESSAGE_PATTERN =
+  'search_for_listing_items_id_by_keyword_message';
 
 // if the string has message at the end of name, it's a pattern for communication between services

@@ -5,6 +5,12 @@ export class AuctionItem {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  name: string;
+
+  @Column()
+  description: string;
+
   @Column({ name: 'listing_item_id' })
   // @OneToOne(() => Item, (item) => item.id, { nullable: false })
   listing_item_id: number;
@@ -31,6 +37,8 @@ export class AuctionItem {
     end_time: number,
     starting_bid_price: number,
     current_bid_price: number,
+    name: string,
+    description: string,
     decrement_amount?: number,
   ) {
     this.listing_item_id = listing_item_id;
@@ -38,6 +46,8 @@ export class AuctionItem {
     this.end_time = end_time;
     this.starting_bid_price = starting_bid_price;
     this.current_bid_price = current_bid_price;
+    this.name = name;
+    this.description = description;
     this.decrement_amount = decrement_amount;
   }
 }

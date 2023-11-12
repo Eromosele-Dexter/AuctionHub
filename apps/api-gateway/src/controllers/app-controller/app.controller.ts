@@ -10,6 +10,7 @@ import {
   Req,
   Param,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AppService } from '../../services/app.service';
@@ -121,8 +122,8 @@ export class AppController {
   // search catalog - auction management service
 
   @UseGuards(AuthenticatedGuard)
-  @Get('/catalog/:searchkeyword')
-  async searchCatalog(@Param('searchkeyword') searchkeyword: string, @Res() response: Response) {
+  @Get('/search-catalog')
+  async searchCatalog(@Query('searchkeyword') searchkeyword: string, @Res() response: Response) {
     const data = await this.appService.searchCatalog(searchkeyword);
 
     if (data?.error || !data) {

@@ -15,6 +15,14 @@ export class ListingItemRepository extends Repository<ListingItem> implements IL
     return this.save(listingItem);
   }
 
+  async getListingItemByNameAndSellerId(name: string, seller_id: number): Promise<ListingItem> {
+    const listingItem = await this.dataSource.manager.query(
+      `SELECT * FROM listing_items WHERE name = $1 AND seller_id = $2`,
+      [name, seller_id],
+    );
+    return listingItem[0];
+  }
+
   async getListingItemById(id: number): Promise<ListingItem> {
     const listingItem = await this.dataSource.manager.query(`SELECT * FROM listing_items WHERE id = ${id}`);
     return listingItem[0];
