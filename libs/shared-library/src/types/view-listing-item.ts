@@ -11,7 +11,7 @@ export class ViewListingItem {
 
   status: string;
 
-  endTime: number;
+  endTime: Date;
 
   currentBidPrice: number;
 
@@ -24,7 +24,7 @@ export class ViewListingItem {
     imageName: string,
     auctionType: string,
     status: string,
-    endTime: number,
+    endTime: Date,
     currentBidPrice: number,
     imageUrl?: string,
   ) {

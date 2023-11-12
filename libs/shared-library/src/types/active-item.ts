@@ -9,7 +9,7 @@ export class ActiveItem {
 
   imageName: string;
 
-  createdAt: Date;
+  created_at: Date;
 
   hasBeenSold: boolean;
 
@@ -23,7 +23,7 @@ export class ActiveItem {
     name: string,
     description: string,
     imageName: string,
-    createdAt: Date,
+    created_at: Date,
     hasBeenSold: boolean,
     auctionType: string,
     imageUrl?: string,
@@ -33,7 +33,7 @@ export class ActiveItem {
     this.name = name;
     this.description = description;
     this.imageName = imageName;
-    this.createdAt = createdAt;
+    this.created_at = created_at;
     this.hasBeenSold = hasBeenSold;
     this.auctionType = auctionType;
     this.imageUrl = imageUrl;

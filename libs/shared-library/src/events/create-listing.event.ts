@@ -10,7 +10,7 @@ class CreateListingEvent {
 
     public readonly imageUrl: string,
 
-    public readonly createdAt: Date,
+    public readonly created_at: Date,
 
     public readonly auctionType: string,
 
@@ -19,6 +19,12 @@ class CreateListingEvent {
     public readonly keyword2: string,
 
     public readonly keyword3: string,
+
+    public readonly startingBidPrice: number,
+
+    public readonly endTime: Date,
+
+    public readonly decrementAmount: number,
   ) {}
 
   toString() {
@@ -28,11 +34,14 @@ class CreateListingEvent {
       description: this.description,
       imageName: this.imageName,
       imageUrl: this.imageUrl,
-      createdAt: this.createdAt,
+      created_at: this.created_at,
       auctionType: this.auctionType,
       keyword1: this.keyword1,
       keyword2: this.keyword2,
       keyword3: this.keyword3,
+      startingBidPrice: this.startingBidPrice,
+      endTime: this.endTime,
+      decrementAmount: this.decrementAmount,
     });
   }
 }

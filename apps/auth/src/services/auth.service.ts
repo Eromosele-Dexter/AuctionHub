@@ -45,6 +45,8 @@ export class AuthService {
 
     const usernameExists = await this.userRepository.getUserByUsername(user.username);
 
+    console.log('userE: ', usernameExists.firstName);
+
     const emailExists = await this.userRepository.getUserByEmail(user.email);
 
     if (usernameExists) {

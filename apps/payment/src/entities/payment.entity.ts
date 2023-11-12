@@ -17,5 +17,5 @@ export class Payment {
   amount: number;
 
   @Column()
-  createdAt: Date;
+  created_at: Date;
 }

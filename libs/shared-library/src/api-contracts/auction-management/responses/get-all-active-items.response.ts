@@ -4,11 +4,11 @@ import { CustomResponse } from '../../response.response';
 
 export class GetAllActiveItemsResponse extends CustomResponse {
   constructor(
-    public readonly activeItems: ActiveItem[],
+    public readonly data: ActiveItem[],
     public readonly message: string,
     public readonly status: string,
     public readonly error?: string,
   ) {
-    super(activeItems, message, status, error);
+    super(data, message, status, error);
   }
 }

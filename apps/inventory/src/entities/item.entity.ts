@@ -19,13 +19,16 @@ export class Item {
   imageName: string;
 
   @Column({ name: 'created_at' })
-  createdAt: Date;
+  created_at: Date;
 
   @Column({ name: 'auction_type_id' })
   auctionTypeId: number;
 
   @Column({ name: 'has_been_sold' })
   hasBeenSold: boolean;
+
+  @Column({ name: 'starting_bid_price', default: 0 })
+  startingBidPrice: number; //remove later
 
   @Column({ name: 'image_url' })
   imageUrl: string;
@@ -35,18 +38,20 @@ export class Item {
     name: string,
     description: string,
     imageName: string,
-    createdAt: Date,
+    created_at: Date,
     auctionTypeId: number,
     hasBeenSold: boolean,
+    startingBidPrice: number,
     imageUrl?: string,
   ) {
     this.sellerId = sellerId;
     this.name = name;
     this.description = description;
     this.imageName = imageName;
-    this.createdAt = createdAt;
+    this.created_at = created_at;
     this.auctionTypeId = auctionTypeId;
     this.hasBeenSold = hasBeenSold;
+    this.startingBidPrice = startingBidPrice;
     this.imageUrl = imageUrl;
   }
 }

@@ -39,7 +39,7 @@ export class User {
   country: string;
 
   @Column({ name: 'created_at' })
-  createdAt: Date;
+  created_at: Date;
 
   @Column({ name: 'updated_at', nullable: true })
   updatedAt: Date;
@@ -56,7 +56,7 @@ export class User {
     postalCode: string,
     city: string,
     country: string,
-    createdAt: Date,
+    created_at: Date,
     updatedAt?: Date,
   ) {
     this.firstName = firstName;
@@ -70,7 +70,7 @@ export class User {
     this.postalCode = postalCode;
     this.city = city;
     this.country = country;
-    this.createdAt = createdAt;
+    this.created_at = created_at;
     this.updatedAt = updatedAt;
   }
 }

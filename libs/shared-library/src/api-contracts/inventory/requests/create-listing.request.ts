@@ -27,4 +27,10 @@ export class CreateListingRequest {
 
   @IsNotEmpty()
   auctionType: string;
+
+  startingBidPrice: number;
+
+  endTime: Date;
+
+  decrementAmount: number;
 }

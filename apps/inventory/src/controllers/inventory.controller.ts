@@ -15,17 +15,18 @@ export class InventoryController {
   ) {}
 
   @EventPattern(CREATE_LISTING_EVENT_PATTERN)
-  handleSendValidationCode(@Payload() data: CreateListingEvent, @Ctx() context: RmqContext) {
+  async handleCreateListing(@Payload() data: CreateListingEvent, @Ctx() context: RmqContext) {
     this.rmqService.ack(context);
     return this.inventoryService.handleCreateListing(data);
   }
 
-  @MessagePattern(VIEW_LISTING_MESSAGE_PATTERN)
-  async handleViewListing(@Payload() data: ViewListingMessage, @Ctx() context: RmqContext) {
-    const handleViewListingResponse = this.inventoryService.handleViewListing(data);
-    this.rmqService.ack(context);
-    return handleViewListingResponse;
-  }
+  // @MessagePattern(VIEW_LISTING_MESSAGE_PATTERN)
+  // async handleViewListing(@Payload() data: ViewListingMessage, @Ctx() context: RmqContext) {
+  //   console.log('handleViewListing');
+  //   const handleViewListingResponse = this.inventoryService.handleViewListing(data);
+  //   this.rmqService.ack(context);
+  //   return handleViewListingResponse;
+  // }
 
   @MessagePattern(GET_ALL_ACTIVE_ITEMS_MESSAGE_PATTERN)
   async handleGetAllActiveItems(@Ctx() context: RmqContext) {

@@ -25,7 +25,7 @@ export class SessionRepository extends Repository<Session> {
     // userId = '${session.json.passport.user.id}',
     // token = '${session.token}',
     // expiresAt = '${session.expiresAt}',
-    // createdAt = '${session.createdAt}',
+    // created_at = '${session.created_at}',
     // updatedAt = '${session.updatedAt}'
     // WHERE id = ${session.id}`);
   }

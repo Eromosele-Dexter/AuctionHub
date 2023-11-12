@@ -36,7 +36,7 @@ export class UserRepository extends Repository<User> implements IUserRepository 
     postal_code = '${user.postalCode}',
     city = '${user.city}',
     country = '${user.country}',
-    created_at = '${user.createdAt}',
+    created_at = '${user.created_at}',
     updated_at = '${user.updatedAt}'
     WHERE id = ${user.id}`);
 

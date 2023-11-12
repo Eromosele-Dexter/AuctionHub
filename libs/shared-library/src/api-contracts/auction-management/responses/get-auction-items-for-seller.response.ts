@@ -5,11 +5,11 @@ import { CustomResponse } from '../../response.response';
 
 export class GetAuctionItemsForSellerResponse extends CustomResponse {
   constructor(
-    public readonly auctionItems: AuctionItem[],
+    public readonly data: AuctionItem[],
     public readonly message: string,
     public readonly status: string,
     public readonly error?: string,
   ) {
-    super(auctionItems, message, status, error);
+    super(data, message, status, error);
   }
 }

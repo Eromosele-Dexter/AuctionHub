@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import {
+  AUCTION_MANAGEMENT_SERVICE,
   CREATE_LISTING_EVENT_PATTERN,
   INVENTORY_SERVICE,
   START_AUCTION_EVENT_PATTERN,
@@ -19,7 +20,10 @@ export class SellerEventService {
   private readonly s3: AWS.S3;
   private readonly EXPIRATION_TIME = 604_800; // 7 days
 
-  constructor(@Inject(INVENTORY_SERVICE) private readonly inventoryClient: ClientProxy) {
+  constructor(
+    @Inject(INVENTORY_SERVICE) private readonly inventoryClient: ClientProxy,
+    @Inject(AUCTION_MANAGEMENT_SERVICE) private readonly auctionManagementClient: ClientProxy,
+  ) {
     this.s3 = new AWS.S3({
       region: process.env.AWS_S3_REGION,
       credentials: {
@@ -80,16 +84,16 @@ export class SellerEventService {
         createListingRequest.keyword1,
         createListingRequest.keyword2,
         createListingRequest.keyword3,
+        createListingRequest.startingBidPrice,
+        createListingRequest.endTime,
+        createListingRequest.decrementAmount,
       ),
     );
   }
 
   async viewListing(sellerId: number): Promise<ViewListingResponse> {
-    // this.inventoryClient.subscribeToResponseOf(VIEW_LISTING_MESSAGE_PATTERN);
-    // await this.inventoryClient.connect();
-
     const response = new Promise<ViewListingResponse>((resolve, reject) => {
-      this.inventoryClient.send(VIEW_LISTING_MESSAGE_PATTERN, new ViewListingMessage(sellerId)).subscribe({
+      this.auctionManagementClient.send(VIEW_LISTING_MESSAGE_PATTERN, new ViewListingMessage(sellerId)).subscribe({
         next: (response) => {
           resolve(response);
         },

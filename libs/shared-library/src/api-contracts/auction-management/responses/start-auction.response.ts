@@ -4,11 +4,11 @@ import { Item } from 'apps/inventory/src/entities/item.entity'; // TODO: make ex
 
 export class StartAuctionResponse extends CustomResponse {
   constructor(
-    public readonly item: Item,
+    public readonly data: Item,
     public readonly message: string,
     public readonly status: string,
     public readonly error?: string,
   ) {
-    super(item, message, status, error);
+    super(data, message, status, error);
   }
 }

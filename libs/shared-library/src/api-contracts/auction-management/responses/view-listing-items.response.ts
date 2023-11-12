@@ -1,9 +1,9 @@
+import { ListingItem } from 'apps/auction-management/src/entities/listing-item.entity';
 import { CustomResponse } from '../../response.response';
-import { EditProfileUser } from '@app/shared-library/types/editProfileUser';
 
-export class EditProfileResponse extends CustomResponse {
+export class ViewListingItemsResponse extends CustomResponse {
   constructor(
-    public readonly data: EditProfileUser,
+    public readonly data: ListingItem[],
     public readonly message: string,
     public readonly status: string,
     public readonly error?: string,

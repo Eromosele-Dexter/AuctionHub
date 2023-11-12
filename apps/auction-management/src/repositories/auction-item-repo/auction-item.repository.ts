@@ -20,9 +20,15 @@ export class AuctionItemRepository extends Repository<AuctionItem> implements IA
     const auctionItem = await this.dataSource.manager.query(`SELECT * FROM auction_items WHERE id = ${id}`);
     return auctionItem[0];
   }
+
   async getAuctionItems(): Promise<AuctionItem[]> {
     return this.find();
   }
+
+  async getAuctionItemsBySellerId(sellerId: number): Promise<AuctionItem[]> {
+    return this.dataSource.manager.query(`SELECT * FROM auction_items WHERE seller_id = ${sellerId}`);
+  }
+
   async updateAuctionItem(auctionItem: AuctionItem) {
     this.dataSource.manager.query(
       `UPDATE auction_items SET end_time = '${auctionItem.endTime}', starting_bid_price = ${auctionItem.startingBidPrice}, current_bid_price = ${auctionItem.currentBidPrice}, decrement_amount = ${auctionItem.decrementAmount} WHERE id = ${auctionItem.id}`,

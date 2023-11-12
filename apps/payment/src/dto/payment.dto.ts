@@ -1,18 +1,18 @@
 import { IsNotEmpty, IsInt, IsNumber } from 'class-validator';
 
 export class PaymentDto {
-    @IsInt()
-    @IsNotEmpty()
-    bidderId: number;
+  @IsInt()
+  @IsNotEmpty()
+  bidderId: number;
 
-    @IsNumber()
-    @IsNotEmpty()
-    shipmentCost: number;
+  @IsNumber()
+  @IsNotEmpty()
+  shipmentCost: number;
 
-    @IsNumber()
-    @IsNotEmpty()
-    amount: number;
+  @IsNumber()
+  @IsNotEmpty()
+  amount: number;
 
-    @IsNotEmpty()
-    createdAt: Date;
+  @IsNotEmpty()
+  created_at: Date;
 }

@@ -10,13 +10,21 @@ import { ItemKeyword } from '../entities/item-keyword.entity';
 import ViewListingMessage from '@app/shared-library/messages/view-listing.message';
 import { ViewListingResponse } from '@app/shared-library/api-contracts/inventory/responses/view-listing.response';
 import { STATUS, VIEW_LISTING_ITEM_STATUS } from '@app/shared-library/types/status';
-import { AUCTION_MANAGEMENT_SERVICE, GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN } from '@app/shared-library';
+import {
+  AUCTION_MANAGEMENT_SERVICE,
+  CREATE_LISTING_ITEM_EVENT_PATTERN,
+  GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN,
+  VIEW_LISTING_ITEMS_MESSAGE_PATTERN,
+} from '@app/shared-library';
 import { ClientProxy } from '@nestjs/microservices';
 import { GetAuctionItemsForSellerResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-auction-items-for-seller.response';
 import GetAuctionItemsForSellerMessage from '@app/shared-library/messages/get-auction-items-for-seller.message';
 import { ViewListingItem } from '@app/shared-library/types/view-listing-item';
 import { GetAllActiveItemsResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-all-active-items.response';
 import { ActiveItem } from '@app/shared-library/types/active-item';
+import { AuctionType } from '../entities/auction-type.entity';
+import CreateListingItemEvent from '@app/shared-library/events/create-listing-item.event';
+import { ViewListingItemsResponse } from '@app/shared-library/api-contracts/auction-management/responses/view-listing-items.response';
 
 @Injectable()
 export class InventoryService {
@@ -28,7 +36,18 @@ export class InventoryService {
     @Inject(AUCTION_MANAGEMENT_SERVICE) private readonly auctionManagementClient: ClientProxy,
   ) {}
 
+  async migration() {
+    const auctionTypesExist = await this.auctionTypeRepository.getAuctionTypes();
+
+    if (auctionTypesExist.length === 0) {
+      await this.auctionTypeRepository.createAuctionType(new AuctionType('dutch'));
+      await this.auctionTypeRepository.createAuctionType(new AuctionType('forward'));
+    }
+  }
+
   async handleCreateListing(data: CreateListingEvent) {
+    await this.migration();
+
     const auctionTypeByName = data.auctionType.toLowerCase();
 
     const auctionType = await this.auctionTypeRepository.getAuctionTypeByName(auctionTypeByName);
@@ -40,23 +59,43 @@ export class InventoryService {
       data.name,
       data.description,
       data.imageName,
-      data.createdAt,
+      data.created_at,
       auctionTypeId,
       false,
+      data.startingBidPrice,
       data.imageUrl,
     );
 
     // dont create item if the seller already has an item with the same name
     const existingItem = await this.itemRepository.getItemByNameAndSellerId(item.name, item.sellerId);
-    console.log('existingItem: ', existingItem);
 
     if (existingItem) {
       item.id = existingItem.id;
 
       await this.itemRepository.updateItem(item);
+      // TODO: update listing item in auction management service
     } else {
       // // create item
+      const end = new Date().setDate(new Date().getDate() + 7);
       await this.itemRepository.createItem(item);
+      this.auctionManagementClient.emit(
+        CREATE_LISTING_ITEM_EVENT_PATTERN,
+        new CreateListingItemEvent(
+          item.name,
+          item.id,
+          item.sellerId,
+          item.startingBidPrice,
+          item.description,
+          item.imageName,
+          item.imageUrl,
+          item.auctionTypeId,
+          new Date(end), // remove
+          //data.endTime , //TODO: update this to be the end time of the auction
+          data.decrementAmount,
+          item.created_at,
+          item.hasBeenSold,
+        ),
+      );
     }
 
     const createdItem = await this.itemRepository.getItemByNameAndSellerId(item.name, item.sellerId);
@@ -143,67 +182,89 @@ export class InventoryService {
   // TODO: ensure deletion of an entities cascades
   // TODO: Need to include pagination in view catalog endpoint
 
-  async handleViewListing(data: ViewListingMessage): Promise<ViewListingResponse> {
-    const items = await this.itemRepository.getItemsBySellerId(data.sellerId);
+  // async handleViewListing(data: ViewListingMessage): Promise<ViewListingResponse> {
+  //   const { sellerId } = data;
 
-    const auctionItems = await new Promise<GetAuctionItemsForSellerResponse>((resolve, reject) => {
-      this.auctionManagementClient
-        .send(GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN, new GetAuctionItemsForSellerMessage(data.sellerId))
-        .subscribe({
-          next: (response) => {
-            resolve(response);
-          },
-          error: (error) => {
-            reject(error);
-          },
-        });
-    });
+  //   const listingItems = (
+  //     await new Promise<ViewListingItemsResponse>((resolve, reject) => {
+  //       this.auctionManagementClient
+  //         .send(VIEW_LISTING_ITEMS_MESSAGE_PATTERN, new ViewListingMessage(sellerId))
+  //         .subscribe({
+  //           next: (response) => {
+  //             resolve(response);
+  //           },
+  //           error: (error) => {
+  //             reject(error);
+  //           },
+  //         });
+  //     })
+  //   ).listingItems;
 
-    console.log('auctionItems: ', auctionItems);
+  //   const auctionItems = (
+  //     await new Promise<GetAuctionItemsForSellerResponse>((resolve, reject) => {
+  //       this.auctionManagementClient
+  //         .send(GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN, new GetAuctionItemsForSellerMessage(data.sellerId))
+  //         .subscribe({
+  //           next: (response) => {
+  //             resolve(response);
+  //           },
+  //           error: (error) => {
+  //             reject(error);
+  //           },
+  //         });
+  //     })
+  //   ).auctionItems;
 
-    const viewListingItems: ViewListingItem[] = [];
+  //   console.log('auctionItems: ', auctionItems);
 
-    // items.forEach(async (item) => {
-    //   const matchingItem = auctionItems.auctionItems.find((auctionItem) => auctionItem.itemId === item.id);
-    //   const auctionType = await this.auctionTypeRepository.getAuctionTypeById(item.auctionTypeId);
+  //   const viewListingItems: ViewListingItem[] = [];
 
-    //   const endTime = matchingItem.endTime;
+  //   listingItems.forEach(async (item) => {
+  //     const matchingItem = auctionItems.find((auctionItem) => auctionItem.itemId === item.id);
+  //     const autId = item.auctionTypeId;
+  //     console.log('autId: ', autId);
+  //     console.log('matchingItem: ', item);
+  //     const auctionType = await this.auctionTypeRepository.getAuctionTypeById(item.auctionTypeId);
 
-    //   let status;
+  //     const endTime = item.endTime;
 
-    //   // hasBeenSold -> status = sold
-    //   // end time < current time -> status = expired
-    //   // not matchingItem -> status = 'Draft'
-    //   // matching -> status = ongoing
+  //     let status;
 
-    //   if (item.hasBeenSold) {
-    //     status = VIEW_LISTING_ITEM_STATUS.SOLD;
-    //   } else if (endTime <= new Date().getTime()) {
-    //     status = VIEW_LISTING_ITEM_STATUS.EXPIRED;
-    //   } else if (!matchingItem) {
-    //     status = VIEW_LISTING_ITEM_STATUS.DRAFT;
-    //   } else {
-    //     status = VIEW_LISTING_ITEM_STATUS.ONGOING;
-    //   }
+  //     // hasBeenSold -> status = sold
+  //     // end time < current time -> status = expired
+  //     // not matchingItem -> status = 'Draft'
+  //     // matching -> status = ongoing
 
-    //   const currentBidPrice = matchingItem.currentBidPrice;
+  //     console.log('auctionType: ', auctionType);
 
-    //   const viewListingItem = new ViewListingItem(
-    //     item.id,
-    //     item.name,
-    //     item.description,
-    //     item.imageName,
-    //     auctionType.name,
-    //     status,
-    //     endTime,
-    //     currentBidPrice,
-    //     item.imageUrl,
-    //   );
+  //     if (item.hasBeenSold) {
+  //       status = VIEW_LISTING_ITEM_STATUS.SOLD;
+  //     } else if (endTime <= new Date()) {
+  //       status = VIEW_LISTING_ITEM_STATUS.EXPIRED;
+  //     } else if (!matchingItem) {
+  //       status = VIEW_LISTING_ITEM_STATUS.DRAFT;
+  //     } else {
+  //       status = VIEW_LISTING_ITEM_STATUS.ONGOING;
+  //     }
 
-    //   viewListingItems.push(viewListingItem);
-    // });
-    return new ViewListingResponse(viewListingItems, 'Items successfully retrieved', STATUS.SUCCESS);
-  }
+  //     const currentBidPrice = matchingItem ? matchingItem.currentBidPrice : item.startingBidPrice;
+
+  //     const viewListingItem = new ViewListingItem(
+  //       item.id,
+  //       item.name,
+  //       item.description,
+  //       item.imageName,
+  //       auctionType.name,
+  //       status,
+  //       endTime,
+  //       currentBidPrice,
+  //       item.imageUrl,
+  //     );
+
+  //     viewListingItems.push(viewListingItem);
+  //   });
+  //   return new ViewListingResponse(viewListingItems, 'Items successfully retrieved', STATUS.SUCCESS);
+  // }
 
   async handleGetAllActiveItems() {
     const items = await this.itemRepository.getAllActiveItems();
@@ -218,7 +279,7 @@ export class InventoryService {
         item.name,
         item.description,
         item.imageName,
-        item.createdAt,
+        item.created_at,
         item.hasBeenSold,
         auctionType.name,
         item.imageUrl,

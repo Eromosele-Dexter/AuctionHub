@@ -19,5 +19,5 @@ export class Bid {
   bidAmount: number;
 
   @Column()
-  createdAt: Date;
+  created_at: Date;
 }

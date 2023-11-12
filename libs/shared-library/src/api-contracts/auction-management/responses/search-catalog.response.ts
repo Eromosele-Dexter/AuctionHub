@@ -4,11 +4,11 @@ import { CatalogItem } from '@app/shared-library/types/view-catalog-item'; // TO
 
 export class SearchCatalogResponse extends CustomResponse {
   constructor(
-    public readonly catalogItems: CatalogItem[],
+    public readonly data: CatalogItem[],
     public readonly message: string,
     public readonly status: string,
     public readonly error?: string,
   ) {
-    super(catalogItems, message, status, error);
+    super(data, message, status, error);
   }
 }

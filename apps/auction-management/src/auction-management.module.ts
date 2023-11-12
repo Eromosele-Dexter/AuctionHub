@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuctionItemRepository } from './repositories/auction-item-repo/auction-item.repository';
 import { AuctionItem } from './entities/auction-item.entity';
 import { INVENTORY_SERVICE, RmqModule } from '@app/shared-library';
+import { ListingItem } from './entities/listing-item.entity';
+import { ListingItemRepository } from './repositories/listing-item-repo/listing-item.repository';
 
 @Module({
   imports: [
@@ -26,13 +28,13 @@ import { INVENTORY_SERVICE, RmqModule } from '@app/shared-library';
         username: configService.get<string>('POSTGRES_USER'),
         password: configService.get<string>('POSTGRES_PASSWORD'),
         database: configService.get<string>('POSTGRES_AUCTION_MANAGEMENT_DATABASE'),
-        entities: [AuctionItem],
+        entities: [AuctionItem, ListingItem],
         synchronize: true, // Be cautious with this in production
       }),
     }),
-    TypeOrmModule.forFeature([AuctionItem]),
+    TypeOrmModule.forFeature([AuctionItem, ListingItem]),
   ],
   controllers: [AuctionManagementController],
-  providers: [AuctionManagementService, AuctionItemRepository],
+  providers: [AuctionManagementService, AuctionItemRepository, ListingItemRepository],
 })
 export class AuctionManagementModule {}

@@ -9,6 +9,9 @@ export class AuctionItem {
   // @OneToOne(() => Item, (item) => item.id, { nullable: false })
   itemId: number;
 
+  @Column({ name: 'seller_id' })
+  sellerId: number;
+
   // this is the time the auction ends
   @Column({ name: 'end_time', type: 'bigint' })
   endTime: number; // if it is a dutch auction, this value is not shown to the bidders
@@ -24,12 +27,14 @@ export class AuctionItem {
 
   constructor(
     itemId: number,
+    sellerId: number,
     endTime: number,
     startingBidPrice: number,
     currentBidPrice: number,
     decrementAmount?: number,
   ) {
     this.itemId = itemId;
+    this.sellerId = sellerId;
     this.endTime = endTime;
     this.startingBidPrice = startingBidPrice;
     this.currentBidPrice = currentBidPrice;
