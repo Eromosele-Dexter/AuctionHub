@@ -7,6 +7,8 @@ services:
       POSTGRES_DB: auth
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Police123
+    ports:
+      - '5433:5432'
     networks:
       - backend
 
@@ -18,6 +20,8 @@ services:
       POSTGRES_DB: auction_management
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Police123
+    ports:
+      - '5434:5432'
     networks:
       - backend
 
@@ -29,6 +33,8 @@ services:
       POSTGRES_DB: bid
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Police123
+    ports:
+      - '5435:5432'
     networks:
       - backend
 
@@ -40,6 +46,8 @@ services:
       POSTGRES_DB: inventory
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Police123
+    ports:
+      - '5436:5432'
     networks:
       - backend
 
@@ -51,6 +59,8 @@ services:
       POSTGRES_DB: payment
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Police123
+    ports:
+      - '5437:5432'
     networks:
       - backend
 

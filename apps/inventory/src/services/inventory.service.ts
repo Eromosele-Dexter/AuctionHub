@@ -29,7 +29,7 @@ export class InventoryService {
   ) {}
 
   async handleCreateListing(data: CreateListingEvent) {
-    const auctionTypeByName = data.auctionType.toUpperCase();
+    const auctionTypeByName = data.auctionType.toLowerCase();
 
     const auctionType = await this.auctionTypeRepository.getAuctionTypeByName(auctionTypeByName);
 
@@ -48,6 +48,7 @@ export class InventoryService {
 
     // dont create item if the seller already has an item with the same name
     const existingItem = await this.itemRepository.getItemByNameAndSellerId(item.name, item.sellerId);
+    console.log('existingItem: ', existingItem);
 
     if (existingItem) {
       item.id = existingItem.id;

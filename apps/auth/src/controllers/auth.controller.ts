@@ -30,22 +30,29 @@ export class AuthController {
   }
 
   @MessagePattern(LOGIN_USER_MESSAGE_PATTERN)
-  handleLoginUser(data: LoginUserMessage) {
-    return this.authService.validateUser(data.username, data.password);
+  handleLoginUser(@Payload() data: LoginUserMessage, @Ctx() context: RmqContext) {
+    const loginUserResponse = this.authService.validateUser(data.username, data.password);
+    this.rmqService.ack(context);
+    return loginUserResponse;
   }
 
   @EventPattern(SEND_VALIDATION_CODE_EVENT_PATTERN)
-  handleSendValidationCode(data: SendValidationCodeEvent) {
+  handleSendValidationCode(@Payload() data: SendValidationCodeEvent, @Ctx() context: RmqContext) {
+    this.rmqService.ack(context);
     return this.authService.handleSendValidationCode(data);
   }
 
   @MessagePattern(RESET_PASSWORD_MESSAGE_PATTERN)
-  handleResetPassword(data: ResetPasswordMessage) {
-    return this.authService.handleResetPassword(data);
+  handleResetPassword(@Payload() data: ResetPasswordMessage, @Ctx() context: RmqContext) {
+    const resetPasswordResponse = this.authService.handleResetPassword(data);
+    this.rmqService.ack(context);
+    return resetPasswordResponse;
   }
 
   @MessagePattern(EDIT_PROFILE_MESSAGE_PATTERN)
-  handleEditProfile(data: EditProfileMessage) {
-    return this.authService.handleEditProfile(data);
+  handleEditProfile(@Payload() data: EditProfileMessage, @Ctx() context: RmqContext) {
+    const editProfileResponse = this.authService.handleEditProfile(data);
+    this.rmqService.ack(context);
+    return editProfileResponse;
   }
 }
