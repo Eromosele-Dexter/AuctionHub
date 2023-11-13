@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, Max } from 'class-validator';
 
 export class CreateListingRequest {
   @IsString()
@@ -29,6 +29,7 @@ export class CreateListingRequest {
   auctionType: string;
 
   @IsNotEmpty()
+  @Max(100_000_000) // Max amount auction can be started at is 100 million
   starting_bid_price: number;
 
   @IsNotEmpty()

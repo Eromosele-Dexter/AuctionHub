@@ -25,10 +25,15 @@ import { ViewListingItem } from '@app/shared-library/types/view-listing-item';
 import { GetAuctionTypeResponse } from '@app/shared-library/api-contracts/inventory/responses/get-auction-type.response';
 import GetAuctionTypeMessage from '@app/shared-library/messages/get-auction-type.message';
 import CreateListingItemMessage from '@app/shared-library/messages/create-listing-item.message';
-import { CreateListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/create-listing-item.response.message';
-import { GetListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-listing-item.response.message';
+import { CreateListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/create-listing-item.response';
+import { GetListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-listing-item.response';
 import { SearchForListingItemsIdByKeywordResponse } from '@app/shared-library/api-contracts/inventory/responses/search-listing-items-id.response';
 import SearchForListingItemsIdByKeywordMessage from '@app/shared-library/messages/search-for-listing-items-id-by-keyword.message';
+import GetAuctionItemMessage from '@app/shared-library/messages/get-auction-item.message';
+import { GetAuctionItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-auction-item.response';
+import PlaceForwardBidMessage from '@app/shared-library/messages/place-forward-bid.message';
+import PlaceDutchBidMessage from '@app/shared-library/messages/place-dutch-bid.message';
+import { PlaceBidResponse } from '@app/shared-library/api-contracts/auction-management/responses/place-bid.response';
 
 @Injectable()
 export class AuctionManagementService {
@@ -268,5 +273,31 @@ export class AuctionManagementService {
       `Catalog searched successfully for keyword: ${searchkeyword}`,
       STATUS.SUCCESS,
     );
+  }
+
+  async handleGetAuctionItem(data: GetAuctionItemMessage): Promise<GetAuctionItemResponse> {
+    const { listing_item_id } = data;
+
+    const listingItem = await this.listingItemRepository.getListingItemById(listing_item_id);
+
+    const auctionItem = await this.auctionItemRepository.getAuctionItemByListingItemId(listing_item_id);
+
+    return new GetAuctionItemResponse(
+      { ...auctionItem, has_been_sold: listingItem.has_been_sold },
+      'Auction item retrieved successfully',
+      STATUS.SUCCESS,
+    );
+  }
+
+  async handlePlaceForwardBidAuction(data: PlaceForwardBidMessage): Promise<PlaceBidResponse> {
+    //update listing and auction table
+    throw new Error('Method not implemented.');
+  }
+
+  async handlePlaceDutchBidAuction(data: PlaceDutchBidMessage): Promise<PlaceBidResponse> {
+    // const reservePrice = 0.1 * starting_bid_price; // reserve price is 10% of starting bid price
+    //update listing and auction table
+    // has been sold should be updated
+    throw new Error('Method not implemented.');
   }
 }

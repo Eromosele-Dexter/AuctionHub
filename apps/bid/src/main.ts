@@ -22,6 +22,3 @@ async function bootstrap() {
   await app.listen(WEBSOCKET_GATEWAY_PORT);
 }
 bootstrap();
-
-// Send simple message on Kafka
-// Use Websocket

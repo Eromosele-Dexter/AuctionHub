@@ -3,12 +3,14 @@ import { AuctionManagementService } from '../services/auction-management.service
 import {
   CREATE_LISTING_ITEM_MESSAGE_PATTERN,
   GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN,
+  GET_AUCTION_ITEM_MESSAGE_PATTERN,
   GET_LISTING_ITEM_MESSAGE_PATTERN,
+  PLACE_DUTCH_BID_AUCTION_MESSAGE_PATTERN,
+  PLACE_FORWARD_BID_AUCTION_MESSAGE_PATTERN,
   RmqService,
   SEARCH_CATALOG_MESSAGE_PATTERN,
   START_AUCTION_EVENT_PATTERN,
   VIEW_CATALOG_MESSAGE_PATTERN,
-  VIEW_LISTING_ITEMS_MESSAGE_PATTERN,
   VIEW_LISTING_MESSAGE_PATTERN,
 } from '@app/shared-library';
 import StartAuctionEvent from '@app/shared-library/events/start-auction.event';
@@ -17,8 +19,8 @@ import ViewCatalogMessage from '@app/shared-library/messages/view-catalog.messag
 import SearchCatalogMessage from '@app/shared-library/messages/search-catalog.message';
 import GetAuctionItemsForSellerMessage from '@app/shared-library/messages/get-auction-items-for-seller.message';
 import CreateListingItemEvent from '@app/shared-library/messages/create-listing-item.message';
-import ViewListingItemsMessage from '@app/shared-library/messages/view-listing-items.message';
 import ViewListingMessage from '@app/shared-library/messages/view-listing.message';
+import GetAuctionItemMessage from '@app/shared-library/messages/get-auction-item.message';
 
 @Controller()
 export class AuctionManagementController {
@@ -78,5 +80,26 @@ export class AuctionManagementController {
     const handleSearchCatalogResponse = await this.auctionManagementService.handleSearchCatalog(data);
     this.rmqService.ack(context);
     return handleSearchCatalogResponse;
+  }
+
+  @MessagePattern(GET_AUCTION_ITEM_MESSAGE_PATTERN)
+  async handleGetAuctionItem(@Payload() data: GetAuctionItemMessage, @Ctx() context: RmqContext) {
+    const auctionItem = await this.auctionManagementService.handleGetAuctionItem(data);
+    this.rmqService.ack(context);
+    return auctionItem;
+  }
+
+  @MessagePattern(PLACE_FORWARD_BID_AUCTION_MESSAGE_PATTERN)
+  async handlePlaceForwardBidAuction(@Payload() data: any, @Ctx() context: RmqContext) {
+    const auctionItem = await this.auctionManagementService.handlePlaceForwardBidAuction(data);
+    this.rmqService.ack(context);
+    return auctionItem;
+  }
+
+  @MessagePattern(PLACE_DUTCH_BID_AUCTION_MESSAGE_PATTERN)
+  async handlePlaceDutchBidAuction(@Payload() data: any, @Ctx() context: RmqContext) {
+    const auctionItem = await this.auctionManagementService.handlePlaceDutchBidAuction(data);
+    this.rmqService.ack(context);
+    return auctionItem;
   }
 }

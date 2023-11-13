@@ -1,5 +1,4 @@
 import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { WatchList } from './watch-list.entity';
 
 @Entity({ name: 'watch_list_items' })
 export class WatchListItem {
@@ -8,11 +7,8 @@ export class WatchListItem {
 
   @Column()
   // @OneToOne(() => WatchList, (watchList) => watchList.id, { nullable: false })
-  watchListId: number;
+  bidderId: number;
 
   @Column()
-  // @ManyToOne(() => AuctionItem, (auctionItem) => auctionItem.id, {
-  //   nullable: false,
-  // })
-  auctionitem_id: number;
+  auction_item_id: number;
 }

@@ -28,8 +28,8 @@ import CreateListingItemEvent from '@app/shared-library/messages/create-listing-
 import { ViewListingItemsResponse } from '@app/shared-library/api-contracts/auction-management/responses/view-listing-items.response';
 import GetAuctionTypeMessage from '@app/shared-library/messages/get-auction-type.message';
 import { GetAuctionTypeResponse } from '@app/shared-library/api-contracts/inventory/responses/get-auction-type.response';
-import { CreateListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/create-listing-item.response.message';
-import { GetListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-listing-item.response.message';
+import { CreateListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/create-listing-item.response';
+import { GetListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-listing-item.response';
 import GetListingItemMessage from '@app/shared-library/messages/get-listing-item.message';
 import SearchForListingItemsIdByKeywordMessage from '@app/shared-library/messages/search-for-listing-items-id-by-keyword.message';
 import { SearchForListingItemsIdByKeywordResponse } from '@app/shared-library/api-contracts/inventory/responses/search-listing-items-id.response';
@@ -101,7 +101,7 @@ export class InventoryService {
               item.image_url,
               item.auction_type_id,
               data.end_time,
-              data.decrement_amount,
+              auctionType.name === 'forward' ? -1 : data.decrement_amount,
               item.created_at,
               item.has_been_sold,
             ),

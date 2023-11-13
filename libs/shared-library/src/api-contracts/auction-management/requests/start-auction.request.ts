@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, Max } from 'class-validator';
 
 export class StartAuctionRequest {
   @IsNotEmpty()
@@ -6,6 +6,7 @@ export class StartAuctionRequest {
 
   @IsNotEmpty()
   @IsNumber()
+  @Max(100_000_000)
   starting_bid_price: number;
 
   @IsNumber()

@@ -1,4 +1,4 @@
-import { BadRequestException, Logger, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Logger, UseFilters, ValidationPipe } from '@nestjs/common';
 import {
   OnGatewayInit,
   WebSocketGateway,
@@ -69,35 +69,24 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   }
 
   @SubscribeMessage('place-bid')
-  async handlePlaceBid(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: PlaceBidRequest,
-  ): Promise<string> {
+  async handlePlaceBid(@ConnectedSocket() client: Socket, @MessageBody() data: PlaceBidRequest) {
     try {
       const validationPipe = new ValidationPipe({ transform: true, exceptionFactory: exceptionFactory });
-      const bidData = await validationPipe.transform(payload, {
+
+      const placeBidRequest: PlaceBidRequest = await validationPipe.transform(data, {
         type: 'body',
         metatype: PlaceBidRequest,
       });
-      // const item = await this.itemService.findItemById(bidData.itemId);
 
-      // if (new Date() > item.expirationTime || item.hasBeenSold) {
-      //     client.emit('bidError', 'This auction has already ended.');
-      //     return;
-      // }
+      const response = await this.bidService.handlePlaceBid(placeBidRequest);
 
-      // if (bidData.amount <= item.currentPrice) {
-      //     client.emit('bidError', 'Your bid must be greater than the current price.');
-      //     return;
-      // }
-
-      //TODO: set decrement amount to -1 if it is a forward auction
-      console.log('hi from place bid: ', bidData);
-      client.emit('bid', { data: bidData, message: 'Bid Successfully Placed', status: STATUS.SUCCESS });
+      this.io.emit('bid', {
+        data: response,
+        message: `Bid Successfully Placed on item with listing id: ${placeBidRequest.listing_item_id}`,
+        status: STATUS.SUCCESS,
+      });
     } catch (error) {
       client.emit('bidError', { error: error, message: error.message, status: STATUS.FAILED });
     }
-
-    return 'Bid received';
   }
 }

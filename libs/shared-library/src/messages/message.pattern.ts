@@ -15,5 +15,8 @@ export const CREATE_LISTING_ITEM_MESSAGE_PATTERN = 'create_listing_item_message'
 export const GET_LISTING_ITEM_MESSAGE_PATTERN = 'get_listing_item_message';
 export const SEARCH_FOR_LISTING_ITEMS_ID_BY_KEYWORD_MESSAGE_PATTERN =
   'search_for_listing_items_id_by_keyword_message';
+export const GET_AUCTION_ITEM_MESSAGE_PATTERN = 'get_auction_item_message';
+export const PLACE_FORWARD_BID_AUCTION_MESSAGE_PATTERN = 'place_forward_bid_auction_message';
+export const PLACE_DUTCH_BID_AUCTION_MESSAGE_PATTERN = 'place_dutch_bid_auction_message';
 
 // if the string has message at the end of name, it's a pattern for communication between services

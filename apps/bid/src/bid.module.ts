@@ -4,9 +4,7 @@ import { BidService } from './services/bid.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Bid } from './entities/bid.entity';
-import { WatchList } from './entities/watch-list.entity';
 import { WatchListItem } from './entities/watch-list-item.entity';
-import { WatchListRepository } from './repositories/watch-list-repo/watch-list.repository';
 import { WatchListItemRepository } from './repositories/watch-list-item-repo/watch-list-item.repository';
 import { BidRepository } from './repositories/bid-repo/bid.repository';
 import { BidGateway } from './services/bid-gateway';
@@ -34,21 +32,14 @@ import { AUCTION_MANAGEMENT_SERVICE, RmqModule } from '@app/shared-library';
         username: configService.get<string>('POSTGRES_USER'),
         password: configService.get<string>('POSTGRES_PASSWORD'),
         database: configService.get<string>('POSTGRES_BID_DATABASE'),
-        entities: [Bid, WatchList, WatchListItem],
+        entities: [Bid, WatchListItem],
         synchronize: true, // Be cautious with this in production
       }),
     }),
-    TypeOrmModule.forFeature([Bid, WatchList, WatchListItem, AuctionItem]),
+    TypeOrmModule.forFeature([Bid, WatchListItem, AuctionItem]),
     jwtModule,
   ],
   controllers: [BidController],
-  providers: [
-    BidService,
-    BidGateway,
-    BidRepository,
-    WatchListRepository,
-    WatchListItemRepository,
-    AuctionItemRepository,
-  ],
+  providers: [BidService, BidGateway, BidRepository, WatchListItemRepository, AuctionItemRepository],
 })
 export class BidModule {}

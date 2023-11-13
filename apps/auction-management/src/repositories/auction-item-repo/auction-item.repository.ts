@@ -21,6 +21,13 @@ export class AuctionItemRepository extends Repository<AuctionItem> implements IA
     return auctionItem[0];
   }
 
+  async getAuctionItemByListingItemId(listing_item_id: number): Promise<AuctionItem> {
+    const auctionItem = await this.dataSource.manager.query(
+      `SELECT * FROM auction_items WHERE listing_item_id = ${listing_item_id}`,
+    );
+    return auctionItem[0];
+  }
+
   async getAuctionItems(): Promise<AuctionItem[]> {
     return await this.find();
   }
