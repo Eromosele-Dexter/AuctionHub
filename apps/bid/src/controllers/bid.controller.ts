@@ -5,8 +5,8 @@ import { BidService } from '../services/bid.service';
 export class BidController {
   constructor(private readonly bidService: BidService) {}
 
-  @Get()
-  getHello(): string {
-    return this.bidService.getHello();
-  }
+  // @Get()
+  // getHello(): string {
+  //   return this.bidService.getHello();
+  // }
 }

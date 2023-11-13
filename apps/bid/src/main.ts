@@ -5,6 +5,7 @@ import { WEBSOCKET_GATEWAY_PORT } from '@app/shared-library/configs/serverConfig
 import { SocketIOAdapter } from './services/socket-io-adapter';
 import { BID_SERVICE, RmqService } from '@app/shared-library';
 import { MicroserviceOptions } from '@nestjs/microservices';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(BidModule);
@@ -13,6 +14,8 @@ async function bootstrap() {
 
   // Enable WebSocket support
   app.useWebSocketAdapter(new SocketIOAdapter(app));
+
+  app.useGlobalPipes(new ValidationPipe());
 
   await app.startAllMicroservices();
 

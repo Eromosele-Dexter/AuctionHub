@@ -13,7 +13,6 @@ import {
   MaxFileSizeValidator,
   FileTypeValidator,
   Param,
-  StreamableFile,
   NotFoundException,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -22,8 +21,6 @@ import { AuthenticatedGuard } from '../../guards/authenticated.guard';
 import { CreateListingRequest } from '@app/shared-library/api-contracts/inventory/requests';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { fileTypesPattern } from '../../utils/fileUtils';
-import { StartAuctionRequest } from '@app/shared-library/api-contracts/auction-management/requests/start-auction.request';
-import * as fs from 'fs';
 
 @Controller()
 export class SellerEventController {

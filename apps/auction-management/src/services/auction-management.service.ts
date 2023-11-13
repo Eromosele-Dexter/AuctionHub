@@ -1,23 +1,15 @@
-import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import StartAuctionEvent from '@app/shared-library/events/start-auction.event';
 import { AuctionItemRepository } from '../repositories/auction-item-repo/auction-item.repository';
 import {
-  GET_ALL_ACTIVE_ITEMS_MESSAGE_PATTERN,
   GET_AUCTION_TYPE_MESSAGE_PATTERN,
   INVENTORY_SERVICE,
   SEARCH_FOR_LISTING_ITEMS_ID_BY_KEYWORD_MESSAGE_PATTERN,
-  START_AUCTION_MESSAGE_PATTERN,
 } from '@app/shared-library';
 import { ClientProxy } from '@nestjs/microservices';
-import { StartAuctionResponse } from '@app/shared-library/api-contracts/auction-management/responses/start-auction.response';
 import { AuctionItem } from '../entities/auction-item.entity';
-import StartAuctionMessage from '@app/shared-library/messages/start-auction.message';
 import ViewCatalogMessage from '@app/shared-library/messages/view-catalog.message';
 import { ViewCatalogResponse } from '@app/shared-library/api-contracts/auction-management/responses/view-catalog.response';
-import { CatalogItem } from '@app/shared-library/types/view-catalog-item';
-import { GetAllActiveItemsResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-all-active-items.response';
-import GetAllActiveItemsMessage from '@app/shared-library/messages/get-all-items.message';
 import { STATUS, VIEW_LISTING_ITEM_STATUS } from '@app/shared-library/types';
 import SearchCatalogMessage from '@app/shared-library/messages/search-catalog.message';
 import { SearchCatalogResponse } from '@app/shared-library/api-contracts/auction-management/responses/search-catalog.response';
@@ -26,7 +18,6 @@ import { GetAuctionItemsForSellerResponse } from '@app/shared-library/api-contra
 import { ListingItemRepository } from '../repositories/listing-item-repo/listing-item.repository';
 import { ListingItem } from '../entities/listing-item.entity';
 import ViewListingItemsMessage from '@app/shared-library/messages/view-listing-items.message';
-import { View } from 'typeorm/schema-builder/view/View';
 import { ViewListingItemsResponse } from '@app/shared-library/api-contracts/auction-management/responses/view-listing-items.response';
 import ViewListingMessage from '@app/shared-library/messages/view-listing.message';
 import { ViewListingResponse } from '@app/shared-library/api-contracts/auction-management/responses/view-listing.response';

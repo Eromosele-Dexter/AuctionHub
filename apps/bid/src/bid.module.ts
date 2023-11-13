@@ -13,7 +13,7 @@ import { BidGateway } from './services/bid-gateway';
 import { jwtModule } from './modules.config';
 import { AuctionItemRepository } from 'apps/auction-management/src/repositories/auction-item-repo/auction-item.repository';
 import { AuctionItem } from 'apps/auction-management/src/entities/auction-item.entity';
-import { RmqModule } from '@app/shared-library';
+import { AUCTION_MANAGEMENT_SERVICE, RmqModule } from '@app/shared-library';
 
 @Module({
   imports: [
@@ -21,7 +21,9 @@ import { RmqModule } from '@app/shared-library';
       envFilePath: './apps/bid/.env',
       isGlobal: true,
     }),
-    RmqModule, // TODO: register services that bid service will send messages to
+    RmqModule.register({
+      name: AUCTION_MANAGEMENT_SERVICE,
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
