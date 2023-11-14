@@ -1,24 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  HttpStatus,
-  Res,
-  Body,
-  UseGuards,
-  Request,
-  Req,
-  Param,
-  Patch,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, HttpStatus, Res, Body, UseGuards, Request, Patch, Query } from '@nestjs/common';
 import { Response } from 'express';
 import { AppService } from '../../services/app.service';
 import { RegisterUserRequest } from '../../../../../libs/shared-library/src/api-contracts/auth/requests/register-user.request';
 import { formatResponse } from '../../utils/formatResponse';
 import { LocalAuthGuard } from '../../guards/local-auth.guard';
 import { AuthenticatedGuard } from '../../guards/authenticated.guard';
-import { LoginUserRequest, ResetPasswordRequest, SendValidationCodeRequest } from '@app/shared-library';
+import { ResetPasswordRequest, SendValidationCodeRequest } from '@app/shared-library';
 import { EditProfileRequest } from '@app/shared-library/api-contracts/auth/requests/edit-profile.request';
 
 @Controller()
@@ -133,31 +120,6 @@ export class AppController {
     return response.status(HttpStatus.OK).json(data);
   }
 
-  // // view item
-  // @UseGuards(AuthenticatedGuard)
-  // @Get('/item/:id')
-  // async viewItem(@Param('id') id: number, @Res() response: Response) {
-  //   try {
-  //     const data = await this.appService.viewItem();
-
-  //     return formatResponse(response, 'Item', data);
-  //   } catch (error) {
-  //     return formatResponse(response, 'Item', error.message);
-  //   }
-  // }
-
-  // view bidding history - bid service
-  @UseGuards(AuthenticatedGuard)
-  @Get('/view-bidding-history')
-  async viewBiddingHistory(@Res() response: Response) {
-    // try {
-    //   const data = await this.appService.viewBiddingHistory();
-    //   return formatResponse(response, 'Bidding history', data);
-    // } catch (error) {
-    //   return formatResponse(response, 'Bidding history', error.message);
-    // }
-  }
-
   // edit profile - auth service
   @UseGuards(AuthenticatedGuard)
   @Patch('/edit-profile')
@@ -172,17 +134,4 @@ export class AppController {
 
     return response.status(HttpStatus.CREATED).json(data);
   }
-
-  // @UseGuards(AuthenticatedGuard) // convert to service worker or websockets
-  // // auction for item ended
-  // @Post('/auction-ended')
-  // async auctionEnded(@Res() response: Response) {
-  //   try {
-  //     const data = await this.appService.auctionEnded();
-
-  //     return formatResponse(response, 'Auction ended', data);
-  //   } catch (error) {
-  //     return formatResponse(response, 'Auction end', error.message);
-  //   }
-  // }
 }

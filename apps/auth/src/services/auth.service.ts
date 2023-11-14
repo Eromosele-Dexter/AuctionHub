@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../repositories/user-repo/user.repository';
 import { User } from '../entities/user.entity';
 import { ROLES, STATUS } from '@app/shared-library/types';
-import { LoginUserResponse, RegisterUserResponse, RmqService } from '@app/shared-library';
-import * as bcrypt from 'bcrypt';
+import { LoginUserResponse, RegisterUserResponse } from '@app/shared-library';
 import RegisterUserMessage from '@app/shared-library/messages/register-user.message';
 import SendValidationCodeEvent from '@app/shared-library/events/send-validation-code.event';
 import * as sgMail from '@sendgrid/mail';
@@ -16,6 +15,9 @@ import { generateValidationCode } from '../utils/generateCode';
 import { VALIDATION_CODE_EMAIL_SUBJECT, validationCodeEmailFormat } from '../utils/emailformats';
 import EditProfileMessage from '@app/shared-library/messages/edit-profile.message';
 import { EditProfileResponse } from '@app/shared-library/api-contracts/auth/responses/edit-profile.response';
+import GetUsersMessage from '@app/shared-library/messages/get-users.message';
+import { GetUsersResponse } from '@app/shared-library/api-contracts/auth/responses/get-users.response';
+import { GetSingleUserResponse } from '@app/shared-library/api-contracts/auth/responses/get-single-user.response';
 
 @Injectable()
 export class AuthService {
@@ -161,5 +163,19 @@ export class AuthService {
     await this.userRepository.updateUser(user);
 
     return new EditProfileResponse(user, 'Profile successfully edited', STATUS.SUCCESS);
+  }
+
+  async handleGetUsersByIds(data: GetUsersMessage): Promise<GetUsersResponse> {
+    const { userIds } = data;
+
+    const users = await this.userRepository.getUsersByIds(userIds);
+
+    return new GetUsersResponse(users, 'Users retrieved successfully', STATUS.SUCCESS);
+  }
+
+  async handleGetSingleUser(user_id: number): Promise<GetSingleUserResponse> {
+    const user = await this.userRepository.getUserById(user_id);
+
+    return new GetSingleUserResponse(user, 'User retrieved successfully', STATUS.SUCCESS);
   }
 }

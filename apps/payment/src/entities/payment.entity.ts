@@ -8,14 +8,21 @@ export class Payment {
 
   @Column()
   // @OneToOne(() => User, (user) => user.id, { nullable: false })
-  bidderId: number;
+  bidder_id: number;
 
   @Column()
-  shipmentCost: number;
+  shipment_cost: number;
 
   @Column()
   amount: number;
 
   @Column({ type: 'bigint' })
   created_at: number;
+
+  constructor(bidder_id: number, shipment_cost: number, amount: number, created_at: number) {
+    this.bidder_id = bidder_id;
+    this.shipment_cost = shipment_cost;
+    this.amount = amount;
+    this.created_at = created_at;
+  }
 }

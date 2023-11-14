@@ -5,6 +5,7 @@ import CreateListingEvent from '@app/shared-library/events/create-listing.event'
 import { CREATE_LISTING_EVENT_PATTERN } from '@app/shared-library/events';
 import {
   GET_ALL_ACTIVE_ITEMS_MESSAGE_PATTERN,
+  GET_AUCTION_TYPE_BY_NAME_MESSAGE_PATTERN,
   GET_AUCTION_TYPE_MESSAGE_PATTERN,
   SEARCH_FOR_LISTING_ITEMS_ID_BY_KEYWORD_MESSAGE_PATTERN,
   VIEW_LISTING_MESSAGE_PATTERN,
@@ -13,6 +14,7 @@ import ViewListingMessage from '@app/shared-library/messages/view-listing.messag
 import { RmqService } from '@app/shared-library';
 import GetAuctionTypeMessage from '@app/shared-library/messages/get-auction-type.message';
 import SearchForListingItemsIdByKeywordMessage from '@app/shared-library/messages/search-for-listing-items-id-by-keyword.message';
+import GetAuctionTypeByNameMessage from '@app/shared-library/messages/get-auction-type-by-name.message';
 
 @Controller()
 export class InventoryController {
@@ -29,9 +31,16 @@ export class InventoryController {
 
   @MessagePattern(GET_AUCTION_TYPE_MESSAGE_PATTERN)
   async handleGetAuctionType(@Payload() data: GetAuctionTypeMessage, @Ctx() context: RmqContext) {
-    const handleGetAuctionTypeResponse = this.inventoryService.handleGetAuctionType(data);
+    const handleGetAuctionTypeResponse = await this.inventoryService.handleGetAuctionType(data);
     this.rmqService.ack(context);
     return handleGetAuctionTypeResponse;
+  }
+
+  @MessagePattern(GET_AUCTION_TYPE_BY_NAME_MESSAGE_PATTERN)
+  async handleGetAuctionTypeByName(@Payload() data: GetAuctionTypeByNameMessage, @Ctx() context: RmqContext) {
+    const handleGetAuctionTypeByNameResponse = await this.inventoryService.handleGetAuctionTypeByName(data);
+    this.rmqService.ack(context);
+    return handleGetAuctionTypeByNameResponse;
   }
 
   @MessagePattern(SEARCH_FOR_LISTING_ITEMS_ID_BY_KEYWORD_MESSAGE_PATTERN)

@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from './entities/payment.entity';
 import { PaymentRepository } from './repositories/payment-repo/payment.repository';
-import { RmqModule } from '@app/shared-library';
+import { AUCTION_MANAGEMENT_SERVICE, AUTH_SERVICE, RmqModule } from '@app/shared-library';
 
 @Module({
   imports: [
@@ -13,7 +13,12 @@ import { RmqModule } from '@app/shared-library';
       envFilePath: './apps/payment/.env',
       isGlobal: true,
     }),
-    RmqModule,
+    RmqModule.register({
+      name: AUCTION_MANAGEMENT_SERVICE,
+    }),
+    RmqModule.register({
+      name: AUTH_SERVICE,
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

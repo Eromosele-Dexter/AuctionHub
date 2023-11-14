@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuctionItemRepository } from './repositories/auction-item-repo/auction-item.repository';
 import { AuctionItem } from './entities/auction-item.entity';
-import { INVENTORY_SERVICE, RmqModule } from '@app/shared-library';
+import { BID_SERVICE, INVENTORY_SERVICE, RmqModule } from '@app/shared-library';
 import { ListingItem } from './entities/listing-item.entity';
 import { ListingItemRepository } from './repositories/listing-item-repo/listing-item.repository';
 
@@ -13,6 +13,9 @@ import { ListingItemRepository } from './repositories/listing-item-repo/listing-
   imports: [
     RmqModule.register({
       name: INVENTORY_SERVICE,
+    }),
+    RmqModule.register({
+      name: BID_SERVICE,
     }),
     ConfigModule.forRoot({
       envFilePath: './apps/auction-management/.env',

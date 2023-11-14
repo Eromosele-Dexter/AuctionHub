@@ -18,5 +18,14 @@ export const SEARCH_FOR_LISTING_ITEMS_ID_BY_KEYWORD_MESSAGE_PATTERN =
 export const GET_AUCTION_ITEM_MESSAGE_PATTERN = 'get_auction_item_message';
 export const PLACE_FORWARD_BID_AUCTION_MESSAGE_PATTERN = 'place_forward_bid_auction_message';
 export const PLACE_DUTCH_BID_AUCTION_MESSAGE_PATTERN = 'place_dutch_bid_auction_message';
-
-// if the string has message at the end of name, it's a pattern for communication between services
+export const SELL_AUCITON_ITEM_MESSAGE_PATTERN = 'sell_auction_item_message';
+export const UPDATE_HAS_ACTIVE_BID_MESSAGE_PATTERN = 'update_has_active_bid_message';
+export const GET_BID_HISTORY_MESSAGE_PATTERN = 'get_bid_history_message';
+export const VIEW_WATCH_LIST_MESSAGE_PATTERN = 'view_watch_list_message';
+export const GET_USERS_MESSAGE_PATTERN = 'get_users_message';
+export const GET_AUCTION_ITEMS_BY_LISTING_ITEM_IDS_MESSAGE_PATTERN =
+  'get_auction_items_by_listing_item_ids_message';
+export const GET_AUCTION_TYPE_BY_NAME_MESSAGE_PATTERN = 'get_auction_type_by_name_message';
+export const CHECK_OUT_ITEM_MESSAGE_PATTERN = 'check_out_item_message';
+export const GET_SINGLE_USER_MESSAGE_PATTERN = 'get_single_user_message';
+export const GET_LISTING_ITEM_BY_ID_MESSAGE_PATTERN = 'get_listing_item_by_id_message';

@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import StartAuctionEvent from '@app/shared-library/events/start-auction.event';
 import { AuctionItemRepository } from '../repositories/auction-item-repo/auction-item.repository';
 import {
+  GET_AUCTION_TYPE_BY_NAME_MESSAGE_PATTERN,
   GET_AUCTION_TYPE_MESSAGE_PATTERN,
   INVENTORY_SERVICE,
   SEARCH_FOR_LISTING_ITEMS_ID_BY_KEYWORD_MESSAGE_PATTERN,
@@ -34,6 +35,14 @@ import { GetAuctionItemResponse } from '@app/shared-library/api-contracts/auctio
 import PlaceForwardBidMessage from '@app/shared-library/messages/place-forward-bid.message';
 import PlaceDutchBidMessage from '@app/shared-library/messages/place-dutch-bid.message';
 import { PlaceBidResponse } from '@app/shared-library/api-contracts/auction-management/responses/place-bid.response';
+import { SellAuctionItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/sell-auction-item.response';
+import GetAuctionItemsByListingItemsIdsMessage from '@app/shared-library/messages/get-auction-items-by-listing-ids.message';
+import { GetAuctionItemsByListingitemIdsResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-auction-items-by-listing-item-ids.response';
+import { Cron } from '@nestjs/schedule';
+import GetAuctionItemsByAuctionTypeMessage from '@app/shared-library/messages/get-auction-type-by-name.message';
+import { GetAuctionTypeObjectResponse } from '@app/shared-library/api-contracts/inventory/responses/get-auction-type-object.response';
+import { GetListingItemByIdResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-listing-item-by-id.response';
+import GetListingItemByIdMessage from '@app/shared-library/messages/get-listing-item-by-id.message';
 
 @Injectable()
 export class AuctionManagementService {
@@ -126,7 +135,7 @@ export class AuctionManagementService {
 
       const end_time = listingItem.end_time;
 
-      let status;
+      let status: string;
 
       // has_been_sold -> status = sold
       // end time < current time -> status = expired
@@ -187,6 +196,7 @@ export class AuctionManagementService {
     this.auctionItemRepository.createAuctionItem(auctionItem);
   }
 
+  // TODO: Need to include pagination in view catalog endpoint
   async handleViewCatalog(data: ViewCatalogMessage): Promise<ViewCatalogResponse> {
     const { userId } = data;
 
@@ -290,14 +300,134 @@ export class AuctionManagementService {
   }
 
   async handlePlaceForwardBidAuction(data: PlaceForwardBidMessage): Promise<PlaceBidResponse> {
-    //update listing and auction table
-    throw new Error('Method not implemented.');
+    const { auction_item_id, bid_amount } = data;
+
+    const auctionItem = await this.auctionItemRepository.getAuctionItemById(auction_item_id);
+
+    const updatedAuctionItem = new AuctionItem(
+      auctionItem.listing_item_id,
+      auctionItem.seller_id,
+      auctionItem.end_time,
+      auctionItem.starting_bid_price,
+      bid_amount,
+      auctionItem.name,
+      auctionItem.description,
+      auctionItem.decrement_amount,
+    );
+
+    await this.auctionItemRepository.updateAuctionItemCurrentBidPrice(updatedAuctionItem);
+
+    return new PlaceBidResponse(updatedAuctionItem, 'Bid placed successfully', STATUS.SUCCESS);
   }
 
   async handlePlaceDutchBidAuction(data: PlaceDutchBidMessage): Promise<PlaceBidResponse> {
-    // const reservePrice = 0.1 * starting_bid_price; // reserve price is 10% of starting bid price
-    //update listing and auction table
+    const { auction_item_id, listing_item_id } = data;
+
+    const auctionItem = await this.auctionItemRepository.getAuctionItemById(auction_item_id);
+
+    // delete auction item entry to indicate its no longer available
+    await this.auctionItemRepository.deleteAuctionItem(auction_item_id);
+
+    // call handle sell item
+    await this.handleSellAuctionItem(listing_item_id);
+
+    return new PlaceBidResponse(auctionItem, 'Bid placed successfully', STATUS.SUCCESS);
+  }
+
+  async handleSellAuctionItem(listing_item_id: number) {
+    const listingItem = await this.listingItemRepository.getListingItemById(listing_item_id);
+
+    const updatedListingItem = new ListingItem(
+      listingItem.name,
+      listingItem.item_id,
+      listingItem.seller_id,
+      listingItem.starting_bid_price,
+      listingItem.description,
+      listingItem.image_name,
+      listingItem.image_url,
+      listingItem.auction_type_id,
+      listingItem.end_time,
+      listingItem.decrement_amount,
+      listingItem.created_at,
+      true,
+    );
+
     // has been sold should be updated
-    throw new Error('Method not implemented.');
+
+    await this.listingItemRepository.updateListingItemHasSold(updatedListingItem);
+
+    // delete auction item entry to indicate its no longer available
+    await this.auctionItemRepository.deleteAuctionItemByListingItemId(listing_item_id);
+
+    return new SellAuctionItemResponse(updatedListingItem, 'Item sold successfully', STATUS.SUCCESS);
+  }
+
+  async handleGetAuctionItemsByListingItemsIds(
+    data: GetAuctionItemsByListingItemsIdsMessage,
+  ): Promise<GetAuctionItemsByListingitemIdsResponse> {
+    const { listing_item_ids } = data;
+
+    const auctionItems = await this.auctionItemRepository.getAuctionItemsByListingItemIds(listing_item_ids);
+
+    return new GetAuctionItemsByListingitemIdsResponse(
+      auctionItems,
+      'Auction items retrieved successfully',
+      STATUS.SUCCESS,
+    );
+  }
+
+  async handleGetListingItemById(
+    getListingItemByIdMessage: GetListingItemByIdMessage,
+  ): Promise<GetListingItemByIdResponse> {
+    const { listing_item_id } = getListingItemByIdMessage;
+
+    const listingItem = await this.listingItemRepository.getListingItemById(listing_item_id);
+
+    return new GetListingItemByIdResponse(listingItem, 'Listing item retrieved successfully', STATUS.SUCCESS);
+  }
+
+  @Cron('0 * * * *')
+  async decrementPrice() {
+    const auctionType = (
+      await new Promise<GetAuctionTypeObjectResponse>((resolve, reject) => {
+        this.inventoryClient
+          .send(GET_AUCTION_TYPE_BY_NAME_MESSAGE_PATTERN, new GetAuctionItemsByAuctionTypeMessage('dutch'))
+          .subscribe({
+            next: (response) => {
+              resolve(response);
+            },
+            error: (error) => {
+              reject(error);
+            },
+          });
+      })
+    ).data;
+
+    const auctionTypeId = auctionType.id;
+
+    const dutchAuctionItems = await this.auctionItemRepository.getAuctionItemsByAuctionTypeId(auctionTypeId);
+
+    for (const item of dutchAuctionItems) {
+      const decrement_amount = item.decrement_amount;
+
+      const current_bid_price = item.current_bid_price;
+
+      const reservePrice = 0.1 * item.starting_bid_price; // reserve price is 10% of starting bid price do not dcerement below reserve price
+
+      const new_bid_price = current_bid_price - decrement_amount;
+
+      const updatedAuctionItem = new AuctionItem(
+        item.listing_item_id,
+        item.seller_id,
+        item.end_time,
+        item.starting_bid_price,
+        reservePrice > new_bid_price ? reservePrice : new_bid_price,
+        item.name,
+        item.description,
+        item.decrement_amount,
+      );
+
+      await this.auctionItemRepository.updateAuctionItemCurrentBidPrice(updatedAuctionItem);
+    }
   }
 }

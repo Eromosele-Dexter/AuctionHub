@@ -1,4 +1,4 @@
-import { Logger, UseFilters, ValidationPipe } from '@nestjs/common';
+import { Logger, OnModuleInit, UseFilters, ValidationPipe } from '@nestjs/common';
 import {
   OnGatewayInit,
   WebSocketGateway,
@@ -16,12 +16,15 @@ import { PlaceBidRequest } from '@app/shared-library/api-contracts/bid/requests/
 import { exceptionFactory } from '../middleware/bid-gateway.middleware';
 import { STATUS } from '@app/shared-library/types';
 import { WsCatchAllFilter } from '../middleware/ws-catch-all-filter.middleware';
+import * as cookie from 'cookie';
+import axios from 'axios';
+import { API_GATEWAY_PORT } from '@app/shared-library';
 
 @UseFilters(new WsCatchAllFilter())
 @WebSocketGateway({
   namespace: 'bid',
 })
-export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
   private readonly logger = new Logger(BidGateway.name);
   constructor(private readonly bidService: BidService) {}
 
@@ -38,25 +41,20 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     this.logger.log(`WS Client with id: ${client.id} connected!`);
     this.logger.debug(`Number of connected sockets: ${sockets.size}`);
 
-    // this.io.emit('hello', `from ${client.id}`);
+    const handshake = client.handshake;
 
-    // this.io.emit('bid', {
-    //   name: client.name,
-    //   message: 'Hello from the Bid Service!',
-    //   item_id: '123',
-    //   end_time: 1536373737,
-    //   from_poll: client.id,
-    // });
+    // // Parse the cookies from the handshake headers
+    const cookies = cookie.parse(handshake.headers.cookie || '');
 
-    // const roomName = client.id;
+    // Access the bid_session_id cookie
+    const bidSessionId = cookies.bid_session_id;
 
-    // await client.join(roomName);
+    if (!bidSessionId) {
+      this.disconnectFromBadSession(client);
+    }
 
-    // const connectedClients = this.io.adapter.rooms?.get(roomName)?.size ?? 0;
-
-    // this.logger.debug(`userID: ${client.userId} joined room with name: ${roomName}`);
-
-    // this.logger.debug(`Total clients connected to room '${roomName}': ${connectedClients}`);
+    // Store the bid_session_id in the client object
+    client.data.bidSessionId = bidSessionId;
   }
 
   async handleDisconnect(client: Socket) {
@@ -78,7 +76,39 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
         metatype: PlaceBidRequest,
       });
 
-      const response = await this.bidService.handlePlaceBid(placeBidRequest);
+      const bidSessionId: string = client.data.bidSessionId;
+
+      // check if user is authenticated and has placed bid by sending a request to the bidder controller in api-gateway by passing user cookie
+      // called bid_session_id
+
+      const retrieveSessionResponse = await axios.get(
+        `http://localhost:${API_GATEWAY_PORT}/retrieve-session/${bidSessionId}`,
+      );
+
+      console.log('Retrieve Session Response: ', retrieveSessionResponse);
+
+      if (retrieveSessionResponse.status === 400) {
+        this.disconnectFromBadSession(client);
+      }
+
+      const bidSession = retrieveSessionResponse.data;
+
+      if (bidSession.error) {
+        this.disconnectFromBadSession(client);
+      }
+
+      const bidSessionData = bidSession.data;
+
+      if (bidSessionData.hasActiveBid && bidSessionData.listing_item_id !== placeBidRequest.listing_item_id) {
+        client.emit('bidError', {
+          error: 'Bid Session Already Active',
+          message: 'Bid Session Already Active',
+          status: STATUS.FAILED,
+        });
+        return;
+      }
+
+      const response = await this.bidService.handlePlaceBid(placeBidRequest, bidSessionId);
 
       this.io.emit('bid', {
         data: response,
@@ -88,5 +118,29 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     } catch (error) {
       client.emit('bidError', { error: error, message: error.message, status: STATUS.FAILED });
     }
+  }
+
+  onModuleInit() {
+    // setInterval(() => {
+    //     this.checkSessionExpiry();
+    // }, 60000); // check every minute
+  }
+
+  // private checkSessionExpiry() {
+  //     this.io.sockets.forEach(client => {
+  //         // const sessionStartTime = // get from session object returned by api-gateway
+  //         // if (sessionStartTime && (new Date().getTime() - sessionStartTime.getTime()) > 3600000) { // 1 hour
+  //         //     client.disconnect(); // Disconnect the client
+  //         // }
+  //     });
+  // }
+
+  private async disconnectFromBadSession(client: Socket) {
+    client.emit('bidError', {
+      error: 'No bid Session Found',
+      message: 'Unauthorized, Login to Bid',
+      status: STATUS.FAILED,
+    });
+    client.disconnect(); // Disconnect if cookie is not available
   }
 }

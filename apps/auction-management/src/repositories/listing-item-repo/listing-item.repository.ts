@@ -50,6 +50,13 @@ export class ListingItemRepository extends Repository<ListingItem> implements IL
     this.save(listingItem);
   }
 
+  async updateListingItemHasSold(listingItem: ListingItem) {
+    this.dataSource.manager.query(
+      `UPDATE listing_items SET has_been_sold = '${listingItem.has_been_sold}' WHERE id = ${listingItem.id}`,
+    );
+    this.save(listingItem);
+  }
+
   async deleteListingItem(id: number): Promise<void> {
     this.delete(id);
   }

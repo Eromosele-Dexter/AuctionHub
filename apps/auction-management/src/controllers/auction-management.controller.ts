@@ -2,13 +2,16 @@ import { Controller } from '@nestjs/common';
 import { AuctionManagementService } from '../services/auction-management.service';
 import {
   CREATE_LISTING_ITEM_MESSAGE_PATTERN,
+  GET_AUCTION_ITEMS_BY_LISTING_ITEM_IDS_MESSAGE_PATTERN,
   GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN,
   GET_AUCTION_ITEM_MESSAGE_PATTERN,
+  GET_LISTING_ITEM_BY_ID_MESSAGE_PATTERN,
   GET_LISTING_ITEM_MESSAGE_PATTERN,
   PLACE_DUTCH_BID_AUCTION_MESSAGE_PATTERN,
   PLACE_FORWARD_BID_AUCTION_MESSAGE_PATTERN,
   RmqService,
   SEARCH_CATALOG_MESSAGE_PATTERN,
+  SELL_AUCITON_ITEM_MESSAGE_PATTERN,
   START_AUCTION_EVENT_PATTERN,
   VIEW_CATALOG_MESSAGE_PATTERN,
   VIEW_LISTING_MESSAGE_PATTERN,
@@ -21,6 +24,11 @@ import GetAuctionItemsForSellerMessage from '@app/shared-library/messages/get-au
 import CreateListingItemEvent from '@app/shared-library/messages/create-listing-item.message';
 import ViewListingMessage from '@app/shared-library/messages/view-listing.message';
 import GetAuctionItemMessage from '@app/shared-library/messages/get-auction-item.message';
+import PlaceForwardBidMessage from '@app/shared-library/messages/place-forward-bid.message';
+import PlaceDutchBidMessage from '@app/shared-library/messages/place-dutch-bid.message';
+import SellAuctionItemMessage from '@app/shared-library/messages/sell-auction-item.message';
+import GetAuctionItemsByListingItemsIdsMessage from '@app/shared-library/messages/get-auction-items-by-listing-ids.message';
+import GetListingItemByIdMessage from '@app/shared-library/messages/get-listing-item-by-id.message';
 
 @Controller()
 export class AuctionManagementController {
@@ -90,16 +98,43 @@ export class AuctionManagementController {
   }
 
   @MessagePattern(PLACE_FORWARD_BID_AUCTION_MESSAGE_PATTERN)
-  async handlePlaceForwardBidAuction(@Payload() data: any, @Ctx() context: RmqContext) {
+  async handlePlaceForwardBidAuction(@Payload() data: PlaceForwardBidMessage, @Ctx() context: RmqContext) {
     const auctionItem = await this.auctionManagementService.handlePlaceForwardBidAuction(data);
     this.rmqService.ack(context);
     return auctionItem;
   }
 
   @MessagePattern(PLACE_DUTCH_BID_AUCTION_MESSAGE_PATTERN)
-  async handlePlaceDutchBidAuction(@Payload() data: any, @Ctx() context: RmqContext) {
+  async handlePlaceDutchBidAuction(@Payload() data: PlaceDutchBidMessage, @Ctx() context: RmqContext) {
     const auctionItem = await this.auctionManagementService.handlePlaceDutchBidAuction(data);
     this.rmqService.ack(context);
     return auctionItem;
+  }
+
+  @MessagePattern(SELL_AUCITON_ITEM_MESSAGE_PATTERN)
+  async handleSellAuctionItem(@Payload() data: SellAuctionItemMessage, @Ctx() context: RmqContext) {
+    const listingItem = await this.auctionManagementService.handleSellAuctionItem(data.listing_item_id);
+    this.rmqService.ack(context);
+    return listingItem;
+  }
+
+  @MessagePattern(GET_AUCTION_ITEMS_BY_LISTING_ITEM_IDS_MESSAGE_PATTERN)
+  async handleGetAuctionItemsByListingItemsIds(
+    @Payload() data: GetAuctionItemsByListingItemsIdsMessage,
+    @Ctx() context: RmqContext,
+  ) {
+    const auctionItems = await this.auctionManagementService.handleGetAuctionItemsByListingItemsIds(data);
+    this.rmqService.ack(context);
+    return auctionItems;
+  }
+
+  @MessagePattern(GET_LISTING_ITEM_BY_ID_MESSAGE_PATTERN)
+  async handleGetListingItemById(
+    @Payload() getListingItemByIdMessage: GetListingItemByIdMessage,
+    @Ctx() context: RmqContext,
+  ) {
+    const listingItem = await this.auctionManagementService.handleGetListingItemById(getListingItemByIdMessage);
+    this.rmqService.ack(context);
+    return listingItem;
   }
 }

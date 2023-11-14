@@ -9,6 +9,9 @@ import * as passport from 'passport';
 import { rateLimiter } from './middleware/rate-limiter.middleware';
 import { TypeormStore } from 'connect-typeorm';
 import { SessionRepository } from './sessions/session-repo/session.repository';
+import { API_GATEWAY_SERVICE } from '@app/shared-library/configs/rmqConfig';
+import { RmqService } from '@app/shared-library';
+import { MicroserviceOptions } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -56,6 +59,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('api', app, document);
+
+  const rmqMicroservice = app.get<RmqService>(RmqService);
+
+  app.connectMicroservice<MicroserviceOptions>(rmqMicroservice.getOptions(API_GATEWAY_SERVICE));
 
   await app.startAllMicroservices();
 

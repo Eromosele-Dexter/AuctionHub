@@ -46,6 +46,10 @@ export class SellerEventController {
     @Res() response: Response,
   ) {
     try {
+      if (req.user.role !== 'seller') {
+        return response.status(HttpStatus.UNAUTHORIZED).json({ message: 'User unauthorized to create listing' });
+      }
+
       createListingRequest.image = image;
       createListingRequest.seller_id = req.user.id;
 
@@ -62,7 +66,12 @@ export class SellerEventController {
   @Post('/start-auction/:listingItemId')
   async startAuction(@Param('listingItemId') listing_item_id, @Request() req, @Res() response: Response) {
     try {
+      if (req.user.role !== 'seller') {
+        return response.status(HttpStatus.UNAUTHORIZED).json({ message: 'User unauthorized to create listing' });
+      }
+
       const seller_id = req.user.id;
+
       this.sellerService.startAuction(listing_item_id, seller_id);
     } catch (error) {
       return response
@@ -74,11 +83,15 @@ export class SellerEventController {
       .json({ message: `Auction started for item with id: ${listing_item_id} successfully` });
   }
 
-  // view item listing - inventory service
+  // view item listing - auction management service
 
   @UseGuards(AuthenticatedGuard)
   @Get('/view-listing')
   async viewListing(@Request() req, @Res() response: Response) {
+    if (req.user.role !== 'seller') {
+      return response.status(HttpStatus.UNAUTHORIZED).json({ message: 'User unauthorized to create listing' });
+    }
+
     const data = await this.sellerService.viewListing(req.user.id);
 
     if (data?.error || !data) {

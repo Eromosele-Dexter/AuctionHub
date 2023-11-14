@@ -146,7 +146,6 @@ export class AppService {
   }
 
   async searchCatalog(searchkeyword: string): Promise<SearchCatalogResponse> {
-    console.log('searchCatalog');
     const response = await new Promise<SearchCatalogResponse>((resolve, reject) => {
       this.auctionManagementClient
         .send(SEARCH_CATALOG_MESSAGE_PATTERN, new SearchCatalogMessage(searchkeyword))
@@ -160,10 +159,6 @@ export class AppService {
         });
     });
     return response;
-  }
-
-  async viewBiddingHistory() {
-    throw new Error('Method not implemented.');
   }
 
   async editProfile(userId: number, editProfileRequest: EditProfileRequest): Promise<EditProfileResponse> {

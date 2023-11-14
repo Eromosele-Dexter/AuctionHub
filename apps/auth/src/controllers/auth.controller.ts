@@ -8,12 +8,15 @@ import {
   RESET_PASSWORD_MESSAGE_PATTERN,
   EDIT_PROFILE_MESSAGE_PATTERN,
   RmqService,
+  GET_USERS_MESSAGE_PATTERN,
+  GET_SINGLE_USER_MESSAGE_PATTERN,
 } from '@app/shared-library';
 import SendValidationCodeEvent from '@app/shared-library/events/send-validation-code.event';
 import LoginUserMessage from '@app/shared-library/messages/login-user.message';
 import RegisterUserMessage from '@app/shared-library/messages/register-user.message';
 import ResetPasswordMessage from '@app/shared-library/messages/reset-password.message';
 import EditProfileMessage from '@app/shared-library/messages/edit-profile.message';
+import GetUsersMessage from '@app/shared-library/messages/get-users.message';
 
 @Controller()
 export class AuthController {
@@ -23,15 +26,15 @@ export class AuthController {
   ) {}
 
   @MessagePattern(REGISTER_USER_MESSAGE_PATTERN)
-  handleRegisterUser(@Payload() data: RegisterUserMessage, @Ctx() context: RmqContext) {
-    const registerUserResponse = this.authService.handleRegisterUser(data);
+  async handleRegisterUser(@Payload() data: RegisterUserMessage, @Ctx() context: RmqContext) {
+    const registerUserResponse = await this.authService.handleRegisterUser(data);
     this.rmqService.ack(context);
     return registerUserResponse;
   }
 
   @MessagePattern(LOGIN_USER_MESSAGE_PATTERN)
-  handleLoginUser(@Payload() data: LoginUserMessage, @Ctx() context: RmqContext) {
-    const loginUserResponse = this.authService.validateUser(data.username, data.password);
+  async handleLoginUser(@Payload() data: LoginUserMessage, @Ctx() context: RmqContext) {
+    const loginUserResponse = await this.authService.validateUser(data.username, data.password);
     this.rmqService.ack(context);
     return loginUserResponse;
   }
@@ -43,16 +46,30 @@ export class AuthController {
   }
 
   @MessagePattern(RESET_PASSWORD_MESSAGE_PATTERN)
-  handleResetPassword(@Payload() data: ResetPasswordMessage, @Ctx() context: RmqContext) {
-    const resetPasswordResponse = this.authService.handleResetPassword(data);
+  async handleResetPassword(@Payload() data: ResetPasswordMessage, @Ctx() context: RmqContext) {
+    const resetPasswordResponse = await this.authService.handleResetPassword(data);
     this.rmqService.ack(context);
     return resetPasswordResponse;
   }
 
   @MessagePattern(EDIT_PROFILE_MESSAGE_PATTERN)
-  handleEditProfile(@Payload() data: EditProfileMessage, @Ctx() context: RmqContext) {
-    const editProfileResponse = this.authService.handleEditProfile(data);
+  async handleEditProfile(@Payload() data: EditProfileMessage, @Ctx() context: RmqContext) {
+    const editProfileResponse = await this.authService.handleEditProfile(data);
     this.rmqService.ack(context);
     return editProfileResponse;
+  }
+
+  @MessagePattern(GET_USERS_MESSAGE_PATTERN)
+  async handleGetUsers(@Payload() data: GetUsersMessage, @Ctx() context: RmqContext) {
+    const users = await this.authService.handleGetUsersByIds(data);
+    this.rmqService.ack(context);
+    return users;
+  }
+
+  @MessagePattern(GET_SINGLE_USER_MESSAGE_PATTERN)
+  async handleGetSingleUser(@Payload() user_id: number, @Ctx() context: RmqContext) {
+    const user = await this.authService.handleGetSingleUser(user_id);
+    this.rmqService.ack(context);
+    return user;
   }
 }

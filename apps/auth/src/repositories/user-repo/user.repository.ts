@@ -55,4 +55,9 @@ export class UserRepository extends Repository<User> implements IUserRepository 
     const user = await this.dataSource.manager.query(`SELECT * FROM users WHERE email = '${email}'`);
     return user[0];
   }
+
+  async getUsersByIds(userIds: number[]): Promise<User[]> {
+    const users = await this.dataSource.manager.query(`SELECT * FROM users WHERE id IN (${userIds})`);
+    return users;
+  }
 }

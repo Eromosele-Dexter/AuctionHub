@@ -11,7 +11,7 @@ import { BidGateway } from './services/bid-gateway';
 import { jwtModule } from './modules.config';
 import { AuctionItemRepository } from 'apps/auction-management/src/repositories/auction-item-repo/auction-item.repository';
 import { AuctionItem } from 'apps/auction-management/src/entities/auction-item.entity';
-import { AUCTION_MANAGEMENT_SERVICE, RmqModule } from '@app/shared-library';
+import { API_GATEWAY_SERVICE, AUCTION_MANAGEMENT_SERVICE, AUTH_SERVICE, RmqModule } from '@app/shared-library';
 
 @Module({
   imports: [
@@ -21,6 +21,12 @@ import { AUCTION_MANAGEMENT_SERVICE, RmqModule } from '@app/shared-library';
     }),
     RmqModule.register({
       name: AUCTION_MANAGEMENT_SERVICE,
+    }),
+    RmqModule.register({
+      name: AUTH_SERVICE,
+    }),
+    RmqModule.register({
+      name: API_GATEWAY_SERVICE,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

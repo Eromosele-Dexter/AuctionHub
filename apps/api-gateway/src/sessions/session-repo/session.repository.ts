@@ -29,6 +29,14 @@ export class SessionRepository extends Repository<Session> {
     // updated_at = '${session.updated_at}'
     // WHERE id = ${session.id}`);
   }
+
+  async updateSessionHasActiveBid(session_id: string, has_active_bid: boolean, listing_item_id: number) {
+    const updatedSession = await this.dataSource.manager.query(
+      `UPDATE sessions SET has_active_bid = '${has_active_bid}', listing_item_id = ${listing_item_id} WHERE id = ${session_id}`,
+    );
+
+    this.save(updatedSession);
+  }
   async deleteSession(id: number): Promise<void> {
     throw new Error('Method not implemented.');
   }

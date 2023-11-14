@@ -1,4 +1,4 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { AuctionTypeRepository } from '../repositories/auction-type-repo/auction-type.repository';
 import { ItemKeywordRepository } from '../repositories/item-keyword-repo/item-keyword.repository';
 import { ItemRepository } from '../repositories/item-repo/item.repository';
@@ -7,25 +7,15 @@ import CreateListingEvent from '@app/shared-library/events/create-listing.event'
 import { Item } from '../entities/item.entity';
 import { Keyword } from '../entities/keyword.entity';
 import { ItemKeyword } from '../entities/item-keyword.entity';
-import ViewListingMessage from '@app/shared-library/messages/view-listing.message';
-import { ViewListingResponse } from '@app/shared-library/api-contracts/inventory/responses/view-listing.response';
-import { STATUS, VIEW_LISTING_ITEM_STATUS } from '@app/shared-library/types/status';
+import { STATUS } from '@app/shared-library/types/status';
 import {
   AUCTION_MANAGEMENT_SERVICE,
   CREATE_LISTING_ITEM_MESSAGE_PATTERN,
-  GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN,
   GET_LISTING_ITEM_MESSAGE_PATTERN,
-  VIEW_LISTING_ITEMS_MESSAGE_PATTERN,
 } from '@app/shared-library';
 import { ClientProxy } from '@nestjs/microservices';
-import { GetAuctionItemsForSellerResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-auction-items-for-seller.response';
-import GetAuctionItemsForSellerMessage from '@app/shared-library/messages/get-auction-items-for-seller.message';
-import { ViewListingItem } from '@app/shared-library/types/view-listing-item';
-import { GetAllActiveItemsResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-all-active-items.response';
-import { ActiveItem } from '@app/shared-library/types/active-item';
 import { AuctionType } from '../entities/auction-type.entity';
 import CreateListingItemEvent from '@app/shared-library/messages/create-listing-item.message';
-import { ViewListingItemsResponse } from '@app/shared-library/api-contracts/auction-management/responses/view-listing-items.response';
 import GetAuctionTypeMessage from '@app/shared-library/messages/get-auction-type.message';
 import { GetAuctionTypeResponse } from '@app/shared-library/api-contracts/inventory/responses/get-auction-type.response';
 import { CreateListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/create-listing-item.response';
@@ -33,6 +23,8 @@ import { GetListingItemResponse } from '@app/shared-library/api-contracts/auctio
 import GetListingItemMessage from '@app/shared-library/messages/get-listing-item.message';
 import SearchForListingItemsIdByKeywordMessage from '@app/shared-library/messages/search-for-listing-items-id-by-keyword.message';
 import { SearchForListingItemsIdByKeywordResponse } from '@app/shared-library/api-contracts/inventory/responses/search-listing-items-id.response';
+import GetAuctionTypeByNameMessage from '@app/shared-library/messages/get-auction-type-by-name.message';
+import { GetAuctionTypeObjectResponse } from '@app/shared-library/api-contracts/inventory/responses/get-auction-type-object.response';
 
 @Injectable()
 export class InventoryService {
@@ -211,99 +203,20 @@ export class InventoryService {
     }
   }
 
-  // TODO: ensure deletion of an entities cascades
-  // TODO: Need to include pagination in view catalog endpoint
-
-  // async handleViewListing(data: ViewListingMessage): Promise<ViewListingResponse> {
-  //   const { seller_id } = data;
-
-  //   const listingItems = (
-  //     await new Promise<ViewListingItemsResponse>((resolve, reject) => {
-  //       this.auctionManagementClient
-  //         .send(VIEW_LISTING_ITEMS_MESSAGE_PATTERN, new ViewListingMessage(seller_id))
-  //         .subscribe({
-  //           next: (response) => {
-  //             resolve(response);
-  //           },
-  //           error: (error) => {
-  //             reject(error);
-  //           },
-  //         });
-  //     })
-  //   ).listingItems;
-
-  //   const auctionItems = (
-  //     await new Promise<GetAuctionItemsForSellerResponse>((resolve, reject) => {
-  //       this.auctionManagementClient
-  //         .send(GET_AUCTION_ITEMS_FOR_SELLER_MESSAGE_PATTERN, new GetAuctionItemsForSellerMessage(data.seller_id))
-  //         .subscribe({
-  //           next: (response) => {
-  //             resolve(response);
-  //           },
-  //           error: (error) => {
-  //             reject(error);
-  //           },
-  //         });
-  //     })
-  //   ).auctionItems;
-
-  //   console.log('auctionItems: ', auctionItems);
-
-  //   const viewListingItems: ViewListingItem[] = [];
-
-  //   listingItems.forEach(async (item) => {
-  //     const matchingItem = auctionItems.find((auctionItem) => auctionItem.item_id === item.id);
-  //     const autId = item.auction_type_id;
-  //     console.log('autId: ', autId);
-  //     console.log('matchingItem: ', item);
-  //     const auctionType = await this.auctionTypeRepository.getAuctionTypeById(item.auction_type_id);
-
-  //     const end_time = item.end_time;
-
-  //     let status;
-
-  //     // has_been_sold -> status = sold
-  //     // end time < current time -> status = expired
-  //     // not matchingItem -> status = 'Draft'
-  //     // matching -> status = ongoing
-
-  //     console.log('auctionType: ', auctionType);
-
-  //     if (item.has_been_sold) {
-  //       status = VIEW_LISTING_ITEM_STATUS.SOLD;
-  //     } else if (end_time <= new Date()) {
-  //       status = VIEW_LISTING_ITEM_STATUS.EXPIRED;
-  //     } else if (!matchingItem) {
-  //       status = VIEW_LISTING_ITEM_STATUS.DRAFT;
-  //     } else {
-  //       status = VIEW_LISTING_ITEM_STATUS.ONGOING;
-  //     }
-
-  //     const current_bid_price = matchingItem ? matchingItem.current_bid_price : item.starting_bid_price;
-
-  //     const viewListingItem = new ViewListingItem(
-  //       item.id,
-  //       item.name,
-  //       item.description,
-  //       item.image_name,
-  //       auctionType.name,
-  //       status,
-  //       end_time,
-  //       current_bid_price,
-  //       item.image_url,
-  //     );
-
-  //     viewListingItems.push(viewListingItem);
-  //   });
-  //   return new ViewListingResponse(viewListingItems, 'Items successfully retrieved', STATUS.SUCCESS);
-  // }
-
-  async handleGetAuctionType(data: GetAuctionTypeMessage) {
+  async handleGetAuctionType(data: GetAuctionTypeMessage): Promise<GetAuctionTypeResponse> {
     const { auction_type_id } = data;
 
     const auctionType = await this.auctionTypeRepository.getAuctionTypeById(auction_type_id);
 
     return new GetAuctionTypeResponse(auctionType.name, 'Auction type successfully retrieved', STATUS.SUCCESS);
+  }
+
+  async handleGetAuctionTypeByName(data: GetAuctionTypeByNameMessage): Promise<GetAuctionTypeObjectResponse> {
+    const { auction_type_name } = data;
+
+    const auctionType = await this.auctionTypeRepository.getAuctionTypeByName(auction_type_name);
+
+    return new GetAuctionTypeObjectResponse(auctionType, 'Auction type successfully retrieved', STATUS.SUCCESS);
   }
 
   async handleSearchForListingItemsIdByKeyword(

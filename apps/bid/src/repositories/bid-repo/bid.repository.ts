@@ -12,8 +12,17 @@ export class BidRepository extends Repository<Bid> implements IBidRepository {
   }
 
   async createBid(bid: Bid): Promise<Bid> {
-    throw new Error('Method not implemented.');
+    this.dataSource.manager.create(Bid, bid);
+    return this.save(bid);
   }
+
+  async getBidsByListingItemId(listing_item_id: number): Promise<Bid[]> {
+    const bids = await this.dataSource.manager.query(
+      `SELECT * FROM bids WHERE listing_item_id = ${listing_item_id} ORDER BY created_at DESC`,
+    );
+    return bids;
+  }
+
   async getBidById(id: number): Promise<Bid> {
     throw new Error('Method not implemented.');
   }

@@ -43,18 +43,32 @@ export class AuctionItemRepository extends Repository<AuctionItem> implements IA
     this.save(auctionItem);
   }
 
-  // async searchAuctionItems(keyword: string): Promise<any[]> {
-  //   const searchItems = await this.dataSource.manager.query(`
-  //   SELECT auction_items.id, auction_items.name, auction_items.description, auction_items.image, auction_types.name AS auction_type_name, auction_items.end_time, auction_items.current_bid_price
-  // FROM auction_items
-  // INNER JOIN item_keywords ON auction_items.listing_item_id = item_keywords.listing_item_id
-  // INNER JOIN keywords ON item_keywords.keyword_id = keywords.id
-  // WHERE keywords.name = '${keyword}';
-  //   `);
-  //   return searchItems;
-  // }
+  async updateAuctionItemCurrentBidPrice(auctionItem: AuctionItem) {
+    this.dataSource.manager.query(
+      `UPDATE auction_items SET current_bid_price = ${auctionItem.current_bid_price} WHERE id = ${auctionItem.id}`,
+    );
+    this.save(auctionItem);
+  }
+
+  async getAuctionItemsByListingItemIds(listing_item_ids: number[]): Promise<AuctionItem[]> {
+    const auctionItems = await this.dataSource.manager.query(
+      `SELECT * FROM auction_items WHERE listing_item_id IN (${listing_item_ids})`,
+    );
+    return auctionItems;
+  }
 
   async deleteAuctionItem(id: number): Promise<void> {
     this.delete(id);
+  }
+
+  async deleteAuctionItemByListingItemId(listing_item_id: number) {
+    this.dataSource.manager.query(`DELETE FROM auction_items WHERE listing_item_id = ${listing_item_id}`);
+  }
+
+  async getAuctionItemsByAuctionTypeId(auctionTypeId: number): Promise<AuctionItem[]> {
+    const auctionItems = await this.dataSource.manager.query(
+      `SELECT * FROM auction_items WHERE auction_type_id = ${auctionTypeId}`,
+    );
+    return auctionItems;
   }
 }

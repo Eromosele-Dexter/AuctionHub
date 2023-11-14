@@ -9,15 +9,22 @@ export class Bid {
 
   @Column()
   // @ManyToOne(() => User, (user) => user.id, { nullable: false })
-  bidderId: number;
+  bidder_id: number;
 
   @Column()
   // @ManyToOne(() => Item, (item) => item.id, { nullable: false })
-  item_id: number;
+  listing_item_id: number;
 
   @Column()
-  bidAmount: number;
+  bid_amount: number;
 
   @Column({ type: 'bigint' })
   created_at: number;
+
+  constructor(bidder_id: number, listing_item_id: number, bid_amount: number, created_at: number) {
+    this.bidder_id = bidder_id;
+    this.listing_item_id = listing_item_id;
+    this.bid_amount = bid_amount;
+    this.created_at = created_at;
+  }
 }
