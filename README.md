@@ -1,73 +1,54 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+AuctionHub is an auction platform that connects bidders and sellers.
 
-## Installation
+## ATTENTION!! Installation
 
-```bash
-$ npm install
-```
+Pull the application from Github and Ensure you have your docker daemon running.
 
-## Running the app
+IMPORTANT:
 
-```bash
-# development
-$ npm run start
+## For the application to run successfully all SIX .env files need to be the associated directory:
 
-# watch mode
-$ npm run start:dev
+1. ./apps/api-gateway/.env
+2. ./apps/auth/.env
+3. ./apps/auction-management/.env
+4. ./apps/bid/.env
+5. ./apps/inventory/.env
+6. ./apps/payment/.env
 
-# production mode
-$ npm run start:prod
-```
+Note: The .env files should be requested for
 
-## Test
+## Running the app: Ensure the directory for all commands is in the api-gateway directory.
 
 ```bash
-# unit tests
-$ npm run test
 
-# e2e tests
-$ npm run test:e2e
+$ docker-compose up --build -V
 
-# test coverage
-$ npm run test:cov
 ```
 
-## Support
+## Restarting the app: Run all three commands in order and Ensure the directory for all commands is in the api-gateway directory.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
 
-## Stay in touch
+$ docker-compose down -v --remove-orphans
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+$ docker rmi $(docker images -q)
 
-## License
+$ docker-compose up --build -V
 
-Nest is [MIT licensed](LICENSE).
+```
+
+## API ENDPOINT INSTRUCTIONS
+
+Note: The application is not seeded, all necessary jsons needed are in the postman collection which is available upon request
+
+The follwing should be done in order:
+
+1. Register: Register Two Users preferably one as a seller and the other as a buyer
+2. Login: Login with seller user
+3. Create Listing: create multiple listings (your choice to create a single listing)
+4. Start Auction: start auction with one of the listing item ids returned from the view listing endpoint or use listing item id = 1
+5. Once the above instructions are complete all the endpoints in the postman collection should work as expected.
+
+Note: A seller can bid for and sell items. A buyer can only bid. Some endpoints prohibit any user apart from sellers to access it.
