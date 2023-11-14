@@ -334,7 +334,7 @@ export class AuctionManagementService {
     return new PlaceBidResponse(auctionItem, 'Bid placed successfully', STATUS.SUCCESS);
   }
 
-  async handleSellAuctionItem(listing_item_id: number) {
+  async handleSellAuctionItem(listing_item_id: number): Promise<SellAuctionItemResponse> {
     const listingItem = await this.listingItemRepository.getListingItemById(listing_item_id);
 
     const updatedListingItem = new ListingItem(

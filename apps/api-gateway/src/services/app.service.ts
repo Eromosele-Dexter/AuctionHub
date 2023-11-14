@@ -42,9 +42,6 @@ export class AppService {
   constructor(
     @Inject(AUCTION_MANAGEMENT_SERVICE) private readonly auctionManagementClient: ClientProxy,
     @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
-    @Inject(BID_SERVICE) private readonly bidClient: ClientProxy,
-    @Inject(INVENTORY_SERVICE) private readonly inventoryClient: ClientProxy,
-    @Inject(PAYMENT_SERVICE) private readonly paymentClient: ClientProxy,
   ) {}
 
   async registerUser(registerUserRequest: RegisterUserRequest): Promise<RegisterUserResponse> {

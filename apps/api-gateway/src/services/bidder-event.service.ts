@@ -1,10 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import {
+  AUCTION_MANAGEMENT_SERVICE,
   BID_SERVICE,
   CHECK_OUT_ITEM_MESSAGE_PATTERN,
   GET_BID_HISTORY_MESSAGE_PATTERN,
   PAYMENT_SERVICE,
+  SELL_AUCITON_ITEM_MESSAGE_PATTERN,
   VIEW_WATCH_LIST_MESSAGE_PATTERN,
 } from '@app/shared-library';
 import { SessionRepository } from '../sessions/session-repo/session.repository';
@@ -17,12 +19,15 @@ import ViewWatchListMessage from '@app/shared-library/messages/view-watch-list.m
 import { CheckoutRequest } from '@app/shared-library/api-contracts/payment/requests/check-out.request';
 import { CheckOutItemResponse } from '@app/shared-library/api-contracts/payment/responses/check-out.response';
 import CheckOutItemMessage from '@app/shared-library/messages/check-out-item.message';
+import { SellAuctionItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/sell-auction-item.response';
+import SellAuctionItemMessage from '@app/shared-library/messages/sell-auction-item.message';
 
 @Injectable()
 export class BidderEventService {
   constructor(
     @Inject(BID_SERVICE) private readonly bidClient: ClientProxy,
     @Inject(PAYMENT_SERVICE) private readonly paymentClient: ClientProxy,
+    @Inject(AUCTION_MANAGEMENT_SERVICE) private readonly auctionManagementClient: ClientProxy,
     private sessionRepository: SessionRepository,
   ) {}
 
@@ -74,6 +79,23 @@ export class BidderEventService {
           reject(error);
         },
       });
+    });
+
+    return response;
+  }
+
+  async sellAuctionItem(listing_item_id: number): Promise<SellAuctionItemResponse> {
+    const response = await new Promise<SellAuctionItemResponse>((resolve, reject) => {
+      this.auctionManagementClient
+        .send(SELL_AUCITON_ITEM_MESSAGE_PATTERN, new SellAuctionItemMessage(listing_item_id))
+        .subscribe({
+          next: (response) => {
+            resolve(response);
+          },
+          error: (error) => {
+            reject(error);
+          },
+        });
     });
 
     return response;

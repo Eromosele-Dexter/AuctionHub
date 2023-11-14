@@ -57,6 +57,22 @@ export class BidderEventController {
     return response.status(HttpStatus.CREATED).json(data);
   }
 
+  @UseGuards(AuthenticatedGuard)
+  @Post('/sell-item:listingItemId')
+  async sellAuctionItem(
+    @Param('listingItemId') listing_item_id: number,
+    @Request() req,
+    @Res() response: Response,
+  ) {
+    const data = await this.bidderService.sellAuctionItem(listing_item_id);
+
+    if (data?.error || !data) {
+      return response.status(HttpStatus.BAD_REQUEST).json(data);
+    }
+
+    return response.status(HttpStatus.CREATED).json(data);
+  }
+
   // checkout  - payment service
   @UseGuards(AuthenticatedGuard)
   @Post('/checkout')
