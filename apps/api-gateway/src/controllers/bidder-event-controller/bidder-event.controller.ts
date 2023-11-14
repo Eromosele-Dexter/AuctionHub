@@ -58,12 +58,8 @@ export class BidderEventController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post('/sell-item:listingItemId')
-  async sellAuctionItem(
-    @Param('listingItemId') listing_item_id: number,
-    @Request() req,
-    @Res() response: Response,
-  ) {
+  @Post('/sell-item/:listingItemId')
+  async sellAuctionItem(@Param('listingItemId') listing_item_id: number, @Res() response: Response) {
     const data = await this.bidderService.sellAuctionItem(listing_item_id);
 
     if (data?.error || !data) {
