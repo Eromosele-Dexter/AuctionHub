@@ -12,20 +12,25 @@ import { SessionRepository } from './sessions/session-repo/session.repository';
 import { API_GATEWAY_SERVICE } from '@app/shared-library/configs/rmqConfig';
 import { RmqService } from '@app/shared-library';
 import { MicroserviceOptions } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   const SessionRepo = app.get(SessionRepository);
+
+  const configService = app.get(ConfigService);
 
   app.setGlobalPrefix('api-gateway');
 
   app.use(rateLimiter);
 
   const COOKIE_EXPIRY = 3_600_000; // 1 hour
+
   app.use(
     session({
       name: 'bid_session_id',
-      secret: process.env.SESSION_SECRET,
+      secret: configService.get<string>('SESSION_SECRET'),
       resave: false,
       saveUninitialized: false,
       cookie: {

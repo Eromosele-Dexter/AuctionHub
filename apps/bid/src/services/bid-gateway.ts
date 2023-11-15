@@ -19,6 +19,9 @@ import { WsCatchAllFilter } from '../middleware/ws-catch-all-filter.middleware';
 import * as cookie from 'cookie';
 import axios from 'axios';
 import { API_GATEWAY_PORT } from '@app/shared-library';
+import * as cookieParser from 'cookie-parser';
+import { ConfigService } from '@nestjs/config';
+import * as cookieSignature from 'cookie-signature';
 
 @UseFilters(new WsCatchAllFilter())
 @WebSocketGateway({
@@ -26,7 +29,10 @@ import { API_GATEWAY_PORT } from '@app/shared-library';
 })
 export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
   private readonly logger = new Logger(BidGateway.name);
-  constructor(private readonly bidService: BidService) {}
+  constructor(
+    private readonly bidService: BidService,
+    private configService: ConfigService,
+  ) {}
 
   @WebSocketServer() io: Namespace;
 
@@ -39,19 +45,29 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     const sockets = this.io.sockets;
 
     this.logger.log(`WS Client with id: ${client.id} connected!`);
+
     this.logger.debug(`Number of connected sockets: ${sockets.size}`);
 
     const handshake = client.handshake;
 
-    // // Parse the cookies from the handshake headers
-    const cookies = cookie.parse(handshake.headers.cookie || '');
+    const retrievedCookie = handshake.headers.cookie;
 
-    // Access the bid_session_id cookie
-    const bidSessionId = cookies.bid_session_id;
+    const decodedCookie = decodeURIComponent(retrievedCookie);
+
+    if (!decodedCookie.startsWith('s:')) {
+      this.disconnectFromBadSession(client);
+    }
+
+    const bidSessionId = cookieSignature.unsign(
+      decodedCookie.slice(2),
+      this.configService.get<string>('SESSION_SECRET'),
+    );
 
     if (!bidSessionId) {
       this.disconnectFromBadSession(client);
     }
+
+    console.log('Bid Session Id: ', bidSessionId);
 
     // Store the bid_session_id in the client object
     client.data.bidSessionId = bidSessionId;
