@@ -4,6 +4,6 @@ export interface IListingItemRepository {
   createListingItem(listingItem: ListingItem): Promise<ListingItem>;
   getListingItemById(id: number): Promise<ListingItem>;
   getListingItems(): Promise<ListingItem[]>;
-  updateListingItem(listingItem: ListingItem);
+  updateListingItem(listingItem: ListingItem, listing_item_id: number): Promise<ListingItem>;
   deleteListingItem(id: number): Promise<void>;
 }

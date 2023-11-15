@@ -1,9 +1,8 @@
-import { AuctionItem } from 'apps/auction-management/src/entities/auction-item.entity';
 import { CustomResponse } from '../../response.response';
 
-export class SearchCatalogResponse extends CustomResponse {
+export class GetIsListingItemBeingAuctionedResponse extends CustomResponse {
   constructor(
-    public readonly data: AuctionItem[],
+    public readonly data: { listing_item_id: number | null; item_is_being_auctioned: boolean },
     public readonly message: string,
     public readonly status: string,
     public readonly error?: string,

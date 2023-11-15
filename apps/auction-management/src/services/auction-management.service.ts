@@ -43,6 +43,10 @@ import GetAuctionItemsByAuctionTypeMessage from '@app/shared-library/messages/ge
 import { GetAuctionTypeObjectResponse } from '@app/shared-library/api-contracts/inventory/responses/get-auction-type-object.response';
 import { GetListingItemByIdResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-listing-item-by-id.response';
 import GetListingItemByIdMessage from '@app/shared-library/messages/get-listing-item-by-id.message';
+import { UpdateListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/update-listing-item.response';
+import UpdateListingItemMessage from '@app/shared-library/messages/update-listing-item.message';
+import GetIsBeingAuctionedMessage from '@app/shared-library/messages/get-is-being-auctioned.message';
+import { GetIsListingItemBeingAuctionedResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-is-being-auctioned.response';
 
 @Injectable()
 export class AuctionManagementService {
@@ -171,6 +175,30 @@ export class AuctionManagementService {
     return new ViewListingResponse(viewListingItems, 'Items successfully retrieved', STATUS.SUCCESS);
   }
 
+  async handleUpdateListingItem(data: UpdateListingItemMessage): Promise<UpdateListingItemResponse> {
+    const { listing_item, listing_item_id } = data;
+
+    const updatedListingItem = await this.listingItemRepository.updateListingItem(listing_item, listing_item_id);
+
+    return new UpdateListingItemResponse(updatedListingItem, 'Item updated successfully', STATUS.SUCCESS);
+  }
+
+  async handleGetIsBeingAuctioned(
+    data: GetIsBeingAuctionedMessage,
+  ): Promise<GetIsListingItemBeingAuctionedResponse> {
+    const { item_id } = data;
+
+    const listing_item_id = (await this.listingItemRepository.getListingItemByItemId(item_id)).id;
+
+    const auctionItem = await this.auctionItemRepository.getAuctionItemByListingItemId(listing_item_id);
+
+    return new GetIsListingItemBeingAuctionedResponse(
+      { listing_item_id, item_is_being_auctioned: auctionItem !== undefined },
+      'Listing item being auctioned object retrieved successfully',
+      STATUS.SUCCESS,
+    );
+  }
+
   async handleStartAuction(data: StartAuctionEvent) {
     const { listing_item_id, seller_id } = data;
 
@@ -200,33 +228,36 @@ export class AuctionManagementService {
   async handleViewCatalog(data: ViewCatalogMessage): Promise<ViewCatalogResponse> {
     const { userId } = data;
 
-    const viewCatalogItems = await this.auctionItemRepository.getAuctionItems();
+    const viewCatalogItems = (await this.auctionItemRepository.getAuctionItems()).filter(
+      (item) => item.end_time > new Date().getTime(),
+    );
 
     Logger.log(`User with id ${userId} requested to view catalog`);
 
     return new ViewCatalogResponse(viewCatalogItems, 'Catalog retrieved successfully', STATUS.SUCCESS);
   }
 
-  getUniqueCatalogItems(searchResults: any[]): any[] {
-    const uniqueitem_ids = new Set<string>();
-    const uniqueItems: any[] = [];
+  getUniqueCatalogItems(searchResults: AuctionItem[]): AuctionItem[] {
+    const uniqueitem_ids = new Set<number>();
+    const uniqueItems: AuctionItem[] = [];
 
     for (const item of searchResults) {
-      if (!uniqueitem_ids.has(item.item_id)) {
-        uniqueitem_ids.add(item.item_id);
+      if (!uniqueitem_ids.has(item.listing_item_id)) {
+        uniqueitem_ids.add(item.listing_item_id);
         uniqueItems.push(item);
       }
     }
-
     return uniqueItems;
   }
 
   async handleSearchCatalog(data: SearchCatalogMessage): Promise<SearchCatalogResponse> {
-    const searchkeyword = data.searchKeyword;
+    const searchkeyword = data.searchKeyword.toLowerCase();
 
     // find if the keyword exists in the db and filter items
 
-    const catalogItems = await this.auctionItemRepository.getAuctionItems();
+    const catalogItems = (await this.auctionItemRepository.getAuctionItems()).filter(
+      (item) => item.end_time > new Date().getTime(),
+    );
 
     const listingItemIds = (
       await new Promise<SearchForListingItemsIdByKeywordResponse>((resolve, reject) => {
@@ -260,23 +291,23 @@ export class AuctionManagementService {
 
     const uniqueItems = this.getUniqueCatalogItems(searchResults);
 
+    console.log('uniqueItems: ', uniqueItems);
+
     const searchCatalogItems: AuctionItem[] = [];
 
-    uniqueItems.forEach((item) => {
-      if (item.end_time > new Date().getTime()) {
-        const searchCatalogItem = new AuctionItem(
-          item.item_id,
-          item.seller_id,
-          item.end_time,
-          item.starting_bid_price,
-          item.current_bid_price,
-          item.name,
-          item.description,
-          item.decrement_amount,
-        );
-        searchCatalogItems.push(searchCatalogItem);
-      }
-    });
+    for (const item of uniqueItems) {
+      const searchCatalogItem = new AuctionItem(
+        item.listing_item_id,
+        item.seller_id,
+        item.end_time,
+        item.starting_bid_price,
+        item.current_bid_price,
+        item.name,
+        item.description,
+        item.decrement_amount,
+      );
+      searchCatalogItems.push(searchCatalogItem);
+    }
 
     return new SearchCatalogResponse(
       searchCatalogItems,

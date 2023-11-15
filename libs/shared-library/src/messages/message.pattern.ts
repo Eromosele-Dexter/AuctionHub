@@ -29,3 +29,5 @@ export const GET_AUCTION_TYPE_BY_NAME_MESSAGE_PATTERN = 'get_auction_type_by_nam
 export const CHECK_OUT_ITEM_MESSAGE_PATTERN = 'check_out_item_message';
 export const GET_SINGLE_USER_MESSAGE_PATTERN = 'get_single_user_message';
 export const GET_LISTING_ITEM_BY_ID_MESSAGE_PATTERN = 'get_listing_item_by_id_message';
+export const UPDATE_LISTING_ITEM_MESSAGE_PATTERN = 'update_listing_item_message';
+export const GET_IS_BEING_AUCTIONED_MESSAGE_PATTERN = 'get_is_being_auctioned_message';

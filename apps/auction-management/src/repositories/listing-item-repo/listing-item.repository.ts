@@ -28,6 +28,13 @@ export class ListingItemRepository extends Repository<ListingItem> implements IL
     return listingItem[0];
   }
 
+  async getListingItemByItemId(item_id: number): Promise<ListingItem> {
+    const listingItem = await this.dataSource.manager.query(
+      `SELECT * FROM listing_items WHERE item_id = ${item_id}`,
+    );
+    return listingItem[0];
+  }
+
   async getListingItemsByseller_id(seller_id: number): Promise<ListingItem[]> {
     const listingItems = await this.dataSource.manager.query(
       `SELECT * FROM listing_items WHERE seller_id = ${seller_id}`,
@@ -39,15 +46,29 @@ export class ListingItemRepository extends Repository<ListingItem> implements IL
     return this.find();
   }
 
-  async updateListingItem(listingItem: ListingItem) {
-    this.dataSource.manager.query(
-      `UPDATE listing_items SET name = '${listingItem.name}', starting_bid_price = '${listingItem.starting_bid_price}',
-        description = '${listingItem.description}', image_name = '${listingItem.image_name}', image_url = '${listingItem.image_url}',
-        auction_type_id = '${listingItem.auction_type_id}', end_time = '${listingItem.end_time}', decrement_amount = '${listingItem.decrement_amount}',
-        created_at = '${listingItem.created_at}' 
-       WHERE id = ${listingItem.id}`,
-    );
-    this.save(listingItem);
+  async updateListingItem(listingItem: ListingItem, listing_item_id: number): Promise<ListingItem> {
+    console.log('listingItemId from listing repo:', listing_item_id);
+    await this.dataSource.manager
+      .createQueryBuilder()
+      .update(ListingItem)
+      .set({
+        name: listingItem.name,
+        item_id: listingItem.item_id,
+        seller_id: listingItem.seller_id,
+        starting_bid_price: listingItem.starting_bid_price,
+        description: listingItem.description,
+        image_name: listingItem.image_name,
+        image_url: listingItem.image_url,
+        auction_type_id: listingItem.auction_type_id,
+        end_time: listingItem.end_time,
+        decrement_amount: listingItem.decrement_amount,
+        created_at: listingItem.created_at,
+        has_been_sold: listingItem.has_been_sold,
+      })
+      .where('id = :id', { id: listing_item_id })
+      .execute();
+
+    return this.dataSource.manager.findOne(ListingItem, { where: { id: listing_item_id } });
   }
 
   async updateListingItemHasSold(listingItem: ListingItem) {

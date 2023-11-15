@@ -11,7 +11,9 @@ import { STATUS } from '@app/shared-library/types/status';
 import {
   AUCTION_MANAGEMENT_SERVICE,
   CREATE_LISTING_ITEM_MESSAGE_PATTERN,
+  GET_IS_BEING_AUCTIONED_MESSAGE_PATTERN,
   GET_LISTING_ITEM_MESSAGE_PATTERN,
+  UPDATE_LISTING_ITEM_MESSAGE_PATTERN,
 } from '@app/shared-library';
 import { ClientProxy } from '@nestjs/microservices';
 import { AuctionType } from '../entities/auction-type.entity';
@@ -25,6 +27,11 @@ import SearchForListingItemsIdByKeywordMessage from '@app/shared-library/message
 import { SearchForListingItemsIdByKeywordResponse } from '@app/shared-library/api-contracts/inventory/responses/search-listing-items-id.response';
 import GetAuctionTypeByNameMessage from '@app/shared-library/messages/get-auction-type-by-name.message';
 import { GetAuctionTypeObjectResponse } from '@app/shared-library/api-contracts/inventory/responses/get-auction-type-object.response';
+import UpdateListingItemMessage from '@app/shared-library/messages/update-listing-item.message';
+import GetIsBeingAuctionedMessage from '@app/shared-library/messages/get-is-being-auctioned.message';
+import { GetIsListingItemBeingAuctionedResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-is-being-auctioned.response';
+import { ListingItem } from 'apps/auction-management/src/entities/listing-item.entity';
+import { UpdateListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/update-listing-item.response';
 
 @Injectable()
 export class InventoryService {
@@ -56,7 +63,7 @@ export class InventoryService {
 
     const item = new Item(
       data.seller_id,
-      data.name.toLocaleLowerCase(),
+      data.name.toLowerCase(),
       data.description,
       data.image_name,
       data.created_at,
@@ -66,16 +73,69 @@ export class InventoryService {
       data.image_url,
     );
 
-    // dont create item if the seller already has an item with the same name
+    // dont create item if the seller already has an item with the same name instead update item
     const existingItem = await this.itemRepository.getItemByNameAndseller_id(item.name, item.seller_id);
 
+    console.log('existingItem:', existingItem);
+
     if (existingItem) {
+      const listingItemIsBeingAuctionedResponse = (
+        await new Promise<GetIsListingItemBeingAuctionedResponse>((resolve, reject) => {
+          this.auctionManagementClient
+            .send(GET_IS_BEING_AUCTIONED_MESSAGE_PATTERN, new GetIsBeingAuctionedMessage(existingItem.id))
+            .subscribe({
+              next: (response) => {
+                resolve(response);
+              },
+              error: (error) => {
+                reject(error);
+              },
+            });
+        })
+      ).data;
+
+      if (listingItemIsBeingAuctionedResponse.item_is_being_auctioned) {
+        return;
+      }
+
+      const existingListingItemId = listingItemIsBeingAuctionedResponse.listing_item_id;
+
+      const updatedListingItem = new ListingItem(
+        data.name.toLowerCase(),
+        existingItem.id,
+        data.seller_id,
+        data.starting_bid_price,
+        data.description,
+        data.image_name,
+        data.image_url,
+        auction_type_id,
+        data.end_time,
+        auctionType.name === 'forward' ? -1 : data.decrement_amount,
+        data.created_at,
+        false,
+      );
+
       item.id = existingItem.id;
 
       await this.itemRepository.updateItem(item);
-      // TODO: update listing item in auction management service
+
+      await new Promise<UpdateListingItemResponse>((resolve, reject) => {
+        this.auctionManagementClient
+          .send(
+            UPDATE_LISTING_ITEM_MESSAGE_PATTERN,
+            new UpdateListingItemMessage(updatedListingItem, existingListingItemId),
+          )
+          .subscribe({
+            next: (response) => {
+              resolve(response);
+            },
+            error: (error) => {
+              reject(error);
+            },
+          });
+      });
     } else {
-      // // create item
+      // create item
 
       await this.itemRepository.createItem(item);
 
