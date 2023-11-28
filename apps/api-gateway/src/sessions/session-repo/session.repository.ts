@@ -10,36 +10,25 @@ export class SessionRepository extends Repository<Session> {
     super(Session, dataSource.createEntityManager());
   }
 
-  async createSession(session: Session): Promise<Session> {
-    throw new Error('Method not implemented.');
-  }
   async getSessionById(id: string): Promise<Session> {
     const session = await this.dataSource.manager.query(`SELECT * FROM sessions WHERE id = '${id}'`);
     return session[0];
   }
-  async getSessions(): Promise<Session[]> {
-    throw new Error('Method not implemented.');
-  }
-  async updateSession(session: Session) {
-    // const updatedSession = await this.dataSource.manager.query(`UPDATE sessions SET
-    // userId = '${session.json.passport.user.id}',
-    // token = '${session.token}',
-    // expiresAt = '${session.expiresAt}',
-    // created_at = '${session.created_at}',
-    // updated_at = '${session.updated_at}'
-    // WHERE id = ${session.id}`);
-  }
 
   async updateSessionHasActiveBid(session_id: string, has_active_bid: boolean, listing_item_id: number) {
-    const updatedSession = await this.dataSource.manager.query(
-      `UPDATE sessions SET has_active_bid = '${has_active_bid}', listing_item_id = ${listing_item_id} WHERE id = ${session_id}`,
+    console.log(
+      'session_id: ',
+      session_id,
+      'has_active_bid: ',
+      has_active_bid,
+      'listing_item_id: ',
+      listing_item_id,
     );
+    const updatedSession = await this.dataSource.manager.query(
+      `UPDATE sessions SET has_active_bid = '${has_active_bid}', listing_item_id = ${listing_item_id} WHERE id = '${session_id}'`,
+    );
+  }
 
-    this.save(updatedSession);
-  }
-  async deleteSession(id: number): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
   async getSessionByToken(token: string): Promise<Session> {
     throw new Error('Method not implemented.');
   }

@@ -324,7 +324,7 @@ export class AuctionManagementService {
     const auctionItem = await this.auctionItemRepository.getAuctionItemByListingItemId(listing_item_id);
 
     return new GetAuctionItemResponse(
-      { ...auctionItem, has_been_sold: listingItem.has_been_sold },
+      { auction_item: auctionItem, has_been_sold: listingItem.has_been_sold },
       'Auction item retrieved successfully',
       STATUS.SUCCESS,
     );
@@ -346,7 +346,7 @@ export class AuctionManagementService {
       auctionItem.decrement_amount,
     );
 
-    await this.auctionItemRepository.updateAuctionItemCurrentBidPrice(updatedAuctionItem);
+    await this.auctionItemRepository.updateAuctionItemCurrentBidPrice(updatedAuctionItem, auction_item_id);
 
     return new PlaceBidResponse(updatedAuctionItem, 'Bid placed successfully', STATUS.SUCCESS);
   }
@@ -385,7 +385,7 @@ export class AuctionManagementService {
 
     // has been sold should be updated
 
-    await this.listingItemRepository.updateListingItemHasSold(updatedListingItem);
+    await this.listingItemRepository.updateListingItemHasSold(updatedListingItem, listing_item_id);
 
     // delete auction item entry to indicate its no longer available
     await this.auctionItemRepository.deleteAuctionItemByListingItemId(listing_item_id);
@@ -458,7 +458,7 @@ export class AuctionManagementService {
         item.decrement_amount,
       );
 
-      await this.auctionItemRepository.updateAuctionItemCurrentBidPrice(updatedAuctionItem);
+      await this.auctionItemRepository.updateAuctionItemCurrentBidPrice(updatedAuctionItem, item.id);
     }
   }
 }

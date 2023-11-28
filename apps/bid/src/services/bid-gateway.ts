@@ -16,10 +16,8 @@ import { PlaceBidRequest } from '@app/shared-library/api-contracts/bid/requests/
 import { exceptionFactory } from '../middleware/bid-gateway.middleware';
 import { STATUS } from '@app/shared-library/types';
 import { WsCatchAllFilter } from '../middleware/ws-catch-all-filter.middleware';
-import * as cookie from 'cookie';
 import axios from 'axios';
 import { API_GATEWAY_PORT } from '@app/shared-library';
-import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import * as cookieSignature from 'cookie-signature';
 
@@ -97,11 +95,11 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
       // check if user is authenticated and has placed bid by sending a request to the bidder controller in api-gateway by passing user cookie
       // called bid_session_id
 
-      const retrieveSessionResponse = await axios.get(
-        `http://localhost:${API_GATEWAY_PORT}/retrieve-session/${bidSessionId}`,
-      );
+      const url = `http://api-gateway:${API_GATEWAY_PORT}/api-gateway/retrieve-session/${bidSessionId}`;
 
-      console.log('Retrieve Session Response: ', retrieveSessionResponse);
+      console.log('URL: ', url);
+
+      const retrieveSessionResponse = await axios.get(url);
 
       if (retrieveSessionResponse.status === 400) {
         this.disconnectFromBadSession(client);
@@ -115,7 +113,10 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
       const bidSessionData = bidSession.data;
 
-      if (bidSessionData.hasActiveBid && bidSessionData.listing_item_id !== placeBidRequest.listing_item_id) {
+      const bidIsInvalid =
+        bidSessionData.has_active_bid && bidSessionData.listing_item_id !== placeBidRequest.listing_item_id;
+
+      if (bidIsInvalid === undefined || bidIsInvalid === null || bidIsInvalid) {
         client.emit('bidError', {
           error: 'Bid Session Already Active',
           message: 'Bid Session Already Active',
@@ -123,6 +124,8 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
         });
         return;
       }
+
+      console.log('bid is invalid: ', bidIsInvalid);
 
       const response = await this.bidService.handlePlaceBid(placeBidRequest, bidSessionId);
 
@@ -144,7 +147,7 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
   // private checkSessionExpiry() {
   //     this.io.sockets.forEach(client => {
-  //         // const sessionStartTime = // get from session object returned by api-gateway
+  //         // const sessionEndTime = // get from session object returned by api-gateway
   //         // if (sessionStartTime && (new Date().getTime() - sessionStartTime.getTime()) > 3600000) { // 1 hour
   //         //     client.disconnect(); // Disconnect the client
   //         // }

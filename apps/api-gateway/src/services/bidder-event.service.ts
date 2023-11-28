@@ -21,6 +21,7 @@ import { CheckOutItemResponse } from '@app/shared-library/api-contracts/payment/
 import CheckOutItemMessage from '@app/shared-library/messages/check-out-item.message';
 import { SellAuctionItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/sell-auction-item.response';
 import SellAuctionItemMessage from '@app/shared-library/messages/sell-auction-item.message';
+import { Console } from 'console';
 
 @Injectable()
 export class BidderEventService {

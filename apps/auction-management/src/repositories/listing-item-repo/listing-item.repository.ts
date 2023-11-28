@@ -47,7 +47,6 @@ export class ListingItemRepository extends Repository<ListingItem> implements IL
   }
 
   async updateListingItem(listingItem: ListingItem, listing_item_id: number): Promise<ListingItem> {
-    console.log('listingItemId from listing repo:', listing_item_id);
     await this.dataSource.manager
       .createQueryBuilder()
       .update(ListingItem)
@@ -71,11 +70,10 @@ export class ListingItemRepository extends Repository<ListingItem> implements IL
     return this.dataSource.manager.findOne(ListingItem, { where: { id: listing_item_id } });
   }
 
-  async updateListingItemHasSold(listingItem: ListingItem) {
+  async updateListingItemHasSold(listingItem: ListingItem, listing_item_id: number) {
     this.dataSource.manager.query(
-      `UPDATE listing_items SET has_been_sold = '${listingItem.has_been_sold}' WHERE id = ${listingItem.id}`,
+      `UPDATE listing_items SET has_been_sold = '${listingItem.has_been_sold}' WHERE id = ${listing_item_id}`,
     );
-    this.save(listingItem);
   }
 
   async deleteListingItem(id: number): Promise<void> {

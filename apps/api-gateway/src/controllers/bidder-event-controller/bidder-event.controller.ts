@@ -9,8 +9,9 @@ import { CheckoutRequest } from '@app/shared-library/api-contracts/payment/reque
 export class BidderEventController {
   constructor(private readonly bidderService: BidderEventService) {}
 
-  @Post('/retrieve-session/:bidSessionId')
+  @Get('/retrieve-session/:bidSessionId')
   async retrieveSession(@Param('bidSessionId') bidSessionId: string, @Res() response: Response) {
+    console.log('Bid Session Id from gateway: ', bidSessionId);
     const data = await this.bidderService.handleRetrieveSession(bidSessionId);
 
     if (data?.error || !data) {
@@ -23,9 +24,10 @@ export class BidderEventController {
   @Post('/bid/:bidSessionId')
   async placeBid(
     @Param('bidSessionId') bidSessionId: string,
-    @Request() updateHasActiveBidRequest: UpdateHasActiveBidRequest,
+    @Body() updateHasActiveBidRequest: UpdateHasActiveBidRequest,
     @Res() response: Response,
   ) {
+    console.log('Bid Session Id from gateway: ', bidSessionId);
     const data = await this.bidderService.updateHasActiveBid(updateHasActiveBidRequest, bidSessionId);
 
     return response.status(HttpStatus.CREATED).json(data);

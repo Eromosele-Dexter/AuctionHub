@@ -56,16 +56,23 @@ export class BidService {
         });
     });
 
-    const item = itemResponse.data;
+    const item = itemResponse.data.auction_item;
 
-    if (!item || new Date().getTime() >= item.end_time || item.has_been_sold) {
+    if (!item || new Date().getTime() >= item.end_time || itemResponse.data.has_been_sold) {
       throw new Error('Auction for this item has ended or does not exist.');
     }
 
     if (item.decrement_amount === -1) {
       const updatedItem = this.handleForwardAuction(bidder_id, bid_amount, itemResponse);
 
-      const placeBidResponse = await axios.post(`http://localhost:${API_GATEWAY_PORT}/bid/${bidSessionId}`);
+      //TODO: consider making post requests to rabbitmq events for performance
+
+      const placeBidResponse = await axios.post(
+        `http://api-gateway:${API_GATEWAY_PORT}/api-gateway/bid/${bidSessionId}`,
+        { listing_item_id: listing_item_id },
+      );
+
+      // TODO: add error checking for placeBidResponse
 
       const bid = new Bid(bidder_id, listing_item_id, bid_amount, new Date().getTime());
 
@@ -79,7 +86,12 @@ export class BidService {
     } else {
       const updatedItem = this.handleDutchAuction(bidder_id, itemResponse);
 
-      const placeBidResponse = await axios.post(`http://localhost:${API_GATEWAY_PORT}/bid/${bidSessionId}`);
+      const placeBidResponse = await axios.post(
+        `http://api-gateway:${API_GATEWAY_PORT}/api-gateway/bid/${bidSessionId}`,
+        { listing_item_id: listing_item_id },
+      );
+
+      // TODO: add error checking for placeBidResponse
 
       const bid = new Bid(bidder_id, listing_item_id, bid_amount, new Date().getTime());
 
@@ -169,9 +181,9 @@ export class BidService {
     bid_amount: number,
     itemResponse: GetAuctionItemResponse,
   ): Promise<PlaceBidResponse> {
-    const item = itemResponse.data;
+    const auctionItem = itemResponse.data.auction_item;
 
-    if (bid_amount <= item.current_bid_price) {
+    if (bid_amount <= auctionItem.current_bid_price) {
       throw new Error('Bid must be higher than the current bid.');
     }
 
@@ -179,7 +191,7 @@ export class BidService {
       this.auctionManagementClient
         .send(
           PLACE_FORWARD_BID_AUCTION_MESSAGE_PATTERN,
-          new PlaceForwardBidMessage(bidder_id, item.listing_item_id, item.id, bid_amount),
+          new PlaceForwardBidMessage(bidder_id, auctionItem.listing_item_id, auctionItem.id, bid_amount),
         )
         .subscribe({
           next: (response) => {
@@ -198,7 +210,7 @@ export class BidService {
     bidder_id: number,
     itemResponse: GetAuctionItemResponse,
   ): Promise<PlaceBidResponse> {
-    const item = itemResponse.data;
+    const item = itemResponse.data.auction_item;
 
     const reservePrice = 0.1 * item.starting_bid_price; // reserve price is 10% of starting bid price
 
