@@ -88,7 +88,6 @@ export class AuctionManagementController {
 
   @MessagePattern(SEARCH_CATALOG_MESSAGE_PATTERN)
   async handleSearchCatalog(@Payload() data: SearchCatalogMessage, @Ctx() context: RmqContext) {
-    console.log('handleSearchCatalog');
     const handleSearchCatalogResponse = await this.auctionManagementService.handleSearchCatalog(data);
     this.rmqService.ack(context);
     return handleSearchCatalogResponse;
@@ -96,7 +95,6 @@ export class AuctionManagementController {
 
   @MessagePattern(GET_AUCTION_ITEM_MESSAGE_PATTERN)
   async handleGetAuctionItem(@Payload() data: GetAuctionItemMessage, @Ctx() context: RmqContext) {
-    console.log('handleGetAuctionItem');
     const auctionItemResponse = await this.auctionManagementService.handleGetAuctionItem(data);
     this.rmqService.ack(context);
     return auctionItemResponse;
