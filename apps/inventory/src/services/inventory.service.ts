@@ -76,8 +76,6 @@ export class InventoryService {
     // dont create item if the seller already has an item with the same name instead update item
     const existingItem = await this.itemRepository.getItemByNameAndseller_id(item.name, item.seller_id);
 
-    console.log('existingItem:', existingItem);
-
     if (existingItem) {
       const listingItemIsBeingAuctionedResponse = (
         await new Promise<GetIsListingItemBeingAuctionedResponse>((resolve, reject) => {

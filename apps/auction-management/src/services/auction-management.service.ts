@@ -279,19 +279,11 @@ export class AuctionManagementService {
 
     const searchResultsKeyword = catalogItems.filter((item) => listingItemIds.includes(item.listing_item_id));
 
-    console.log('search by keyword: ', searchResultsKeyword);
-
     const searchResultsFilter = catalogItems.filter((item) => item.name.includes(searchkeyword));
-
-    console.log('catalogItems: ', catalogItems);
-
-    console.log('search by name: ', searchResultsFilter);
 
     const searchResults = searchResultsKeyword.concat(searchResultsFilter);
 
     const uniqueItems = this.getUniqueCatalogItems(searchResults);
-
-    console.log('uniqueItems: ', uniqueItems);
 
     const searchCatalogItems: AuctionItem[] = [];
 

@@ -11,7 +11,6 @@ export class BidderEventController {
 
   @Get('/retrieve-session/:bidSessionId')
   async retrieveSession(@Param('bidSessionId') bidSessionId: string, @Res() response: Response) {
-    console.log('Bid Session Id from gateway: ', bidSessionId);
     const data = await this.bidderService.handleRetrieveSession(bidSessionId);
 
     if (data?.error || !data) {
@@ -27,7 +26,6 @@ export class BidderEventController {
     @Body() updateHasActiveBidRequest: UpdateHasActiveBidRequest,
     @Res() response: Response,
   ) {
-    console.log('Bid Session Id from gateway: ', bidSessionId);
     const data = await this.bidderService.updateHasActiveBid(updateHasActiveBidRequest, bidSessionId);
 
     return response.status(HttpStatus.CREATED).json(data);

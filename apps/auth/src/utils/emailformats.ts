@@ -1,6 +1,8 @@
-export const VALIDATION_CODE_EMAIL_SUBJECT = 'Welcome to Auction Hub!';
+export const VALIDATION_CODE_EMAIL_SUBJECT = 'Welcome to Auction Hub!👋🏽';
 
-export function registrationEmailFormat(username: string, isHtml?: boolean) {
+export const REGISTRATION_EMAIL_SUBJECT = 'Welcome to Auction Hub!👋🏽';
+
+export function registrationEmailFormat(username: string, isHtml?: boolean): string {
   if (isHtml) {
     return `
         <p>Dear ${username},</p>
@@ -12,11 +14,11 @@ export function registrationEmailFormat(username: string, isHtml?: boolean) {
             <li>Connect with a community of fellow auction enthusiasts.</li>
         </ul>
         <p>We're thrilled to have you as a part of our community. Your journey with Auction Hub begins today, and we look forward to sharing many incredible auction experiences with you.</p>
-        <p>If you have any questions, need assistance, or want to learn more about how to get the most out of your Auction Hub account, feel free to reach out to our support team at <a href="mailto:[Support Email Address]">[Support Email Address]</a>.</p>
+        <p>If you have any questions, need assistance, or want to learn more about how to get the most out of your Auction Hub account, feel free to reach out to our support team at <a href="dextere2512@gmail.com">Support</a>.</p>
         <p>Thank you for choosing Auction Hub. We're here to make your auction experience exceptional.</p>
-        <p>Best regards,<br>The Auction Hub Team</p>
+        <p>Best regards,<br>The Auction Hub Team</p><br>
         <p><img src="[Company Logo URL]" alt="Auction Hub Logo"></p>
-        <p><b>Auction Hub - Your Trusted Online Auction Platform</b><br>Website: <a href="[Auction Hub Website]">[Auction Hub Website]</a><br>Email: <a href="mailto:auctionHub@info.com">auctionHub@info.com</a></p>
+        <p><b>Auction Hub - Your Trusted Online Auction Platform</b><br>Website: <a href="https://imaginative-speculoos-2736de.netlify.app/">Auction Hub</a><br>Email: <a href="mailto:dextere2512@gmail.com">dextere2512@gmail.com</a></p>
         `;
   }
   return `
@@ -31,7 +33,7 @@ export function registrationEmailFormat(username: string, isHtml?: boolean) {
     Connect with a community of fellow auction enthusiasts.
     We're thrilled to have you as a part of our community. Your journey with Auction Hub begins today, and we look forward to sharing many incredible auction experiences with you.
     
-    If you have any questions, need assistance, or want to learn more about how to get the most out of your Auction Hub account, feel free to reach out to our support team at auctionHub@info.com.
+    If you have any questions, need assistance, or want to learn more about how to get the most out of your Auction Hub account, feel free to reach out to our support team at dextere2512@gmail.com.
     
     Thank you for choosing Auction Hub. We're here to make your auction experience exceptional.
     
@@ -41,8 +43,8 @@ export function registrationEmailFormat(username: string, isHtml?: boolean) {
     [Company Logo]
     
     Auction Hub - Your Trusted Online Auction Platform
-    Website: [Auction Hub Website]
-    Email: auctionHub@info.com.
+    Website: https://imaginative-speculoos-2736de.netlify.app/
+    Email: dextere2512@gmail.com.
     `;
 }
 
@@ -58,13 +60,13 @@ export function validationCodeEmailFormat(username: string, validationCode: numb
         <p>To reset your password, please click on the following link or copy and paste it into your web browser:</p>
         <p>If you did not request a password reset or believe this request is not initiated by you, please disregard this email. Your account security is important to us.</p>
         <p>Please note that the validation code provided above is an essential part of the password reset process. Make sure to enter it correctly on the password reset page.</p>
-        <p>If you have any questions or need further assistance, please don't hesitate to contact our support team at <a href="mailto:auctionHub@info.com">auctionHub@info.com.</a></p>
+        <p>If you have any questions or need further assistance, please don't hesitate to contact our support team at <a href="mailto:dextere2512@gmail.com">dextere2512@gmail.com.</a></p>
         <p>Thank you for choosing Auction Hub.</p>
         <p>Best regards, <br>The Auction Hub Team</p>
         <img src="[Company Logo]" alt="Auction Hub Logo">
         <p>Auction Hub - Your Trusted Online Auction Platform</p>
-        <p>Website: <a href="[Auction Hub Website]">[Auction Hub Website]</a></p>
-        <p>Email: <a href="mailto:auctionHub@info.com">auctionHub@info.com</a></p>
+        <p>Website: <a href="https://imaginative-speculoos-2736de.netlify.app/">[Auction Hub Website]</a></p>
+        <p>Email: <a href="mailto:dextere2512@gmail.com">dextere2512@gmail.com</a></p>
         `;
   }
   return `  
@@ -79,7 +81,7 @@ export function validationCodeEmailFormat(username: string, validationCode: numb
     
     Please note that the validation code provided above is an essential part of the password reset process. Make sure to enter it correctly on the password reset page.
     
-    If you have any questions or need further assistance, please don't hesitate to contact our support team at auctionHub@info.com.
+    If you have any questions or need further assistance, please don't hesitate to contact our support team at dextere2512@gmail.com.
     
     Thank you for choosing Auction Hub.
     
@@ -89,11 +91,11 @@ export function validationCodeEmailFormat(username: string, validationCode: numb
     [Company Logo]
     
     Auction Hub - Your Trusted Online Auction Platform
-    Website: [Auction Hub Website]
-    Email: auctionHub@info.com`;
+    Website: https://imaginative-speculoos-2736de.netlify.app/
+    Email: dextere2512@gmail.com`;
 }
 
-export const AUCTION_WON_EMAIL_SUBJECT = 'Congratulations on Winning the Auction!';
+export const AUCTION_WON_EMAIL_SUBJECT = 'Congratulations on Winning the Auction!🏅';
 
 export function auctionWonEmailFormat(username: string, itemName: string, isHtml?: boolean) {
   if (isHtml) {
@@ -116,8 +118,8 @@ export function auctionWonEmailFormat(username: string, itemName: string, isHtml
           </div>
           <div style="text-align: center; padding: 20px;">
             <p><strong>The Auction Hub Team</strong></p>
-            <p><a href="[Auction Hub Website]">Auction Hub - Your Trusted Online Auction Platform</a></p>
-            <p>Email: <a href="mailto:auctionHub@info.com">auctionHub@info.com</a></p>
+            <p><a href="https://imaginative-speculoos-2736de.netlify.app/">Auction Hub - Your Trusted Online Auction Platform</a></p>
+            <p>Email: <a href="mailto:dextere2512@gmail.com">dextere2512@gmail.com</a></p>
           </div>
         </div>
       </div>
@@ -134,7 +136,7 @@ export function auctionWonEmailFormat(username: string, itemName: string, isHtml
     
     To complete the transaction and receive your item, please follow the instructions provided in the auction listing or contact the seller directly.
     
-    If you have any questions or need further assistance regarding this purchase, please don't hesitate to reach out to our support team at auctionHub@info.com. We're here to help.
+    If you have any questions or need further assistance regarding this purchase, please don't hesitate to reach out to our support team at dextere2512@gmail.com. We're here to help.
 
     Thank you for choosing Auction Hub, and congratulations once again on your winning bid!
 
@@ -144,7 +146,7 @@ export function auctionWonEmailFormat(username: string, itemName: string, isHtml
     [Company Logo]
 
     Auction Hub - Your Trusted Online Auction Platform
-    Website: [Auction Hub Website]
-    Email: auctionHub@info.com
+    Website: https://imaginative-speculoos-2736de.netlify.app/
+    Email: dextere2512@gmail.com
     `;
 }

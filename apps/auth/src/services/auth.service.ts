@@ -5,14 +5,18 @@ import { ROLES, STATUS } from '@app/shared-library/types';
 import { LoginUserResponse, RegisterUserResponse } from '@app/shared-library';
 import RegisterUserMessage from '@app/shared-library/messages/register-user.message';
 import SendValidationCodeEvent from '@app/shared-library/events/send-validation-code.event';
-import * as sgMail from '@sendgrid/mail';
 import { SendGridService } from './sendgrid.service';
 import { ValidationCodeRepository } from '../repositories/validation-codes-repo/code.repository';
 import { ValidationCode } from '../entities/validation-code.entity';
 import { ResetPasswordResponse } from '@app/shared-library/api-contracts/auth/responses/reset-password.response';
 import ResetPasswordMessage from '@app/shared-library/messages/reset-password.message';
 import { generateValidationCode } from '../utils/generateCode';
-import { VALIDATION_CODE_EMAIL_SUBJECT, validationCodeEmailFormat } from '../utils/emailformats';
+import {
+  REGISTRATION_EMAIL_SUBJECT,
+  VALIDATION_CODE_EMAIL_SUBJECT,
+  registrationEmailFormat,
+  validationCodeEmailFormat,
+} from '../utils/emailformats';
 import EditProfileMessage from '@app/shared-library/messages/edit-profile.message';
 import { EditProfileResponse } from '@app/shared-library/api-contracts/auth/responses/edit-profile.response';
 import GetUsersMessage from '@app/shared-library/messages/get-users.message';
@@ -25,9 +29,7 @@ export class AuthService {
     private userRepository: UserRepository,
     private validationCodeRepository: ValidationCodeRepository,
     private sendGridService: SendGridService,
-  ) {
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-  }
+  ) {}
 
   async handleRegisterUser(registerUserMessage: RegisterUserMessage): Promise<RegisterUserResponse> {
     const user = new User(
@@ -69,7 +71,13 @@ export class AuthService {
 
     this.userRepository.createUser(user);
 
-    //TODO: send welcome email
+    this.sendGridService.sendEmail(
+      registerUserMessage.email,
+      REGISTRATION_EMAIL_SUBJECT,
+      registrationEmailFormat(registerUserMessage.first_name),
+      registrationEmailFormat(registerUserMessage.first_name, true),
+    );
+
     return new RegisterUserResponse(user, 'User created', STATUS.SUCCESS);
   }
 

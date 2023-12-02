@@ -45,7 +45,6 @@ export class AppService {
   ) {}
 
   async registerUser(registerUserRequest: RegisterUserRequest): Promise<RegisterUserResponse> {
-    console.log(this.authClient);
     const response = await new Promise<RegisterUserResponse>((resolve, reject) => {
       this.authClient
         .send(
