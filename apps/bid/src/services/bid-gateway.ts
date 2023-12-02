@@ -97,8 +97,6 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
       const url = `http://api-gateway:${API_GATEWAY_PORT}/api-gateway/retrieve-session/${bidSessionId}`;
 
-      console.log('URL: ', url);
-
       const retrieveSessionResponse = await axios.get(url);
 
       if (retrieveSessionResponse.status === 400) {
@@ -125,9 +123,16 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
         return;
       }
 
-      console.log('bid is invalid: ', bidIsInvalid);
-
       const response = await this.bidService.handlePlaceBid(placeBidRequest, bidSessionId);
+
+      if (!response) {
+        this.io.emit('bid', {
+          error: 'Invalid Bid due to either price or item has expired.',
+          message: `Bid Failure on item with listing id: ${placeBidRequest.listing_item_id}`,
+          status: STATUS.FAILED,
+        });
+        return;
+      }
 
       this.io.emit('bid', {
         data: response,

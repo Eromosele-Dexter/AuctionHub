@@ -58,8 +58,16 @@ export class BidService {
 
     const item = itemResponse.data.auction_item;
 
+    const auctionItem = itemResponse.data.auction_item;
+
+    if (bid_amount <= auctionItem.current_bid_price) {
+      console.log('Bid must be higher than the current bid.');
+      return false;
+    }
+
     if (!item || new Date().getTime() >= item.end_time || itemResponse.data.has_been_sold) {
-      throw new Error('Auction for this item has ended or does not exist.');
+      console.log('Auction for this item has ended or does not exist.');
+      return false;
     }
 
     if (item.decrement_amount === -1) {
@@ -133,7 +141,8 @@ export class BidService {
       if (user) {
         biddingHistoryItems.push(
           new BiddingHistoryItem(
-            user.first_name + ' ' + user.last_name.substring(0, 1) + '.',
+            // user.first_name + ' ' + user.last_name.substring(0, 1) + '.',
+            user.username,
             bid.bid_amount,
             bid.created_at,
           ),
@@ -180,12 +189,8 @@ export class BidService {
     bidder_id: number,
     bid_amount: number,
     itemResponse: GetAuctionItemResponse,
-  ): Promise<PlaceBidResponse> {
+  ): Promise<PlaceBidResponse | boolean> {
     const auctionItem = itemResponse.data.auction_item;
-
-    if (bid_amount <= auctionItem.current_bid_price) {
-      throw new Error('Bid must be higher than the current bid.');
-    }
 
     const updatedAuctionItem = await new Promise<PlaceBidResponse>((resolve, reject) => {
       this.auctionManagementClient
@@ -209,14 +214,8 @@ export class BidService {
   private async handleDutchAuction(
     bidder_id: number,
     itemResponse: GetAuctionItemResponse,
-  ): Promise<PlaceBidResponse> {
+  ): Promise<PlaceBidResponse | boolean> {
     const item = itemResponse.data.auction_item;
-
-    const reservePrice = 0.1 * item.starting_bid_price; // reserve price is 10% of starting bid price
-
-    if (item.current_bid_price < reservePrice) {
-      throw new Error('Bid must be higher than the reserve price.');
-    }
 
     const updatedAuctionItem = await new Promise<PlaceBidResponse>((resolve, reject) => {
       this.auctionManagementClient
