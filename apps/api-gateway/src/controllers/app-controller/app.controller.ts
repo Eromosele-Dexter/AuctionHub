@@ -35,6 +35,8 @@ export class AppController {
       return response.status(HttpStatus.BAD_REQUEST).json(data);
     }
 
+    loginUserRequest.session.user = data;
+
     return response.status(HttpStatus.OK).json(data);
   }
 

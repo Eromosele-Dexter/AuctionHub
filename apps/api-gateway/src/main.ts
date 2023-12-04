@@ -35,6 +35,9 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         maxAge: COOKIE_EXPIRY,
+        secure: true, // Set to true if using HTTPS, false otherwise
+        httpOnly: true,
+        sameSite: 'none', // or 'strict' based on your requirements
       },
       store: new TypeormStore({}).connect(SessionRepo),
     }),
@@ -44,7 +47,7 @@ async function bootstrap() {
   app.use(passport.session());
 
   const corsOptions: CorsOptions = {
-    origin: '*',
+    origin: 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     allowedHeaders: 'Content-Type, Accept',
