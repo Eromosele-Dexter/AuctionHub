@@ -218,6 +218,7 @@ export class AuctionManagementService {
       listingItem.starting_bid_price,
       listingItem.name,
       listingItem.description,
+      listingItem.image_url,
       listingItem.decrement_amount,
     );
 
@@ -296,6 +297,7 @@ export class AuctionManagementService {
         item.current_bid_price,
         item.name,
         item.description,
+        item.image_url,
         item.decrement_amount,
       );
       searchCatalogItems.push(searchCatalogItem);
@@ -335,6 +337,7 @@ export class AuctionManagementService {
       bid_amount,
       auctionItem.name,
       auctionItem.description,
+      auctionItem.image_url,
       auctionItem.decrement_amount,
     );
 
@@ -447,6 +450,7 @@ export class AuctionManagementService {
         reservePrice > new_bid_price ? reservePrice : new_bid_price,
         item.name,
         item.description,
+        item.image_url,
         item.decrement_amount,
       );
 

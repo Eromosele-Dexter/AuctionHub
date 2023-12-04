@@ -30,6 +30,8 @@ import { BiddingHistoryItem } from '@app/shared-library/types/bidding-history';
 import { GetAuctionItemsByListingitemIdsResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-auction-items-by-listing-item-ids.response';
 import GetAuctionItemsByListingItemsIdsMessage from '@app/shared-library/messages/get-auction-items-by-listing-ids.message';
 import { WatchListItem } from '../entities/watch-list-item.entity';
+import { WATCH_LISTING_ITEM_STATUS } from '@app/shared-library/types/status';
+import { AuctionItem } from 'apps/auction-management/src/entities/auction-item.entity';
 
 @Injectable()
 export class BidService {
@@ -182,7 +184,31 @@ export class BidService {
       })
     ).data;
 
-    return new ViewWatchListResponse(auctionItems, 'Watch list retrieved successfully', 'success');
+    const watchListItemsWithStatus: (AuctionItem & { status: string })[] = [];
+
+    for (const auctionItem of auctionItems) {
+      let status: string;
+
+      const highestBid = await this.bidRepository.getHighestBidByListingItem_id(auctionItem.listing_item_id);
+
+      const highestBidderId = highestBid?.bidder_id;
+
+      // default -> status = watching
+      // highestBidderId === userId -> status = highest bidder
+      // highestBidderId !== userId -> status = outbid
+
+      if (highestBid && highestBidderId === data.user_id) {
+        status = WATCH_LISTING_ITEM_STATUS.HIGHEST_BIDDER;
+      } else if (highestBid && highestBidderId !== data.user_id) {
+        status = WATCH_LISTING_ITEM_STATUS.OUTBID;
+      } else {
+        status = WATCH_LISTING_ITEM_STATUS.WATCHING;
+      }
+
+      watchListItemsWithStatus.push({ ...auctionItem, status: status });
+    }
+
+    return new ViewWatchListResponse(watchListItemsWithStatus, 'Watch list retrieved successfully', 'success');
   }
 
   private async handleForwardAuction(

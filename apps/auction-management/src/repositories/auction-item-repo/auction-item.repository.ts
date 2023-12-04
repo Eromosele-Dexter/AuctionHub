@@ -49,6 +49,10 @@ export class AuctionItemRepository extends Repository<AuctionItem> implements IA
   }
 
   async getAuctionItemsByListingItemIds(listing_item_ids: number[]): Promise<AuctionItem[]> {
+    if (listing_item_ids.length === 0) {
+      return [];
+    }
+
     const auctionItems = await this.dataSource.manager.query(
       `SELECT * FROM auction_items WHERE listing_item_id IN (${listing_item_ids})`,
     );

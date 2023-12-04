@@ -31,6 +31,9 @@ export class AuctionItem {
   @Column({ name: 'decrement_amount', nullable: true })
   decrement_amount: number; // if the auction is a dutch auction, this is the amount to decrement the price by
 
+  @Column({ name: 'image_url' })
+  image_url: string;
+
   constructor(
     listing_item_id: number,
     seller_id: number,
@@ -39,6 +42,7 @@ export class AuctionItem {
     current_bid_price: number,
     name: string,
     description: string,
+    image_url: string,
     decrement_amount?: number,
   ) {
     this.listing_item_id = listing_item_id;
@@ -48,6 +52,7 @@ export class AuctionItem {
     this.current_bid_price = current_bid_price;
     this.name = name;
     this.description = description;
+    this.image_url = image_url;
     this.decrement_amount = decrement_amount;
   }
 }

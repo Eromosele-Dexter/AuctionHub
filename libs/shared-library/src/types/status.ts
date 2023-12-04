@@ -12,7 +12,7 @@ export const VIEW_LISTING_ITEM_STATUS = {
 };
 
 export const WATCH_LISTING_ITEM_STATUS = {
-  WATHCING: 'watching',
+  WATCHING: 'watching',
   HIGHEST_BIDDER: 'highest bidder',
   OUTBID: 'outbid',
   WON: 'won',
