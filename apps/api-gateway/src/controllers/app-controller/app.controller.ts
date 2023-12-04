@@ -19,8 +19,10 @@ export class AppController {
     const data = await this.appService.registerUser(registerUserRequest);
 
     if (data?.error || !data) {
+      console.log('BAD REQUEST');
       return response.status(HttpStatus.BAD_REQUEST).json(data);
     }
+    console.log('CREATED');
     return response.status(HttpStatus.CREATED).json(data);
   }
 

@@ -13,9 +13,18 @@ import { API_GATEWAY_SERVICE } from '@app/shared-library/configs/rmqConfig';
 import { RmqService } from '@app/shared-library';
 import { MicroserviceOptions } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const httpsOptions = {
+    key: readFileSync(join(__dirname, 'localhost+2-key.pem')),
+    cert: readFileSync(join(__dirname, 'localhost+2.pem')),
+  };
+
+  const app = await NestFactory.create(AppModule, {
+    httpsOptions,
+  });
 
   const SessionRepo = app.get(SessionRepository);
 
@@ -47,7 +56,7 @@ async function bootstrap() {
   app.use(passport.session());
 
   const corsOptions: CorsOptions = {
-    origin: 'http://localhost:3000',
+    origin: 'https://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     allowedHeaders: 'Content-Type, Accept',
