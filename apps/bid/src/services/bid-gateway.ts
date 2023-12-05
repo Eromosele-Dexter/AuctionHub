@@ -50,7 +50,9 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
     const retrievedCookie = handshake.headers.cookie;
 
-    const decodedCookie = decodeURIComponent(retrievedCookie);
+    const decodedCookie = decodeURIComponent(retrievedCookie).replace(/bid_session_id=/g, '');
+
+    console.log('Decoded Cookie: ', decodedCookie);
 
     if (!decodedCookie.startsWith('s:')) {
       this.disconnectFromBadSession(client);

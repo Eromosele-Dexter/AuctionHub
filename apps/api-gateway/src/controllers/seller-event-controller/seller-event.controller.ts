@@ -98,7 +98,7 @@ export class SellerEventController {
       return response.status(HttpStatus.BAD_REQUEST).json(data);
     }
 
-    return response.status(HttpStatus.CREATED).json(data);
+    return response.status(HttpStatus.OK).json(data);
   }
 
   @UseGuards(AuthenticatedGuard)
