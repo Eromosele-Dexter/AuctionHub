@@ -57,6 +57,7 @@ export class UserRepository extends Repository<User> implements IUserRepository 
   }
 
   async getUsersByIds(userIds: number[]): Promise<User[]> {
+    if (userIds.length === 0) return [];
     const users = await this.dataSource.manager.query(`SELECT * FROM users WHERE id IN (${userIds})`);
     return users;
   }

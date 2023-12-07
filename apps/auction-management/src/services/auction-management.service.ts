@@ -219,6 +219,7 @@ export class AuctionManagementService {
       listingItem.name,
       listingItem.description,
       listingItem.image_url,
+      listingItem.auction_type_id == 1 ? 'dutch' : 'forward',
       listingItem.decrement_amount,
     );
 
@@ -227,13 +228,13 @@ export class AuctionManagementService {
 
   // TODO: Need to include pagination in view catalog endpoint
   async handleViewCatalog(data: ViewCatalogMessage): Promise<ViewCatalogResponse> {
-    const { userId } = data;
+    // const { userId } = data;
 
     const viewCatalogItems = (await this.auctionItemRepository.getAuctionItems()).filter(
       (item) => item.end_time > new Date().getTime(),
     );
 
-    Logger.log(`User with id ${userId} requested to view catalog`);
+    // Logger.log(`User with id ${userId} requested to view catalog`);
 
     return new ViewCatalogResponse(viewCatalogItems, 'Catalog retrieved successfully', STATUS.SUCCESS);
   }
@@ -298,6 +299,7 @@ export class AuctionManagementService {
         item.name,
         item.description,
         item.image_url,
+        item.auction_type,
         item.decrement_amount,
       );
       searchCatalogItems.push(searchCatalogItem);
@@ -338,6 +340,7 @@ export class AuctionManagementService {
       auctionItem.name,
       auctionItem.description,
       auctionItem.image_url,
+      auctionItem.auction_type,
       auctionItem.decrement_amount,
     );
 
@@ -451,6 +454,7 @@ export class AuctionManagementService {
         item.name,
         item.description,
         item.image_url,
+        item.auction_type,
         item.decrement_amount,
       );
 

@@ -32,6 +32,7 @@ import GetAuctionItemsByListingItemsIdsMessage from '@app/shared-library/message
 import { WatchListItem } from '../entities/watch-list-item.entity';
 import { WATCH_LISTING_ITEM_STATUS } from '@app/shared-library/types/status';
 import { AuctionItem } from 'apps/auction-management/src/entities/auction-item.entity';
+import * as https from 'https';
 
 @Injectable()
 export class BidService {
@@ -62,8 +63,15 @@ export class BidService {
 
     const auctionItem = itemResponse.data.auction_item;
 
-    if (bid_amount <= auctionItem.current_bid_price) {
+    const auctionType = auctionItem.auction_type;
+
+    if (auctionType === 'forward' && bid_amount <= auctionItem.current_bid_price) {
       console.log('Bid must be higher than the current bid.');
+      return false;
+    }
+
+    if (auctionType === 'dutch' && bid_amount !== auctionItem.current_bid_price) {
+      console.log('Bid amount must be same as current bid price.');
       return false;
     }
 
@@ -72,14 +80,23 @@ export class BidService {
       return false;
     }
 
+    // console.log('hereee2');
+
+    const agent = new https.Agent({
+      rejectUnauthorized: false,
+    });
+
+    // console.log('agent1: ', agent);
+
     if (item.decrement_amount === -1) {
-      const updatedItem = this.handleForwardAuction(bidder_id, bid_amount, itemResponse);
+      const updatedItem = await this.handleForwardAuction(bidder_id, bid_amount, itemResponse);
 
       //TODO: consider making post requests to rabbitmq events for performance
 
       const placeBidResponse = await axios.post(
-        `http://api-gateway:${API_GATEWAY_PORT}/api-gateway/bid/${bidSessionId}`,
+        `https://api-gateway:${API_GATEWAY_PORT}/api-gateway/bid/${bidSessionId}`,
         { listing_item_id: listing_item_id },
+        { httpsAgent: agent },
       );
 
       // TODO: add error checking for placeBidResponse
@@ -92,13 +109,14 @@ export class BidService {
 
       const createdWatchListItem = await this.watchListItemRepository.createWatchListItem(watchListItem);
 
-      return updatedItem;
+      return updatedItem.data;
     } else {
-      const updatedItem = this.handleDutchAuction(bidder_id, itemResponse);
+      const updatedItem = await this.handleDutchAuction(bidder_id, itemResponse);
 
       const placeBidResponse = await axios.post(
-        `http://api-gateway:${API_GATEWAY_PORT}/api-gateway/bid/${bidSessionId}`,
+        `https://api-gateway:${API_GATEWAY_PORT}/api-gateway/bid/${bidSessionId}`,
         { listing_item_id: listing_item_id },
+        { httpsAgent: agent },
       );
 
       // TODO: add error checking for placeBidResponse
@@ -111,7 +129,7 @@ export class BidService {
 
       const createdWatchListItem = await this.watchListItemRepository.createWatchListItem(watchListItem);
 
-      return updatedItem;
+      return updatedItem.data;
     }
   }
 
@@ -215,7 +233,7 @@ export class BidService {
     bidder_id: number,
     bid_amount: number,
     itemResponse: GetAuctionItemResponse,
-  ): Promise<PlaceBidResponse | boolean> {
+  ): Promise<PlaceBidResponse> {
     const auctionItem = itemResponse.data.auction_item;
 
     const updatedAuctionItem = await new Promise<PlaceBidResponse>((resolve, reject) => {
@@ -240,7 +258,7 @@ export class BidService {
   private async handleDutchAuction(
     bidder_id: number,
     itemResponse: GetAuctionItemResponse,
-  ): Promise<PlaceBidResponse | boolean> {
+  ): Promise<PlaceBidResponse> {
     const item = itemResponse.data.auction_item;
 
     const updatedAuctionItem = await new Promise<PlaceBidResponse>((resolve, reject) => {

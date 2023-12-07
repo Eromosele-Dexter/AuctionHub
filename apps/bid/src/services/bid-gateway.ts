@@ -20,6 +20,7 @@ import axios from 'axios';
 import { API_GATEWAY_PORT } from '@app/shared-library';
 import { ConfigService } from '@nestjs/config';
 import * as cookieSignature from 'cookie-signature';
+import * as https from 'https';
 
 @UseFilters(new WsCatchAllFilter())
 @WebSocketGateway({
@@ -96,10 +97,16 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
       // check if user is authenticated and has placed bid by sending a request to the bidder controller in api-gateway by passing user cookie
       // called bid_session_id
+      // console.log('hereee');
+      const agent = new https.Agent({
+        rejectUnauthorized: false,
+      });
 
-      const url = `http://api-gateway:${API_GATEWAY_PORT}/api-gateway/retrieve-session/${bidSessionId}`;
+      // console.log('agent: ', agent);
 
-      const retrieveSessionResponse = await axios.get(url);
+      const url = `https://api-gateway:${API_GATEWAY_PORT}/api-gateway/retrieve-session/${bidSessionId}`;
+
+      const retrieveSessionResponse = await axios.get(url, { httpsAgent: agent });
 
       if (retrieveSessionResponse.status === 400) {
         this.disconnectFromBadSession(client);
@@ -117,6 +124,7 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
         bidSessionData.has_active_bid && bidSessionData.listing_item_id !== placeBidRequest.listing_item_id;
 
       if (bidIsInvalid === undefined || bidIsInvalid === null || bidIsInvalid) {
+        console.log('bidIsInvalid: ', bidIsInvalid);
         client.emit('bidError', {
           error: 'Bid Session Already Active',
           message: 'Bid Session Already Active',
@@ -137,7 +145,7 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
       }
 
       this.io.emit('bid', {
-        data: response,
+        data: { ...response, bidder_id: data.bidder_id },
         message: `Bid Successfully Placed on item with listing id: ${placeBidRequest.listing_item_id}`,
         status: STATUS.SUCCESS,
       });

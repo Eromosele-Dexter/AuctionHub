@@ -98,10 +98,10 @@ export class AppController {
 
   // view catalog -  auction management service
 
-  @UseGuards(AuthenticatedGuard)
+  // @UseGuards(AuthenticatedGuard)
   @Get('/catalog')
   async viewCatalog(@Request() req, @Res() response: Response) {
-    const data = await this.appService.viewCatalog(req.user.id);
+    const data = await this.appService.viewCatalog(req?.user?.id || -1);
 
     if (data?.error || !data) {
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(data);

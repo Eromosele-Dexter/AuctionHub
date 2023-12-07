@@ -17,6 +17,9 @@ export class BidRepository extends Repository<Bid> implements IBidRepository {
   }
 
   async getBidsByListingItemId(listing_item_id: number): Promise<Bid[]> {
+    if (!listing_item_id) {
+      return [];
+    }
     const bids = await this.dataSource.manager.query(
       `SELECT * FROM bids WHERE listing_item_id = ${listing_item_id} ORDER BY created_at DESC`,
     );

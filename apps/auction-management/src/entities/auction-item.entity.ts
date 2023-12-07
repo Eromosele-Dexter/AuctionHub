@@ -34,6 +34,9 @@ export class AuctionItem {
   @Column({ name: 'image_url' })
   image_url: string;
 
+  @Column({ name: 'aucion_type' })
+  auction_type: string;
+
   constructor(
     listing_item_id: number,
     seller_id: number,
@@ -43,6 +46,7 @@ export class AuctionItem {
     name: string,
     description: string,
     image_url: string,
+    auction_type: string,
     decrement_amount?: number,
   ) {
     this.listing_item_id = listing_item_id;
@@ -53,6 +57,7 @@ export class AuctionItem {
     this.name = name;
     this.description = description;
     this.image_url = image_url;
+    this.auction_type = auction_type;
     this.decrement_amount = decrement_amount;
   }
 }
