@@ -2,8 +2,10 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import StartAuctionEvent from '@app/shared-library/events/start-auction.event';
 import { AuctionItemRepository } from '../repositories/auction-item-repo/auction-item.repository';
 import {
+  BID_SERVICE,
   GET_AUCTION_TYPE_BY_NAME_MESSAGE_PATTERN,
   GET_AUCTION_TYPE_MESSAGE_PATTERN,
+  GET_BID_HISTORY_MESSAGE_PATTERN,
   INVENTORY_SERVICE,
   SEARCH_FOR_LISTING_ITEMS_ID_BY_KEYWORD_MESSAGE_PATTERN,
 } from '@app/shared-library';
@@ -47,6 +49,8 @@ import { UpdateListingItemResponse } from '@app/shared-library/api-contracts/auc
 import UpdateListingItemMessage from '@app/shared-library/messages/update-listing-item.message';
 import GetIsBeingAuctionedMessage from '@app/shared-library/messages/get-is-being-auctioned.message';
 import { GetIsListingItemBeingAuctionedResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-is-being-auctioned.response';
+import ViewBiddingHistoryMessage from '@app/shared-library/messages/get-bidding-history.message';
+import { ViewBiddingHistoryResponse } from '@app/shared-library/api-contracts/bid/responses/get-bidding-history-for-item.response';
 
 @Injectable()
 export class AuctionManagementService {
@@ -54,6 +58,7 @@ export class AuctionManagementService {
     private auctionItemRepository: AuctionItemRepository,
     private listingItemRepository: ListingItemRepository,
     @Inject(INVENTORY_SERVICE) private readonly inventoryClient: ClientProxy,
+    @Inject(BID_SERVICE) private readonly bidClient: ClientProxy,
   ) {}
 
   async handleCreateListingItem(data: CreateListingItemMessage): Promise<CreateListingItemResponse> {
@@ -137,7 +142,26 @@ export class AuctionManagementService {
         })
       ).data;
 
+      const listingItemBidHistory = (
+        await new Promise<ViewBiddingHistoryResponse>((resolve, reject) => {
+          this.bidClient
+            .send(GET_BID_HISTORY_MESSAGE_PATTERN, new ViewBiddingHistoryMessage(listingItem.id))
+            .subscribe({
+              next: (response) => {
+                resolve(response);
+              },
+              error: (error) => {
+                reject(error);
+              },
+            });
+        })
+      ).data;
+
       const end_time = listingItem.end_time;
+
+      const itemHasExpired = end_time <= new Date().getTime();
+
+      const forwardAuctionEndedAndIsPending = listingItemBidHistory.length > 0 && itemHasExpired;
 
       let status: string;
 
@@ -147,8 +171,10 @@ export class AuctionManagementService {
       // matching -> status = ongoing
 
       if (listingItem.has_been_sold) {
-        status = VIEW_LISTING_ITEM_STATUS.SOLD;
-      } else if (end_time <= new Date().getTime()) {
+        status = VIEW_LISTING_ITEM_STATUS.SOLD; // someone checked out the item and has paid
+      } else if (forwardAuctionEndedAndIsPending) {
+        status = VIEW_LISTING_ITEM_STATUS.PENDING;
+      } else if (itemHasExpired) {
         status = VIEW_LISTING_ITEM_STATUS.EXPIRED;
       } else if (!matchingItem) {
         status = VIEW_LISTING_ITEM_STATUS.DRAFT;
@@ -220,6 +246,7 @@ export class AuctionManagementService {
       listingItem.description,
       listingItem.image_url,
       listingItem.auction_type_id == 1 ? 'dutch' : 'forward',
+      listingItem.has_been_sold,
       listingItem.decrement_amount,
     );
 
@@ -230,9 +257,9 @@ export class AuctionManagementService {
   async handleViewCatalog(data: ViewCatalogMessage): Promise<ViewCatalogResponse> {
     // const { userId } = data;
 
-    const viewCatalogItems = (await this.auctionItemRepository.getAuctionItems()).filter(
-      (item) => item.end_time > new Date().getTime(),
-    );
+    const viewCatalogItems = (await this.auctionItemRepository.getAuctionItems())
+      .filter((item) => item.end_time > new Date().getTime())
+      .filter((item) => !item.has_been_sold);
 
     // Logger.log(`User with id ${userId} requested to view catalog`);
 
@@ -300,6 +327,7 @@ export class AuctionManagementService {
         item.description,
         item.image_url,
         item.auction_type,
+        item.has_been_sold,
         item.decrement_amount,
       );
       searchCatalogItems.push(searchCatalogItem);
@@ -341,6 +369,7 @@ export class AuctionManagementService {
       auctionItem.description,
       auctionItem.image_url,
       auctionItem.auction_type,
+      auctionItem.has_been_sold,
       auctionItem.decrement_amount,
     );
 
@@ -350,15 +379,12 @@ export class AuctionManagementService {
   }
 
   async handlePlaceDutchBidAuction(data: PlaceDutchBidMessage): Promise<PlaceBidResponse> {
-    const { auction_item_id, listing_item_id } = data;
+    const { auction_item_id } = data;
 
     const auctionItem = await this.auctionItemRepository.getAuctionItemById(auction_item_id);
 
     // delete auction item entry to indicate its no longer available
     await this.auctionItemRepository.deleteAuctionItem(auction_item_id);
-
-    // call handle sell item
-    await this.handleSellAuctionItem(listing_item_id);
 
     return new PlaceBidResponse(auctionItem, 'Bid placed successfully', STATUS.SUCCESS);
   }
@@ -385,7 +411,7 @@ export class AuctionManagementService {
 
     await this.listingItemRepository.updateListingItemHasSold(updatedListingItem, listing_item_id);
 
-    // delete auction item entry to indicate its no longer available
+    // delete auction item entry to indicate its no longer available: if it is dutch, it has already been deleted, if it is forward, it is deleted here
     await this.auctionItemRepository.deleteAuctionItemByListingItemId(listing_item_id);
 
     return new SellAuctionItemResponse(updatedListingItem, 'Item sold successfully', STATUS.SUCCESS);
@@ -455,6 +481,7 @@ export class AuctionManagementService {
         item.description,
         item.image_url,
         item.auction_type,
+        item.has_been_sold,
         item.decrement_amount,
       );
 

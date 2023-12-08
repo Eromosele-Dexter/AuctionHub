@@ -6,6 +6,7 @@ import {
   AUTH_SERVICE,
   GET_LISTING_ITEM_BY_ID_MESSAGE_PATTERN,
   GET_SINGLE_USER_MESSAGE_PATTERN,
+  SELL_AUCITON_ITEM_MESSAGE_PATTERN,
 } from '@app/shared-library';
 import { ClientProxy } from '@nestjs/microservices';
 import { CheckOutItemResponse } from '@app/shared-library/api-contracts/payment/responses/check-out.response';
@@ -14,6 +15,9 @@ import { GetListingItemByIdResponse } from '@app/shared-library/api-contracts/au
 import GetListingItemMessage from '@app/shared-library/messages/get-listing-item.message';
 import GetListingItemByIdMessage from '@app/shared-library/messages/get-listing-item-by-id.message';
 import { CheckOutItem } from '@app/shared-library/types/check-out-item';
+import SellAuctionItemMessage from '@app/shared-library/messages/sell-auction-item.message';
+import { SellAuctionItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/sell-auction-item.response';
+import { Payment } from '../entities/payment.entity';
 
 @Injectable()
 export class PaymentService {
@@ -24,7 +28,7 @@ export class PaymentService {
   ) {}
 
   async handleCheckoutItem(data: CheckOutItemMessage): Promise<CheckOutItemResponse> {
-    const { user_id, listing_item_id, bid_amount } = data;
+    const { user_id, listing_item_id } = data;
 
     // get user from user_id
 
@@ -41,36 +45,28 @@ export class PaymentService {
       })
     ).data;
 
+    if (!user) {
+      return new CheckOutItemResponse(null, 'Checkout item unsuccessful', 'failed');
+    }
+
     // get listing item from listing_item_id
 
-    const listingItem = (
-      await new Promise<GetListingItemByIdResponse>((resolve, reject) => {
-        this.auctionManagementClient
-          .send(GET_LISTING_ITEM_BY_ID_MESSAGE_PATTERN, new GetListingItemByIdMessage(listing_item_id))
-          .subscribe({
-            next: (response) => {
-              resolve(response);
-            },
-            error: (error) => {
-              reject(error);
-            },
-          });
-      })
-    ).data;
+    await new Promise<SellAuctionItemResponse>((resolve, reject) => {
+      this.auctionManagementClient
+        .send(SELL_AUCITON_ITEM_MESSAGE_PATTERN, new SellAuctionItemMessage(listing_item_id))
+        .subscribe({
+          next: (response) => {
+            resolve(response);
+          },
+          error: (error) => {
+            reject(error);
+          },
+        });
+    });
 
-    const checkoutItem = new CheckOutItem(
-      user.first_name,
-      user.last_name,
-      user.street_name,
-      user.street_number,
-      user.city,
-      user.postal_code,
-      bid_amount,
-      0.05 * bid_amount, // shipping cost is 5% of bid amount
-      listing_item_id,
-      listingItem.name,
-    );
+    // create payment TOOD: get shipping fee and amount from CheckOutItemMessag
+    await this.paymentRepository.createPayment(new Payment(user_id, 0, 0, new Date().getTime(), listing_item_id));
 
-    return new CheckOutItemResponse(checkoutItem, 'Checkout item successful', 'success');
+    return new CheckOutItemResponse(null, 'Checkout item successful', 'success');
   }
 }

@@ -105,10 +105,7 @@ export class BidderEventService {
   async checkout(user_id: number, checkoutRequest: CheckoutRequest): Promise<CheckOutItemResponse> {
     const response = await new Promise<CheckOutItemResponse>((resolve, reject) => {
       this.paymentClient
-        .send(
-          CHECK_OUT_ITEM_MESSAGE_PATTERN,
-          new CheckOutItemMessage(checkoutRequest.listing_item_id, user_id, checkoutRequest.bid_amount),
-        )
+        .send(CHECK_OUT_ITEM_MESSAGE_PATTERN, new CheckOutItemMessage(checkoutRequest.listing_item_id, user_id))
         .subscribe({
           next: (response) => {
             resolve(response);

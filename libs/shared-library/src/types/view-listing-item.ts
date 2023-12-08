@@ -7,7 +7,7 @@ export class ViewListingItem {
 
   image_name: string;
 
-  auctionType: string;
+  auction_type: string;
 
   status: string;
 
@@ -32,7 +32,7 @@ export class ViewListingItem {
     this.name = name;
     this.description = description;
     this.image_name = image_name;
-    this.auctionType = auctionType;
+    this.auction_type = auctionType;
     this.status = status;
     this.end_time = end_time;
     this.current_bid_price = current_bid_price;

@@ -4,10 +4,7 @@ import { Payment } from '../../entities/payment.entity';
 import { IPaymentRepository } from './payment.repository.interface';
 
 @Injectable()
-export class PaymentRepository
-  extends Repository<Payment>
-  implements IPaymentRepository
-{
+export class PaymentRepository extends Repository<Payment> implements IPaymentRepository {
   private readonly logger = new Logger(PaymentRepository.name);
 
   constructor(private dataSource: DataSource) {
@@ -18,7 +15,8 @@ export class PaymentRepository
     throw new Error('Method not implemented.');
   }
   async createPayment(payment: Payment): Promise<Payment> {
-    throw new Error('Method not implemented.');
+    this.dataSource.manager.create(Payment, payment);
+    return this.save(payment);
   }
   async getPaymentById(id: number): Promise<Payment> {
     throw new Error('Method not implemented.');

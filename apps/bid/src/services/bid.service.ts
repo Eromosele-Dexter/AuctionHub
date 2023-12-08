@@ -211,11 +211,18 @@ export class BidService {
 
       const highestBidderId = highestBid?.bidder_id;
 
+      const auctionHasEnded = auctionItem.end_time <= new Date().getTime();
+
       // default -> status = watching
       // highestBidderId === userId -> status = highest bidder
       // highestBidderId !== userId -> status = outbid
 
-      if (highestBid && highestBidderId === data.user_id) {
+      if (
+        (auctionHasEnded && highestBid && highestBidderId === data.user_id) ||
+        (auctionItem.has_been_sold && highestBidderId === data.user_id)
+      ) {
+        status = WATCH_LISTING_ITEM_STATUS.WON;
+      } else if (highestBid && highestBidderId === data.user_id) {
         status = WATCH_LISTING_ITEM_STATUS.HIGHEST_BIDDER;
       } else if (highestBid && highestBidderId !== data.user_id) {
         status = WATCH_LISTING_ITEM_STATUS.OUTBID;

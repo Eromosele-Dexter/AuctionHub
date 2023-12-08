@@ -9,6 +9,7 @@ export const VIEW_LISTING_ITEM_STATUS = {
   ONGOING: 'ongoing',
   SOLD: 'sold',
   EXPIRED: 'expired',
+  PENDING: 'pending',
 };
 
 export const WATCH_LISTING_ITEM_STATUS = {
