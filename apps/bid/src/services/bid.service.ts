@@ -129,6 +129,12 @@ export class BidService {
 
       const createdWatchListItem = await this.watchListItemRepository.createWatchListItem(watchListItem);
 
+      await axios.post(
+        `https://api-gateway:${API_GATEWAY_PORT}/api-gateway/update-all-sessions-bidding-on-item/${listing_item_id}`,
+        {},
+        { httpsAgent: agent },
+      );
+
       return updatedItem.data;
     }
   }

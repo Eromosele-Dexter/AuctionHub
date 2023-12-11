@@ -161,7 +161,10 @@ export class AuctionManagementService {
 
       const itemHasExpired = end_time <= new Date().getTime();
 
-      const forwardAuctionEndedAndIsPending = listingItemBidHistory.length > 0 && itemHasExpired;
+      const forwardAuctionEndedAndIsPending =
+        listingItemBidHistory.length > 0 && itemHasExpired && listingItem.auction_type_id === 2;
+
+      const ducthAuctionEndedAndIsPending = listingItemBidHistory.length > 0 && listingItem.auction_type_id === 1;
 
       let status: string;
 
@@ -172,7 +175,7 @@ export class AuctionManagementService {
 
       if (listingItem.has_been_sold) {
         status = VIEW_LISTING_ITEM_STATUS.SOLD; // someone checked out the item and has paid
-      } else if (forwardAuctionEndedAndIsPending) {
+      } else if (forwardAuctionEndedAndIsPending || ducthAuctionEndedAndIsPending) {
         status = VIEW_LISTING_ITEM_STATUS.PENDING;
       } else if (itemHasExpired) {
         status = VIEW_LISTING_ITEM_STATUS.EXPIRED;
@@ -383,8 +386,10 @@ export class AuctionManagementService {
 
     const auctionItem = await this.auctionItemRepository.getAuctionItemById(auction_item_id);
 
-    // delete auction item entry to indicate its no longer available
-    await this.auctionItemRepository.deleteAuctionItem(auction_item_id);
+    // // delete auction item entry to indicate its no longer available
+    // await this.auctionItemRepository.deleteAuctionItem(auction_item_id);
+
+    await this.auctionItemRepository.updateAuctionItem({ ...auctionItem, end_time: new Date().getTime() });
 
     return new PlaceBidResponse(auctionItem, 'Bid placed successfully', STATUS.SUCCESS);
   }

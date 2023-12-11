@@ -29,6 +29,12 @@ export class SessionRepository extends Repository<Session> {
     );
   }
 
+  async updateAllSessionsBiddingOnItem(listing_item_id: number) {
+    const updatedSession = await this.dataSource.manager.query(
+      `UPDATE sessions SET has_active_bid = false, listing_item_id = null WHERE listing_item_id = ${listing_item_id}`,
+    );
+  }
+
   async getSessionByToken(token: string): Promise<Session> {
     throw new Error('Method not implemented.');
   }

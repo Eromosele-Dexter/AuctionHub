@@ -118,4 +118,8 @@ export class BidderEventService {
 
     return response;
   }
+
+  updateAllSessionsBiddingOnItem(listing_item_id: number) {
+    return this.sessionRepository.updateAllSessionsBiddingOnItem(listing_item_id);
+  }
 }

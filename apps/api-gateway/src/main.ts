@@ -56,7 +56,7 @@ async function bootstrap() {
   app.use(passport.session());
 
   const corsOptions: CorsOptions = {
-    origin: 'https://localhost:3000',
+    origin: ['https://localhost:3000', 'http://localhost:3000'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     allowedHeaders: 'Content-Type, Accept',

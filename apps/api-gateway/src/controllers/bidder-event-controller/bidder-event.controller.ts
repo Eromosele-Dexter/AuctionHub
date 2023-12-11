@@ -31,6 +31,16 @@ export class BidderEventController {
     return response.status(HttpStatus.CREATED).json(data);
   }
 
+  @Post('/update-all-sessions-bidding-on-item/:listingItemId')
+  async updateAllSessionsBiddingOnItem(
+    @Param('listingItemId') listing_item_id: number,
+    @Res() response: Response,
+  ) {
+    const data = await this.bidderService.updateAllSessionsBiddingOnItem(listing_item_id);
+
+    return response.status(HttpStatus.OK).json(data);
+  }
+
   // view watchlist - bid service
   @UseGuards(AuthenticatedGuard)
   @Get('/view-watchlist')
