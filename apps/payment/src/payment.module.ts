@@ -3,9 +3,10 @@ import { PaymentController } from './controllers/payment.controller';
 import { PaymentService } from './services/payment.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Payment } from './entities/payment.entity';
+import { Payment } from '@app/shared-library';
 import { PaymentRepository } from './repositories/payment-repo/payment.repository';
 import { AUCTION_MANAGEMENT_SERVICE, AUTH_SERVICE, RmqModule } from '@app/shared-library';
+import { SendGridService } from './services/sendgrid.service';
 
 @Module({
   imports: [
@@ -36,6 +37,6 @@ import { AUCTION_MANAGEMENT_SERVICE, AUTH_SERVICE, RmqModule } from '@app/shared
     TypeOrmModule.forFeature([Payment]),
   ],
   controllers: [PaymentController],
-  providers: [PaymentService, PaymentRepository],
+  providers: [PaymentService, PaymentRepository, SendGridService],
 })
 export class PaymentModule {}

@@ -5,3 +5,4 @@ export * from './api-contracts/auth/requests';
 export * from './api-contracts/auth/responses';
 export * from './rmq/rmq.service';
 export * from './rmq/rmq.module';
+export * from './entities';

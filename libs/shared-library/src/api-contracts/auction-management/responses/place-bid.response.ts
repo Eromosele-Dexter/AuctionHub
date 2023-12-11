@@ -1,4 +1,4 @@
-import { AuctionItem } from 'apps/auction-management/src/entities/auction-item.entity';
+import { AuctionItem } from '@app/shared-library/entities/auction-management/auction-item.entity';
 import { CustomResponse } from '../../response.response';
 
 export class PlaceBidResponse extends CustomResponse {

@@ -1,4 +1,4 @@
-import { Session } from 'apps/api-gateway/src/sessions/session.entity';
+import { Session } from '@app/shared-library';
 import { CustomResponse } from '../../response.response';
 
 export class RetrieveSessionResponse extends CustomResponse {

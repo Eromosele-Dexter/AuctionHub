@@ -1,4 +1,4 @@
-import { ValidationCode } from '../../entities/validation-code.entity';
+import { ValidationCode } from '../../../../../libs/shared-library/src/entities/auth/validation-code.entity';
 
 export interface IValidationCodeRepository {
   createValidationCode(validation: ValidationCode): Promise<ValidationCode>;

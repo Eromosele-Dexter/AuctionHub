@@ -1,4 +1,4 @@
-import { WatchListItem } from '../../entities/watch-list-item.entity';
+import { WatchListItem } from '../../../../../libs/shared-library/src/entities/bid/watch-list-item.entity';
 
 export interface IWatchListItemRepository {
   createWatchListItem(watchListItem: WatchListItem): Promise<WatchListItem>;

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { Payment } from '../../entities/payment.entity';
+import { Payment } from '../../../../../libs/shared-library/src/entities/payment/payment.entity';
 import { IPaymentRepository } from './payment.repository.interface';
 
 @Injectable()

@@ -4,9 +4,9 @@ import { AuctionManagementService } from './services/auction-management.service'
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuctionItemRepository } from './repositories/auction-item-repo/auction-item.repository';
-import { AuctionItem } from './entities/auction-item.entity';
+import { AuctionItem } from '@app/shared-library';
 import { BID_SERVICE, INVENTORY_SERVICE, RmqModule } from '@app/shared-library';
-import { ListingItem } from './entities/listing-item.entity';
+import { ListingItem } from '../../../libs/shared-library/src/entities/auction-management/listing-item.entity';
 import { ListingItemRepository } from './repositories/listing-item-repo/listing-item.repository';
 
 @Module({

@@ -1,4 +1,4 @@
-import { User } from '../../entities/user.entity';
+import { User } from '../../../../../libs/shared-library/src/entities/auth/user.entity';
 
 export interface IUserRepository {
   createUser(user: User): Promise<User>;

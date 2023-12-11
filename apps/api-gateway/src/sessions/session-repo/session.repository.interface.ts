@@ -1,4 +1,4 @@
-import { Session } from '../session.entity';
+import { Session } from '@app/shared-library';
 
 export interface ISessionRepository {
   createSession(session: Session): Promise<Session>;

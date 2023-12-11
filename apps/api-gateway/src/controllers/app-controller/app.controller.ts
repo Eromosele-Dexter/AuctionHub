@@ -1,7 +1,7 @@
 import { Controller, Get, Post, HttpStatus, Res, Body, UseGuards, Request, Patch, Query } from '@nestjs/common';
 import { Response } from 'express';
 import { AppService } from '../../services/app.service';
-import { RegisterUserRequest } from '../../../../../libs/shared-library/src/api-contracts/auth/requests/register-user.request';
+import { RegisterUserRequest } from '@app/shared-library';
 import { formatResponse } from '../../utils/formatResponse';
 import { LocalAuthGuard } from '../../guards/local-auth.guard';
 import { AuthenticatedGuard } from '../../guards/authenticated.guard';

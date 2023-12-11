@@ -10,7 +10,7 @@ import {
   SEARCH_FOR_LISTING_ITEMS_ID_BY_KEYWORD_MESSAGE_PATTERN,
 } from '@app/shared-library';
 import { ClientProxy } from '@nestjs/microservices';
-import { AuctionItem } from '../entities/auction-item.entity';
+import { AuctionItem } from '@app/shared-library';
 import ViewCatalogMessage from '@app/shared-library/messages/view-catalog.message';
 import { ViewCatalogResponse } from '@app/shared-library/api-contracts/auction-management/responses/view-catalog.response';
 import { STATUS, VIEW_LISTING_ITEM_STATUS } from '@app/shared-library/types';
@@ -19,7 +19,7 @@ import { SearchCatalogResponse } from '@app/shared-library/api-contracts/auction
 import GetAuctionItemsForSellerMessage from '@app/shared-library/messages/get-auction-items-for-seller.message';
 import { GetAuctionItemsForSellerResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-auction-items-for-seller.response';
 import { ListingItemRepository } from '../repositories/listing-item-repo/listing-item.repository';
-import { ListingItem } from '../entities/listing-item.entity';
+import { ListingItem } from '@app/shared-library';
 import ViewListingItemsMessage from '@app/shared-library/messages/view-listing-items.message';
 import { ViewListingItemsResponse } from '@app/shared-library/api-contracts/auction-management/responses/view-listing-items.response';
 import ViewListingMessage from '@app/shared-library/messages/view-listing.message';

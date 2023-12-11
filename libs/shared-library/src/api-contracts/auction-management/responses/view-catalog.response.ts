@@ -1,4 +1,4 @@
-import { AuctionItem } from 'apps/auction-management/src/entities/auction-item.entity';
+import { AuctionItem } from '@app/shared-library/entities/auction-management/auction-item.entity';
 import { CustomResponse } from '../../response.response';
 import { CatalogItem } from '@app/shared-library/types/view-catalog-item'; // TODO: make exact replica of item.entity.ts in types in shared-library,
 // do this for all the responses

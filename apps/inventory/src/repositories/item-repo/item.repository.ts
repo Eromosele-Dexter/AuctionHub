@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { IItemRepository } from './item.repository.interface';
-import { Item } from '../../entities/item.entity';
+import { Item } from '../../../../../libs/shared-library/src/entities/inventory/item.entity';
 
 @Injectable()
 export class ItemRepository extends Repository<Item> implements IItemRepository {

@@ -1,4 +1,4 @@
-import { ListingItem } from '../../entities/listing-item.entity';
+import { ListingItem } from '../../../../../libs/shared-library/src/entities/auction-management/listing-item.entity';
 
 export interface IListingItemRepository {
   createListingItem(listingItem: ListingItem): Promise<ListingItem>;

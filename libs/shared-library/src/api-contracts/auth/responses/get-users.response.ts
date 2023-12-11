@@ -1,4 +1,4 @@
-import { User } from 'apps/auth/src/entities/user.entity';
+import { User } from '@app/shared-library/entities/auth/user.entity';
 import { CustomResponse } from '../../response.response';
 
 export class GetUsersResponse extends CustomResponse {

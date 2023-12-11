@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { IValidationCodeRepository } from './code.repository.interface';
-import { ValidationCode } from '../../entities/validation-code.entity';
+import { ValidationCode } from '../../../../../libs/shared-library/src/entities/auth/validation-code.entity';
 
 @Injectable()
 export class ValidationCodeRepository extends Repository<ValidationCode> implements IValidationCodeRepository {

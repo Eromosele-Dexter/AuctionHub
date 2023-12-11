@@ -1,5 +1,5 @@
 import { DataSource, Repository } from 'typeorm';
-import { WatchListItem } from '../../entities/watch-list-item.entity';
+import { WatchListItem } from '../../../../../libs/shared-library/src/entities/bid/watch-list-item.entity';
 import { Injectable, Logger } from '@nestjs/common';
 import { IWatchListItemRepository } from './watch-list-item.repository.interface';
 

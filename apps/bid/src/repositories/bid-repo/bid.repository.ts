@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { Bid } from '../../entities/bid.entity';
+import { Bid } from '../../../../../libs/shared-library/src/entities/bid/bid.entity';
 import { IBidRepository } from './bid.repository.interface';
 
 @Injectable()

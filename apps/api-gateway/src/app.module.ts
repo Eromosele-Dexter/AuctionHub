@@ -11,7 +11,7 @@ import { LocalStrategy } from './middleware/local.strategy';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { SessionSerializer } from './utils/session.serializer';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Session } from '../src/sessions/session.entity';
+import { Session } from '@app/shared-library';
 import { SessionRepository } from './sessions/session-repo/session.repository';
 import {
   AUCTION_MANAGEMENT_SERVICE,

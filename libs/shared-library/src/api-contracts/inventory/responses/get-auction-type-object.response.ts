@@ -1,4 +1,4 @@
-import { AuctionType } from 'apps/inventory/src/entities/auction-type.entity';
+import { AuctionType } from '@app/shared-library/entities/inventory/auction-type.entity';
 import { CustomResponse } from '../../response.response';
 
 export class GetAuctionTypeObjectResponse extends CustomResponse {

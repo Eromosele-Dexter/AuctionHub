@@ -3,14 +3,14 @@ import { BidController } from './controllers/bid.controller';
 import { BidService } from './services/bid.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Bid } from './entities/bid.entity';
-import { WatchListItem } from './entities/watch-list-item.entity';
+import { Bid } from '@app/shared-library';
+import { WatchListItem } from '@app/shared-library';
 import { WatchListItemRepository } from './repositories/watch-list-item-repo/watch-list-item.repository';
 import { BidRepository } from './repositories/bid-repo/bid.repository';
 import { BidGateway } from './services/bid-gateway';
 import { jwtModule } from './modules.config';
 import { AuctionItemRepository } from 'apps/auction-management/src/repositories/auction-item-repo/auction-item.repository';
-import { AuctionItem } from 'apps/auction-management/src/entities/auction-item.entity';
+import { AuctionItem } from '@app/shared-library/entities/auction-management/auction-item.entity';
 import { API_GATEWAY_SERVICE, AUCTION_MANAGEMENT_SERVICE, AUTH_SERVICE, RmqModule } from '@app/shared-library';
 
 @Module({

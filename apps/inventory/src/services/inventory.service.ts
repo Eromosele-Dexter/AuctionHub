@@ -4,9 +4,9 @@ import { ItemKeywordRepository } from '../repositories/item-keyword-repo/item-ke
 import { ItemRepository } from '../repositories/item-repo/item.repository';
 import { KeywordRepository } from '../repositories/keyword-repo/keyword.repository';
 import CreateListingEvent from '@app/shared-library/events/create-listing.event';
-import { Item } from '../entities/item.entity';
-import { Keyword } from '../entities/keyword.entity';
-import { ItemKeyword } from '../entities/item-keyword.entity';
+import { Item } from '@app/shared-library';
+import { Keyword } from '@app/shared-library';
+import { ItemKeyword } from '@app/shared-library';
 import { STATUS } from '@app/shared-library/types/status';
 import {
   AUCTION_MANAGEMENT_SERVICE,
@@ -16,7 +16,7 @@ import {
   UPDATE_LISTING_ITEM_MESSAGE_PATTERN,
 } from '@app/shared-library';
 import { ClientProxy } from '@nestjs/microservices';
-import { AuctionType } from '../entities/auction-type.entity';
+import { AuctionType } from '@app/shared-library';
 import CreateListingItemEvent from '@app/shared-library/messages/create-listing-item.message';
 import GetAuctionTypeMessage from '@app/shared-library/messages/get-auction-type.message';
 import { GetAuctionTypeResponse } from '@app/shared-library/api-contracts/inventory/responses/get-auction-type.response';
@@ -30,7 +30,7 @@ import { GetAuctionTypeObjectResponse } from '@app/shared-library/api-contracts/
 import UpdateListingItemMessage from '@app/shared-library/messages/update-listing-item.message';
 import GetIsBeingAuctionedMessage from '@app/shared-library/messages/get-is-being-auctioned.message';
 import { GetIsListingItemBeingAuctionedResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-is-being-auctioned.response';
-import { ListingItem } from 'apps/auction-management/src/entities/listing-item.entity';
+import { ListingItem } from '@app/shared-library/entities/auction-management/listing-item.entity';
 import { UpdateListingItemResponse } from '@app/shared-library/api-contracts/auction-management/responses/update-listing-item.response';
 
 @Injectable()

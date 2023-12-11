@@ -1,5 +1,5 @@
 import { CustomResponse } from '../../response.response';
-import { Item } from 'apps/inventory/src/entities/item.entity'; // TODO: make exact replica of item.entity.ts in types in shared-library,
+import { Item } from '@app/shared-library/entities/inventory/item.entity'; // TODO: make exact replica of item.entity.ts in types in shared-library,
 // do this for all the responses
 
 export class StartAuctionResponse extends CustomResponse {

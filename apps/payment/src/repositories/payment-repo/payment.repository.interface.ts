@@ -1,4 +1,4 @@
-import { Payment } from '../../entities/payment.entity';
+import { Payment } from '../../../../../libs/shared-library/src/entities/payment/payment.entity';
 
 export interface IPaymentRepository {
   createPayment(payment: Payment): Promise<Payment>;

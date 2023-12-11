@@ -1,4 +1,4 @@
-import { Bid } from '../../entities/bid.entity';
+import { Bid } from '../../../../../libs/shared-library/src/entities/bid/bid.entity';
 
 export interface IBidRepository {
   createBid(bid: Bid): Promise<Bid>;

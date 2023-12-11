@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Keyword } from '../../entities/keyword.entity';
+import { Keyword } from '../../../../../libs/shared-library/src/entities/inventory/keyword.entity';
 import { IKeywordRepository } from './keyword.repository.interface';
 import { DataSource, Repository } from 'typeorm';
 

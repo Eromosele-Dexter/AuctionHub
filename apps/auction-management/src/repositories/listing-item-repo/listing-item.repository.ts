@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 
-import { ListingItem } from '../../entities/listing-item.entity';
+import { ListingItem } from '../../../../../libs/shared-library/src/entities/auction-management/listing-item.entity';
 import { IListingItemRepository } from './listing-item.repository.interface';
 
 @Injectable()

@@ -1,4 +1,4 @@
-import { AuctionItem } from 'apps/auction-management/src/entities/auction-item.entity'; // TODO: make exact replica of item.entity.ts in types in shared-library,
+import { AuctionItem } from '@app/shared-library/entities/auction-management/auction-item.entity'; // TODO: make exact replica of item.entity.ts in types in shared-library,
 import { CustomResponse } from '../../response.response';
 
 // do this for all the responses

@@ -1,4 +1,4 @@
-import { ListingItem } from 'apps/auction-management/src/entities/listing-item.entity';
+import { ListingItem } from '@app/shared-library/entities/auction-management/listing-item.entity';
 import { CustomResponse } from '../../response.response';
 
 export class CreateListingItemResponse extends CustomResponse {

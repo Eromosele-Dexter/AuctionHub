@@ -1,4 +1,4 @@
-import { Item } from '../../entities/item.entity';
+import { Item } from '../../../../../libs/shared-library/src/entities/inventory/item.entity';
 
 export interface IItemRepository {
   createItem(item: Item): Promise<Item>;

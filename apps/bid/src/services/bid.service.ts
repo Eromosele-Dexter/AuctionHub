@@ -19,7 +19,7 @@ import { PlaceBidResponse } from '@app/shared-library/api-contracts/auction-mana
 import PlaceForwardBidMessage from '@app/shared-library/messages/place-forward-bid.message';
 import PlaceDutchBidMessage from '@app/shared-library/messages/place-dutch-bid.message';
 import axios from 'axios';
-import { Bid } from '../entities/bid.entity';
+import { Bid } from '@app/shared-library';
 import ViewBiddingHistoryMessage from '@app/shared-library/messages/get-bidding-history.message';
 import ViewWatchListMessage from '@app/shared-library/messages/view-watch-list.message';
 import { ViewBiddingHistoryResponse } from '@app/shared-library/api-contracts/bid/responses/get-bidding-history-for-item.response';
@@ -29,9 +29,9 @@ import GetUsersMessage from '@app/shared-library/messages/get-users.message';
 import { BiddingHistoryItem } from '@app/shared-library/types/bidding-history';
 import { GetAuctionItemsByListingitemIdsResponse } from '@app/shared-library/api-contracts/auction-management/responses/get-auction-items-by-listing-item-ids.response';
 import GetAuctionItemsByListingItemsIdsMessage from '@app/shared-library/messages/get-auction-items-by-listing-ids.message';
-import { WatchListItem } from '../entities/watch-list-item.entity';
+import { WatchListItem } from '@app/shared-library';
 import { WATCH_LISTING_ITEM_STATUS } from '@app/shared-library/types/status';
-import { AuctionItem } from 'apps/auction-management/src/entities/auction-item.entity';
+import { AuctionItem } from '@app/shared-library/entities/auction-management/auction-item.entity';
 import * as https from 'https';
 
 @Injectable()

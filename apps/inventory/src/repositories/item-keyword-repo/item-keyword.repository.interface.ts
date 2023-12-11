@@ -1,4 +1,4 @@
-import { ItemKeyword } from '../../entities/item-keyword.entity';
+import { ItemKeyword } from '../../../../../libs/shared-library/src/entities/inventory/item-keyword.entity';
 
 export interface IItemKeywordRepository {
   createItemKeyword(itemKeyword: ItemKeyword): Promise<ItemKeyword>;

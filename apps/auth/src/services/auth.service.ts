@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../repositories/user-repo/user.repository';
-import { User } from '../entities/user.entity';
+import { User } from '@app/shared-library';
 import { ROLES, STATUS } from '@app/shared-library/types';
 import { LoginUserResponse, RegisterUserResponse } from '@app/shared-library';
 import RegisterUserMessage from '@app/shared-library/messages/register-user.message';
 import SendValidationCodeEvent from '@app/shared-library/events/send-validation-code.event';
 import { SendGridService } from './sendgrid.service';
 import { ValidationCodeRepository } from '../repositories/validation-codes-repo/code.repository';
-import { ValidationCode } from '../entities/validation-code.entity';
+import { ValidationCode } from '@app/shared-library';
 import { ResetPasswordResponse } from '@app/shared-library/api-contracts/auth/responses/reset-password.response';
 import ResetPasswordMessage from '@app/shared-library/messages/reset-password.message';
 import { generateValidationCode } from '../utils/generateCode';

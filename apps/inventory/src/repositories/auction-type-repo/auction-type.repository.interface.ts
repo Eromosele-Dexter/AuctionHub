@@ -1,4 +1,4 @@
-import { AuctionType } from '../../entities/auction-type.entity';
+import { AuctionType } from '../../../../../libs/shared-library/src/entities/inventory/auction-type.entity';
 
 export interface IAuctionTypeRepository {
   createAuctionType(auctionType: AuctionType): Promise<AuctionType>;

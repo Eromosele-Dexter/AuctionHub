@@ -1,5 +1,5 @@
-import { User } from 'apps/auth/src/entities/user.entity';
-import { Item } from 'apps/inventory/src/entities/item.entity';
+import { User } from '@app/shared-library/entities/auth/user.entity';
+import { Item } from '@app/shared-library/entities/inventory/item.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'bids' })
