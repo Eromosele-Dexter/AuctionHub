@@ -9,7 +9,6 @@ import { WatchListItemRepository } from './repositories/watch-list-item-repo/wat
 import { BidRepository } from './repositories/bid-repo/bid.repository';
 import { BidGateway } from './services/bid-gateway';
 import { jwtModule } from './modules.config';
-import { AuctionItemRepository } from 'apps/auction-management/src/repositories/auction-item-repo/auction-item.repository';
 import { AuctionItem } from '@app/shared-library/entities/auction-management/auction-item.entity';
 import { API_GATEWAY_SERVICE, AUCTION_MANAGEMENT_SERVICE, AUTH_SERVICE, RmqModule } from '@app/shared-library';
 
@@ -49,6 +48,6 @@ import { API_GATEWAY_SERVICE, AUCTION_MANAGEMENT_SERVICE, AUTH_SERVICE, RmqModul
     jwtModule,
   ],
   controllers: [BidController],
-  providers: [BidService, BidGateway, BidRepository, WatchListItemRepository, AuctionItemRepository],
+  providers: [BidService, BidGateway, BidRepository, WatchListItemRepository],
 })
 export class BidModule {}
