@@ -17,13 +17,13 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 async function bootstrap() {
-  const httpsOptions = {
-    key: readFileSync(join(__dirname, 'localhost+2-key.pem')),
-    cert: readFileSync(join(__dirname, 'localhost+2.pem')),
-  };
+  // const httpsOptions = {
+  //   key: readFileSync(join(__dirname, 'localhost+2-key.pem')),
+  //   cert: readFileSync(join(__dirname, 'localhost+2.pem')),
+  // };
 
   const app = await NestFactory.create(AppModule, {
-    httpsOptions,
+    // httpsOptions,
   });
 
   const SessionRepo = app.get(SessionRepository);
@@ -56,7 +56,7 @@ async function bootstrap() {
   app.use(passport.session());
 
   const corsOptions: CorsOptions = {
-    origin: ['https://localhost:3000', 'http://localhost:3000'],
+    origin: ['https://localhost:3000', 'https://auctionhub.netlify.app'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     allowedHeaders: 'Content-Type, Accept',
