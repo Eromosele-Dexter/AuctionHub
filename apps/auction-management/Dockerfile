@@ -7,7 +7,7 @@ COPY tsconfig.json tsconfig.json
 
 RUN npm install
 
-COPY ../apps/auction-management ./apps/auction-management 
+COPY apps/auction-management apps/auction-management 
 COPY libs libs
 
 RUN npm run build auction-management

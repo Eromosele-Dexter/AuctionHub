@@ -7,7 +7,7 @@ COPY tsconfig.json tsconfig.json
 
 RUN npm install
 
-COPY ../apps/bid ./apps/bid
+COPY apps/bid apps/bid
 COPY libs libs
 
 RUN npm run build bid

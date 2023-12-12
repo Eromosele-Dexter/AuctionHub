@@ -7,7 +7,7 @@ COPY tsconfig.json tsconfig.json
 
 RUN npm install
 
-COPY ../apps/auth ./apps/auth
+COPY apps/auth apps/auth
 COPY libs libs
 
 RUN npm run build auth

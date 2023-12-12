@@ -7,7 +7,7 @@ COPY tsconfig.json tsconfig.json
 
 RUN npm install
 
-COPY ../apps/payment ./apps/payment
+COPY apps/payment apps/payment
 COPY libs libs
 
 RUN npm run build payment

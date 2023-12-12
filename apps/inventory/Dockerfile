@@ -7,7 +7,7 @@ COPY tsconfig.json tsconfig.json
 
 RUN npm install
 
-COPY ../apps/inventory ./apps/inventory
+COPY apps/inventory apps/inventory
 COPY libs libs
 
 RUN npm run build inventory
