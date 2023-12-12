@@ -52,3 +52,26 @@ The follwing should be done in order:
 5. Once the above instructions are complete all the endpoints in the postman collection should work as expected.
 
 Note: A seller can bid for and sell items. A buyer can only bid. Some endpoints prohibit any user apart from sellers to access it.
+
+## Building services individually
+
+```bash
+# run in api-gateway/apps/api-gateway
+$ docker build -t api-gateway -f ./Dockerfile ../../
+
+# run in auction-management
+$ docker build -t auction-management -f ./Dockerfile ../../
+
+# run in auth
+$ docker build -t auth -f ./Dockerfile ../../
+
+# run in bid
+$ docker build -t bid -f ./Dockerfile ../../
+
+# run in inventory
+$ docker build -t inventory -f ./Dockerfile ../../
+
+# run in payment
+$ docker build -t payment -f ./Dockerfile ../../
+
+```

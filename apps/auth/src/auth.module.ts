@@ -28,7 +28,10 @@ import { RmqModule } from '@app/shared-library';
         password: configService.get<string>('POSTGRES_PASSWORD'),
         database: configService.get<string>('POSTGRES_AUTH_DATABASE'),
         entities: [User, ValidationCode],
-        synchronize: true, // Be cautious with this in production
+        // synchronize: true, // Be cautious with this in production
+        ssl: {
+          rejectUnauthorized: false, // Allows self-signed certificates (use with caution in production)
+        },
       }),
     }),
     TypeOrmModule.forFeature([User, ValidationCode]),

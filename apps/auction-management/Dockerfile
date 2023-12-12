@@ -3,10 +3,12 @@ FROM node:alpine As development
 WORKDIR /usr/src/app
 
 COPY package*.json ./
+COPY tsconfig.json tsconfig.json
 
 RUN npm install
 
-COPY . .
+COPY ../apps/auction-management ./apps/auction-management 
+COPY libs libs
 
 RUN npm run build auction-management
 

@@ -32,7 +32,10 @@ import { ListingItemRepository } from './repositories/listing-item-repo/listing-
         password: configService.get<string>('POSTGRES_PASSWORD'),
         database: configService.get<string>('POSTGRES_AUCTION_MANAGEMENT_DATABASE'),
         entities: [AuctionItem, ListingItem],
-        synchronize: true, // Be cautious with this in production
+        // synchronize: true, // Be cautious with this in production
+        ssl: {
+          rejectUnauthorized: false, // Allows self-signed certificates (use with caution in production)
+        },
       }),
     }),
     TypeOrmModule.forFeature([AuctionItem, ListingItem]),

@@ -1,0 +1,41 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 243451384839.dkr.ecr.us-east-2.amazonaws.com
+
+  build:
+    commands:
+      - echo Building the Docker image...
+
+      - docker build -t api-gateway -f ./apps/api-gateway/Dockerfile .
+      - docker tag api-gateway:latest 243451384839.dkr.ecr.us-east-2.amazonaws.com/api-gateway:latest
+
+      - docker build -t auction-management -f ./apps/auction-management/Dockerfile .
+      - docker tag auction-management:latest 243451384839.dkr.ecr.us-east-2.amazonaws.com/auction-management:latest
+
+      - docker build -t auth -f ./apps/auth/Dockerfile .
+      - docker tag auth:latest 243451384839.dkr.ecr.us-east-2.amazonaws.com/auth:latest
+
+      - docker build -t bid -f ./apps/bid/Dockerfile .
+      - docker tag bid:latest 243451384839.dkr.ecr.us-east-2.amazonaws.com/bid:latest
+
+      - docker build -t inventory -f ./apps/inventory/Dockerfile .
+      - docker tag inventory:latest 243451384839.dkr.ecr.us-east-2.amazonaws.com/inventory:latest
+
+      - docker build -t payment -f ./apps/payment/Dockerfile .
+      - docker tag payment:latest 243451384839.dkr.ecr.us-east-2.amazonaws.com/payment:latest
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push 243451384839.dkr.ecr.us-east-2.amazonaws.com/api-gateway:latest
+      - docker push 243451384839.dkr.ecr.us-east-2.amazonaws.com/auction-management:latest
+      - docker push 243451384839.dkr.ecr.us-east-2.amazonaws.com/auth:latest
+      - docker push 243451384839.dkr.ecr.us-east-2.amazonaws.com/bid:latest
+      - docker push 243451384839.dkr.ecr.us-east-2.amazonaws.com/inventory:latest
+      - docker push 243451384839.dkr.ecr.us-east-2.amazonaws.com/payment:latest

@@ -3,12 +3,17 @@ FROM node:alpine As development
 WORKDIR /usr/src/app
 
 COPY package*.json ./
+COPY tsconfig.json tsconfig.json
 
 RUN npm install
 
-COPY . .
+COPY ../apps/bid ./apps/bid
+COPY libs libs
 
 RUN npm run build bid
+
+# Expose the necessary port(s)
+EXPOSE 7081
 
 FROM node:alpine as production
 
