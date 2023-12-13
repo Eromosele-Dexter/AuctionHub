@@ -32,6 +32,7 @@ export class AuthService {
   ) {}
 
   async handleRegisterUser(registerUserMessage: RegisterUserMessage): Promise<RegisterUserResponse> {
+    console.log('register endpoint hit in auth service');
     const user = new User(
       registerUserMessage.first_name,
       registerUserMessage.last_name,
@@ -77,6 +78,8 @@ export class AuthService {
       registrationEmailFormat(registerUserMessage.first_name),
       registrationEmailFormat(registerUserMessage.first_name, true),
     );
+
+    console.log('user created in auth service');
 
     return new RegisterUserResponse(user, 'User created', STATUS.SUCCESS);
   }

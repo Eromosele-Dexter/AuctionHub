@@ -16,6 +16,8 @@ export class AppController {
 
   @Post('/register')
   async registerUser(@Body() registerUserRequest: RegisterUserRequest, @Res() response: Response) {
+    console.log('register endpoint hit');
+
     const data = await this.appService.registerUser(registerUserRequest);
 
     if (data?.error || !data) {

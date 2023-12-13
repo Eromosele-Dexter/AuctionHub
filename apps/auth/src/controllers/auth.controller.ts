@@ -27,8 +27,10 @@ export class AuthController {
 
   @MessagePattern(REGISTER_USER_MESSAGE_PATTERN)
   async handleRegisterUser(@Payload() data: RegisterUserMessage, @Ctx() context: RmqContext) {
+    console.log('register endpoint hit in auth controller');
     const registerUserResponse = await this.authService.handleRegisterUser(data);
     this.rmqService.ack(context);
+    console.log('acknowledged');
     return registerUserResponse;
   }
 
