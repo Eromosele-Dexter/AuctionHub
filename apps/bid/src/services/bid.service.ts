@@ -5,6 +5,7 @@ import {
   API_GATEWAY_PORT,
   AUCTION_MANAGEMENT_SERVICE,
   AUTH_SERVICE,
+  BASE_API_GATEWAY_URL,
   GET_AUCTION_ITEMS_BY_LISTING_ITEM_IDS_MESSAGE_PATTERN,
   GET_AUCTION_ITEM_MESSAGE_PATTERN,
   GET_USERS_MESSAGE_PATTERN,
@@ -94,7 +95,7 @@ export class BidService {
       //TODO: consider making post requests to rabbitmq events for performance
 
       const placeBidResponse = await axios.post(
-        `https://api-gateway:${API_GATEWAY_PORT}/api-gateway/bid/${bidSessionId}`,
+        `${BASE_API_GATEWAY_URL}/bid/${bidSessionId}`,
         { listing_item_id: listing_item_id },
         { httpsAgent: agent },
       );
@@ -114,7 +115,7 @@ export class BidService {
       const updatedItem = await this.handleDutchAuction(bidder_id, itemResponse);
 
       const placeBidResponse = await axios.post(
-        `https://api-gateway:${API_GATEWAY_PORT}/api-gateway/bid/${bidSessionId}`,
+        `${BASE_API_GATEWAY_URL}/bid/${bidSessionId}`,
         { listing_item_id: listing_item_id },
         { httpsAgent: agent },
       );
@@ -130,7 +131,7 @@ export class BidService {
       const createdWatchListItem = await this.watchListItemRepository.createWatchListItem(watchListItem);
 
       await axios.post(
-        `https://api-gateway:${API_GATEWAY_PORT}/api-gateway/update-all-sessions-bidding-on-item/${listing_item_id}`,
+        `${BASE_API_GATEWAY_URL}/update-all-sessions-bidding-on-item/${listing_item_id}`,
         {},
         { httpsAgent: agent },
       );

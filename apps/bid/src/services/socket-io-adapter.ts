@@ -11,7 +11,7 @@ export class SocketIOAdapter extends IoAdapter {
 
   createIOServer(port: number, options?: ServerOptions) {
     const cors = {
-      origin: 'https://localhost:3000', // Specify the client URL
+      origin: ['https://auctionhub.netlify.app', 'https://localhost:3000'], // Specify the client URL
       methods: ['GET', 'POST'],
       credentials: true, // Important for handling cookies
     };

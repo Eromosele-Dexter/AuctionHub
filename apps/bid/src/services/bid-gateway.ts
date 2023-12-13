@@ -17,7 +17,7 @@ import { exceptionFactory } from '../middleware/bid-gateway.middleware';
 import { STATUS } from '@app/shared-library/types';
 import { WsCatchAllFilter } from '../middleware/ws-catch-all-filter.middleware';
 import axios from 'axios';
-import { API_GATEWAY_PORT } from '@app/shared-library';
+import { API_GATEWAY_PORT, BASE_API_GATEWAY_URL } from '@app/shared-library';
 import { ConfigService } from '@nestjs/config';
 import * as cookieSignature from 'cookie-signature';
 import * as https from 'https';
@@ -106,7 +106,7 @@ export class BidGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
       // console.log('agent: ', agent);
 
-      const url = `https://api-gateway:${API_GATEWAY_PORT}/api-gateway/retrieve-session/${bidSessionId}`;
+      const url = `${BASE_API_GATEWAY_URL}/retrieve-session/${bidSessionId}`;
 
       const retrieveSessionResponse = await axios.get(url, { httpsAgent: agent });
 
